@@ -81,6 +81,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - Updates so schnell wie möglich – am besten im Minutentakt → Handy-Wächter (M3) hat hohe Priorität.
 - Reiter „News & Leaks“: was in Quelltexten/Sitemaps, Newslettern und offiziellen Ankündigungen gefunden wurde und in den
   nächsten Stunden/Tagen/Wochen kommt; beim Release sofort Push mit Link, um als einer der Ersten zum UVP zu bestellen.
+- **Cardmarket ganz wichtig:** jede Top-/Elite-Trainer-Box (auch alte Sets) bis 60 € ohne Versand anzeigen („lieber mehr anzeigen“),
+  dazu Displays, Booster-Bundles, Pin-/Poster-Kollektionen im Blick. Nur erlaubte Wege (offizielle API prüfen, kein Scraping gegen AGB/Bot-Schutz).
+- Regel-Ergänzung: Top-Trainer-Boxen bis 60 € (ohne Versand) gelten immer als Treffer, egal welches Set.
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
   Von GitHub aus durch DataDome geblockt → nur über Handy-Wächter, Bot-Schutz nie umgehen.
 - **Daueraufgabe:** Immer prüfen, ob verfügbare Schnittstellen, APIs, MCP-Server/Konnektoren oder Downloads das Projekt verbessern,
