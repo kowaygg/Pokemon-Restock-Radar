@@ -38,6 +38,9 @@ async function melden(meldungen) {
 const lieferbar = [];
 const top = []; // jetzt bestellbar, sealed, ≤ UVP + Spielraum
 for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'shopify')) {
+  // Nach „zu viele Anfragen“ (HTTP 429) den Händler eine Weile in Ruhe lassen
+  const pause = zustand.haendler[h.id]?.pauseBis;
+  if (pause && jetzt < Date.parse(pause)) { bericht.push(`| ${h.name} | ⏸ Pause bis ${pause.slice(11, 16)} UTC (zu viele Anfragen) | – | – | – | – |`); continue; }
   try {
     const vollZeit = zustand.haendler[h.id]?.vollScan;
     const voll = !handy || !vollZeit || jetzt - Date.parse(vollZeit) >= einst.handyVollMinuten * 60000;
@@ -59,8 +62,9 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     await melden(meldungen);
     bericht.push(`| ${h.name} | ✅ | ${roh.length} | ${sealed.length} | ${sealed.filter((p) => p.verfuegbar).length} | ${ersterLauf ? 'erster Lauf (nur merken)' : meldungen.length} |`);
   } catch (e) {
-    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString() };
-    bericht.push(`| ${h.name} | ❌ ${e.message} | – | – | – | – |`);
+    const pauseBis = /429/.test(e.message) ? new Date(jetzt.getTime() + einst.pauseNach429Minuten * 60000).toISOString() : null;
+    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString(), pauseBis };
+    bericht.push(`| ${h.name} | ❌ ${e.message}${pauseBis ? ` → Pause ${einst.pauseNach429Minuten} Min.` : ''} | – | – | – | – |`);
   }
 }
 // Sitemap-Händler macht der GitHub-Wächter (Handy spart Datenvolumen)

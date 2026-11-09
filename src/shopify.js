@@ -34,7 +34,7 @@ export async function shopifyHolen(haendler, { holen = fetch, maxSeiten = 8, lim
     const teil = produkteAusShopify(await r.json(), basis);
     alle.push(...teil);
     if (teil.length < limit) break;
-    await new Promise((res) => setTimeout(res, 800));
+    await new Promise((res) => setTimeout(res, 1500));
   }
   return alle;
 }
