@@ -21,3 +21,10 @@ test('JSON-LD Produkt lesen', () => {
   assert.equal(vb.vorbestellung, true);
   assert.equal(produktAusHtml('<html></html>'), null);
 });
+
+test('Microdata-Ersatz (JTL/Shopware ohne JSON-LD)', () => {
+  const html = '<meta property="og:title" content="Pokémon Delta-Herrschaft Display"><span itemprop="price" content="179.99"></span><link itemprop="availability" href="https://schema.org/InStock">';
+  const p = produktAusHtml(html);
+  assert.deepEqual([p.preis, p.verfuegbar, p.name], [179.99, true, 'Pokémon Delta-Herrschaft Display']);
+  assert.equal(produktAusHtml('<meta itemprop="price" content="9.99"><link itemprop="availability" href="https://schema.org/OutOfStock">').verfuegbar, false);
+});

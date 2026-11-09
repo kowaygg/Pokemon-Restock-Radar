@@ -94,11 +94,11 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     bericht.push(`| ${h.name} | ❌ ${e.message}${pauseBis ? ` → Pause ${pauseMin} Min.` : ''} | – | – | – | – |`);
   }
 }
-// Sitemap-Händler macht der GitHub-Wächter (Handy spart Datenvolumen)
-for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x.abfrage) && !handy)) {
+// Sitemap-Händler: GitHub immer, Handy nur im WLAN (unterwegs spart das Datenvolumen)
+for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x.abfrage) && !spar)) {
   try {
     const alt = zustand.haendler[h.id]?.sitemap;
-    const { meldungen, stand, info } = await sitemapWaechter(h, alt, { jetzt, sitemapMinuten: einst.sitemapMinuten, seitenProLauf: einst.seitenProLauf });
+    const { meldungen, stand, info } = await sitemapWaechter(h, alt, { jetzt, sitemapMinuten: einst.sitemapMinuten, seitenProLauf: handy ? einst.seitenProLaufHandy : einst.seitenProLauf });
     zustand.haendler[h.id] = { sitemap: stand, stand: jetzt.toISOString(), fehler: null };
     await melden(meldungen);
     for (const [url, z] of Object.entries(stand.urls)) {

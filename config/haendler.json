@@ -39,7 +39,7 @@
       "url": "https://www.card-corner.de",
       "art": "fachhandel",
       "status": "aktiv",
-      "abfrage": "sitemap"
+      "abfrage": "sitemap-jsonld"
     },
     {
       "id": "gate-to-the-games",
@@ -47,7 +47,7 @@
       "url": "https://www.gate-to-the-games.de",
       "art": "fachhandel",
       "status": "aktiv",
-      "abfrage": "sitemap",
+      "abfrage": "sitemap-jsonld",
       "versand": {
         "euro": 6.49,
         "quelle": "https://www.gate-to-the-games.de/info/Versandinformationen",
@@ -86,7 +86,7 @@
       "url": "https://cardmex-shop.de",
       "art": "fachhandel",
       "status": "aktiv",
-      "abfrage": "sitemap"
+      "abfrage": "sitemap-jsonld"
     },
     {
       "id": "geeks-heaven",

@@ -189,6 +189,11 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   JP 30th Celebration 7.200 Yen (20 Packs), KR 30th Celebration 70.000 Won (niedrig); CN nichts Belastbares. Umrechnung EZB-Tageskurs
   (eurofxref-daily.xml, 1×/Tag) + 19 % Einfuhr-USt.
 
+- 09.11.2026 (0.11.0): Preis-Leser per Microdata (itemprop price/availability) als Ersatz für JSON-LD → Card-Corner, Gate to the Games,
+  Cardmex jetzt „Sitemap + Preis“ (Live: Card-Corner/Gate liefern Preis + Bestand, viel Scalper-Preise). TRADER + Games-Island: weder JSON-LD-
+  Produkt noch Microdata → eigener Leser offen. Einzelkarten-Filter: Wort „Karte“. Sitemap-Händler laufen jetzt auch auf dem Handy (nur WLAN,
+  4 Seiten/Händler/Lauf), weil GitHub selten läuft.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
