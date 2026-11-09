@@ -8,6 +8,7 @@ import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
 import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
 import { mediamarktHolen } from './mediamarkt.js';
+import { neueSetCodes } from './setcodes.js';
 import { ebaySuche, ebayGraded, serioes } from './ebay.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
@@ -61,6 +62,7 @@ function bewerteGesamt(titel, art, preis, haendlerId) {
   return { bewertung: preisBewertung(gesamt, uvpFinden(titel, art, uvpListe), uvpListe.spielraumEuro), versand, gesamt };
 }
 const top = []; // jetzt bestellbar, sealed, ≤ UVP + Spielraum
+const setQuellen = []; // Produktnamen/-links für das Set-Code-Radar
 for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'shopify')) {
   // Nach „zu viele Anfragen“ (HTTP 429) den Händler eine Weile in Ruhe lassen
   const pause = zustand.haendler[h.id]?.pauseBis;
@@ -71,6 +73,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     const roh = await shopifyHolen(h, voll ? { maxSeiten: einst.maxSeiten } : { maxSeiten: 1, limit: einst.handyLimit });
     const sealed = roh.filter(istPokemon).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), vorbestellung: istVorbestellung(p), haendler: h.name, haendlerId: h.id }));
+    for (const p of sealed) setQuellen.push({ titel: p.titel, link: p.link, haendler: h.name });
     for (const p of sealed.filter((x) => x.verfuegbar)) {
       const { bewertung: b, versand } = bewerteGesamt(p.titel, p.art, p.preis, h.id);
       if (b.stufe === 'uvp') top.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: p.warenkorb });
@@ -101,6 +104,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x
     const { meldungen, stand, info } = await sitemapWaechter(h, alt, { jetzt, sitemapMinuten: einst.sitemapMinuten, seitenProLauf: handy ? einst.seitenProLaufHandy : einst.seitenProLauf });
     zustand.haendler[h.id] = { sitemap: stand, stand: jetzt.toISOString(), fehler: null };
     await melden(meldungen);
+    for (const url of Object.keys(stand.urls)) setQuellen.push({ titel: titelAusUrl(url), link: url, haendler: h.name });
     for (const [url, z] of Object.entries(stand.urls)) {
       const a = produktArt(titelAusUrl(url));
       if (!z.v || !a) continue;
@@ -187,6 +191,21 @@ if (ebayAktiv && (!zustand.ebay.zeit || jetzt - Date.parse(zustand.ebay.zeit) >=
   zustand.ebay.gesehen = Object.fromEntries(Object.entries(zustand.ebay.gesehen).filter(([, z]) => Date.parse(z) >= grenzeEbay));
   Object.assign(zustand.ebay, { zeit: jetzt.toISOString(), sofort, auktionen, graded, fehler });
   bericht.push(`| eBay | ${fehler.length ? '⚠ ' + fehler.join('; ') : '✅'} | ${(eb.suchen || []).length} Suchen | ${sofort.length} Sofortkauf | ${auktionen.length} Auktionen | ${graded.length} Graded |`);
+}
+
+// Set-Code-Radar: neue Set-Codes in Händler-Produkten = Leak-Hinweis (News-Reiter + Push)
+if (setQuellen.length && !handy) { // nur vollständige Durchläufe (GitHub), sonst Fehlalarme durch Teilansichten
+  const { bekannt, neu } = neueSetCodes(zustand.setCodes, setQuellen, { jetzt });
+  zustand.setCodes = { bekannt };
+  zustand.news ||= [];
+  if (neu.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
+  for (const s of neu.slice(0, 5)) {
+    const n = { titel: `Neuer Set-Code entdeckt: ${s.code} – „${s.titel}“ bei ${s.haendler}`, link: s.link, zeit: jetzt.toISOString(), art: 'leak', quelle: 'Set-Code-Radar', quelleId: 'setcodes', stufe: 'B', bestaetigt: false, pokemonCenter: false, ttb: false, vorOrt: false };
+    zustand.news.unshift(n);
+    if (!gemeldet.has(s.link) && await pushSenden({ title: `🔮 Leak: neuer Set-Code ${s.code}`, message: `${s.titel}
+entdeckt bei ${s.haendler} – womöglich ein kommendes Set`, priority: 4, tags: ['crystal_ball'], click: s.link }, { kanal })) { pushes++; gemeldet.add(s.link); }
+  }
+  bericht.push(`| Set-Code-Radar | ✅ | ${Object.keys(bekannt).length} bekannte Codes | ${neu.length} neu | – | – |`);
 }
 
 // News & Leaks (alle newsMinuten)

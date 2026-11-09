@@ -204,6 +204,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Kaufen-Knopf), Kopf mit Drachen-Symbol, Reiter: Kaufen · News · Bald · Vor Ort · Meldungen · TTB-Markt · UVP · Händler; Filter-Knöpfe im Reiter
   Kaufen (Alle/TTB/Displays/Bundles). Noch offen aus Plan B: TRADER/Games-Island-Leser, neue Shops aus Deal-Feeds, Leak-Radar, echter Kalender.
 
+- 09.11.2026 (1.1.0): Set-Code-Radar (`src/setcodes.js`): sammelt Codes ME/SV/SWSH/M/KP + Nummer (≤ 30, .5) aus allen Händler-Produktnamen/-URLs;
+  neuer Code → News „Leak“ (Quelle Set-Code-Radar) + Push 🔮. Nur bei GitHub-Läufen (Handy sieht nur Ausschnitte → Fehlalarme). Erster Lauf merkt nur.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
