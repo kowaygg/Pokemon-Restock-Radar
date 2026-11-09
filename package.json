@@ -6,7 +6,7 @@
   "description": "Meldet Pokémon-TCG-Sealed-Produkte zum UVP bei seriösen Händlern",
   "engines": { "node": ">=22" },
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test \"tests/*.test.js\"",
     "haendler-check": "node scripts/haendler-check.js"
   }
 }
