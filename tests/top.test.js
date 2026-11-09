@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { uvpFinden, preisBewertung, pushWert } from '../src/uvp.js';
+import { produktArt } from '../src/produkt.js';
+import { pushNachricht } from '../src/push.js';
+
+const liste = JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url)));
+const bew = (titel, preis) => { const a = produktArt(titel); return preisBewertung(preis, uvpFinden(titel, a.art, liste), 5); };
+
+test('Top: nur echte UVP-Treffer', () => {
+  assert.equal(bew('Pokémon TCG Delta Herrschaft Top Trainer Box (DE)', 54.99).stufe, 'uvp');
+  assert.equal(bew('Pokémon Delta Herrschaft 36er Display (DE)', 179.99).stufe, 'uvp');
+  assert.equal(bew('Pokémon - Shiny Treasure EX 10er Display - JPN', 139.9).stufe, 'unbekannt');
+  assert.equal(bew('Pokémon - Ewige Rivalen 18er Booster Display - DE', 139.9).stufe, 'unbekannt');
+  assert.equal(bew('Pokémon - Collect 151 Glumanda Display Set - CHN', 19.99).stufe, 'unbekannt');
+  assert.equal(bew('Pokémon 30 Jahre Tech-Sticker-Kollektion (deutsch)', 29.99).stufe, 'unbekannt');
+  assert.equal(bew('Pokémon 30 Jahre Figuren-Kollektion Mew', 36.99).stufe, 'uvp');
+  assert.equal(bew('Pokémon Top Trainer Box Delta Herrschaft', 25).stufe, 'unplausibel');
+});
+
+test('Reseal, geöffnete Ware und Zubehör fliegen raus', () => {
+  for (const t of ['Pokémon Top Trainer Box resealed', 'Pokémon Display geöffnet', 'Pokémon Deck Box Pikachu', 'LEGO Pokémon Box']) assert.equal(produktArt(t), null, t);
+});
+
+test('Push nur bei UVP-Treffer, mit Warenkorb-Knopf', () => {
+  const m = { typ: 'neu', haendler: 'Shop', titel: 'Delta Herrschaft Top Trainer Box', prioritaet: 1, preis: 54.99, verfuegbar: true, link: 'https://s.de/p', warenkorb: 'https://s.de/cart/1:1', bewertung: { stufe: 'uvp', uvp: 54.99, differenz: 0 } };
+  assert.equal(pushWert(m), true);
+  assert.equal(pushWert({ ...m, bewertung: { stufe: 'drueber' } }), false);
+  assert.equal(pushWert({ ...m, bewertung: { stufe: 'unbekannt' } }), false);
+  assert.equal(pushWert({ ...m, preis: NaN, bewertung: { stufe: 'unbekannt' } }), true);
+  const n = pushNachricht(m);
+  assert.equal(n.priority, 5);
+  assert.equal(n.actions[0].url, 'https://s.de/cart/1:1');
+});

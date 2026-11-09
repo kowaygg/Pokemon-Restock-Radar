@@ -1,12 +1,14 @@
 {
-  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = geprüft und wird überwacht, gesperrt = nicht abfragbar/unseriös. Neue Händler einfach als weiteren Eintrag ergänzen.",
+  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = geprüft und wird überwacht, gesperrt = nicht abfragbar/unseriös. Neue Händler einfach als weiteren Eintrag ergänzen. abfrage: shopify = products.json; sitemap-jsonld = Sitemap + Preis/Bestand aus der Produktseite; sitemap = nur Frühwarnung bei neuen Produkt-URLs. urlFilter: Pflichtwort im URL-Pfad (Regex).",
   "haendler": [
     {
       "id": "alternate",
       "name": "Alternate",
       "url": "https://www.alternate.de",
       "art": "elektronik",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap-jsonld",
+      "urlFilter": "Sammelkarten|TCG"
     },
     {
       "id": "tcgviert",
@@ -21,7 +23,8 @@
       "name": "Card-Corner",
       "url": "https://www.card-corner.de",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap"
     },
     {
       "id": "gate-to-the-games",
@@ -49,7 +52,8 @@
       "name": "Gameshop Marli",
       "url": "https://www.gameshop-marli.de",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap"
     },
     {
       "id": "cardmex",
@@ -79,7 +83,8 @@
       "name": "TRADER Online",
       "url": "https://www.trader-online.de",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap"
     },
     {
       "id": "games-island",
@@ -107,7 +112,8 @@
       "name": "Müller",
       "url": "https://www.mueller.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap"
     },
     {
       "id": "thalia",

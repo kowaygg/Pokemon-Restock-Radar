@@ -1,7 +1,7 @@
 // Prüft Händler-Kandidaten technisch: erreichbar? Shop-System? Bot-Schutz? robots.txt? Impressum mit Registereintrag?
 // Nur lesende Abrufe der Startseite, robots.txt, products.json (Shopify) und Impressum – mit Pause zwischen Händlern.
 
-export const USER_AGENT = 'PokemonRestockRadar/0.1 (+https://github.com/kowaygg/Pokemon-Restock-Radar; privat, nicht-kommerziell)';
+export const USER_AGENT = 'PokemonRestockRadar/0.2 (+https://github.com/kowaygg/Pokemon-Restock-Radar; privat, nicht-kommerziell)';
 
 export function shopSystem(html) {
   const s = [];

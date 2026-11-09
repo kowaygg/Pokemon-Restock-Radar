@@ -1,7 +1,9 @@
 {
-  "_hinweis": "Zentrale Einstellungen. maxSeiten: Seiten à 250 Produkte pro Shopify-Shop. pushNurUvp: true = keine Push-Meldung bei Preisen über UVP + Spielraum (stehen trotzdem im Feed).",
+  "_hinweis": "Zentrale Einstellungen. maxSeiten: Seiten à 250 Produkte pro Shopify-Shop. pushNurUvp: true = keine Push-Meldung bei Preisen über UVP + Spielraum (stehen trotzdem im Feed). sitemapMinuten: wie oft die Sitemap neu gelesen wird. seitenProLauf: Produktseiten pro Lauf und Händler (sitemap-jsonld).",
   "maxSeiten": 20,
   "maxPushProLauf": 8,
   "pushNurUvp": true,
-  "feedTage": 14
+  "feedTage": 14,
+  "sitemapMinuten": 15,
+  "seitenProLauf": 10
 }

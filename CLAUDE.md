@@ -72,6 +72,20 @@ Release-Kalender + Vorbestell-Alarm (Priorität 1), Kauf-Vorbereitung (Konten, P
 Newsletter-Auswertung, Restock-Muster/Statistik, Gesamtkosten Ausland (Versand + Zoll + 19 % EUSt),
 Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-Liste (nur lokal).
 
+**Wünsche vom 09.11.2026 (abends):**
+- App-Symbol auf Handy-Startseite + Desktop (PWA) – Symbol soll an einen orangen Feuerdrachen erinnern (eigene Figur, KEIN Glurak-Nachbau)
+- Reiter „Top“: bester aktuell bestellbarer Deal nach unseren Kriterien (sealed, ≤ UVP + 5 €), TTB zuerst, dann Displays/Bundles/Rest;
+  Link möglichst direkt in den Warenkorb. Keine Einzelkarten, kein Reseal/geöffnet/beschädigt, keine Scalper-Preise.
+- Sprachen DE, EN, JP, KR, CN alle erlaubt – in der App klar nach Sprache gegliedert. Asiatische Ware braucht EIGENE UVPs (Feld `sprache` in uvp.json).
+- Große chinesische Plattformen (Alibaba, AliExpress …) sind erlaubt, wenn wirklich UVP-Preis – Achtung Fälschungen, nur offizielle Shops.
+- Updates so schnell wie möglich – am besten im Minutentakt → Handy-Wächter (M3) hat hohe Priorität.
+- Reiter „News & Leaks“: was in Quelltexten/Sitemaps, Newslettern und offiziellen Ankündigungen gefunden wurde und in den
+  nächsten Stunden/Tagen/Wochen kommt; beim Release sofort Push mit Link, um als einer der Ersten zum UVP zu bestellen.
+- **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
+  Von GitHub aus durch DataDome geblockt → nur über Handy-Wächter, Bot-Schutz nie umgehen.
+- **Daueraufgabe:** Immer prüfen, ob verfügbare Schnittstellen, APIs, MCP-Server/Konnektoren oder Downloads das Projekt verbessern,
+  und sie dem Nutzer jeweils als Hinweis vorschlagen (nicht ungefragt einrichten).
+
 **Feste Regeln:**
 - Nur MELDEN, nie automatisch kaufen
 - Kein Umgehen von Bot-Schutz (Cloudflare, Warteschlangen, Captchas); Nutzungsbedingungen je Shop beachten;
@@ -101,20 +115,34 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 09.11.2026: Von GitHub aus geblockt (Cloudflare/DataDome/Imperva): MediaMarkt, Saturn, Thalia, Galeria, Kaufland,
   Spiele-Offensive, Fantasywelt, Pokémon Center, Smyths → nur über Handy-Wächter (M3) testen, Bot-Schutz NIE umgehen.
 
+- 09.11.2026 (0.2.0): Sitemap-Wächter (`src/sitemap-waechter.js`): Alternate als `sitemap-jsonld` (neue URLs + Preis/Bestand aus JSON-LD,
+  10 Produktseiten pro Lauf rotierend), Card-Corner/TRADER/Gameshop Marli/Müller als `sitemap` (nur Frühwarnung). Sitemap alle 15 Min.
+- 09.11.2026: UVP-Bewertung strenger: Preis < 70 % UVP = „unplausibel“; 10er/18er/30er-Displays ≠ 36er; Kollektionen brauchen passende Namenswörter;
+  JP/KR/CN nur gegen UVP-Einträge derselben Sprache. Push nur bei echtem UVP-Treffer (oder Frühwarnung ohne Preis).
+- 09.11.2026: Shopify-Warenkorb-Link `/cart/<variante>:1` als Knopf in App + Push („In den Warenkorb“).
+- 09.11.2026: PWA in `web/`, wird bei jedem Abruf mit `data/oeffentlich.json` auf GitHub Pages veröffentlicht.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
 - `src/run.js` – Durchlauf · `src/shopify.js` · `src/produkt.js` (Erkennung Art/Sprache/Vorbestellung) · `src/uvp.js` · `src/aenderungen.js` · `src/push.js` (ntfy)
+- `src/sitemap-waechter.js` (Sitemap + JSON-LD) · `web/` (App: Top · Meldungen · Frühwarnung · TTB-Markt · UVP-Liste · Händler) · `scripts/symbole.js` (App-Symbole) · `scripts/vorschau.js` (lokale Vorschau :8090)
 - `src/haendler-pruefen.js` + `scripts/haendler-check.js` – technischer Händler-Check
 - `.github/workflows/` – `abruf.yml` (alle 5 Min.), `haendler-check.yml`, `tests.yml`
 - `docs/` – Recherche + Händler-Check-Ergebnisse
 
 ### Befehle
-- `npm test` · `npm run abruf` · `npm run haendler-check`
+- `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run symbole`
 
 ### Offene Punkte
 - ✅ 09.11.2026: Secret NTFY_KANAL angelegt (Kanal nur in Secret + lokaler .env), Test-Push gesendet; Kanal in ntfy-App auf dem Handy abonniert, Test-Push angekommen ✅
 - ✅ 09.11.2026: Vault-Notizen unter Projekte/Pokemon-Restock-Radar/ angelegt
 - UVPs mit Sicherheit „niedrig“ bestätigen; Händler-Impressen von Hand + handelsregister.de prüfen
-- M2 Rest: Release-Kalender (pokemon.com/de), Frühwarnung (Sitemaps), weitere Händler (Alternate u. a. per HTML/Sitemap)
+- ✅ 09.11.2026: Alternate + Sitemap-Frühwarnung (0.2.0), App mit Reiter Top
+- M2 Rest: Release-Kalender (pokemon.com/de)
+- UVPs für JP/KR/CN-Ware recherchieren (je Produkt, mit Quelle) – sonst erscheint Asien-Ware nie in „Top“
+- Versandkosten je Händler erfassen (Regel: Preis + Versand ≤ UVP + 5 €) – bisher nur Artikelpreis geprüft
+- Schneller als GitHub-Cron: Handy-Wächter (M3) oder externer Gratis-Taktgeber (cron-job.org → workflow_dispatch, braucht Token + Konto des Nutzers)
+- NÄCHSTES (Reihenfolge vom Nutzer): Reiter News & Leaks · Pokémon Center einbinden · Handy-Wächter im Minutentakt
+- Eigenes App-Symbol „Feuerdrache“ (lokal mit ComfyUI, nichts Geschütztes nachbauen)
 - M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten

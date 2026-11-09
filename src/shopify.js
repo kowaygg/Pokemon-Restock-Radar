@@ -7,6 +7,7 @@ export function produkteAusShopify(json, basis) {
     const verfuegbar = varianten.some((v) => v.available);
     const preise = varianten.filter((v) => v.available).map((v) => Number(v.price)).filter(Number.isFinite);
     const allePreise = varianten.map((v) => Number(v.price)).filter(Number.isFinite);
+    const kaufVariante = varianten.find((v) => v.available);
     return {
       id: String(p.id),
       titel: p.title,
@@ -15,6 +16,8 @@ export function produkteAusShopify(json, basis) {
       verfuegbar,
       preis: (preise.length ? Math.min(...preise) : allePreise.length ? Math.min(...allePreise) : NaN),
       link: `${basis}/products/${p.handle}`,
+      // Shopify-Warenkorb-Link: legt die Variante direkt in den Warenkorb und öffnet die Kasse
+      warenkorb: kaufVariante ? `${basis}/cart/${kaufVariante.id}:1` : null,
       veroeffentlicht: p.published_at,
     };
   });

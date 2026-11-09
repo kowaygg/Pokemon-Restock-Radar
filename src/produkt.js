@@ -15,7 +15,7 @@ export const ARTEN = [
 ];
 
 // Ausschluss: keine Sealed-Ware oder unerwünscht
-const AUSSCHLUSS = [/einzelkarte/, /\bsingle\b/, /\bpsa\b/, /\bcgc\b/, /\bbgs\b/, /graded/, /sleeves?\b/, /acryl|acrylic/, /\bcase\b/, /protector|schutzh|magnetic|schutzbox|display ?case/, /\b(nm|lp|mp|hp)\)?$/, /\b(near mint|played)\b/, /hullen/, /toploader/, /binder/, /sammelalbum/, /playmat/, /spielmatte/, /deckbox/, /plusch|plush/, /figur(?!en ?kollektion)/, /\bleer\b/, /\bempty\b/, /ohne booster/, /repack/, /proxy/, /\bcode ?karte|code card/, /einzelner? booster/, /\b1x booster\b/];
+const AUSSCHLUSS = [/einzelkarte/, /\bsingle\b/, /\bpsa\b/, /\bcgc\b/, /\bbgs\b/, /graded/, /sleeves?\b/, /acryl|acrylic/, /\bcase\b/, /protector|schutzh|magnetic|schutzbox|display ?case/, /\b(nm|lp|mp|hp)\)?$/, /\b(near mint|played)\b/, /hullen/, /toploader/, /binder/, /sammelalbum/, /playmat/, /spielmatte/, /deckbox/, /plusch|plush/, /figur(?!en ?kollektion)/, /\bleer\b/, /\bempty\b/, /ohne booster/, /reseal|geoffnet|opened|ohne folie|beschadigt|damaged|b ware|gebraucht|\bused\b/, /deck ?box/, /\blego\b/, /tonie/, /\bdvds?\b|blu ?ray|movie/, /modellbau|puzzle/, /repack/, /proxy/, /\bcode ?karte|code card/, /einzelner? booster/, /\b1x booster\b/];
 
 export function istPokemon(p) {
   const t = norm([p.titel, p.marke, ...(p.tags || [])].join(' '));
@@ -33,7 +33,9 @@ export function sprache(titel) {
   const t = norm(titel);
   if (/\b(deutsch|\bde\b|german)/.test(t)) return 'DE';
   if (/\b(englisch|english|\ben\b)/.test(t)) return 'EN';
-  if (/\b(japanisch|japanese|\bjp\b|\bjap\b)/.test(t)) return 'JP';
+  if (/\b(japanisch|japanese|\bjpn?\b|\bjap\b)/.test(t)) return 'JP';
+  if (/\b(koreanisch|korean|\bkor?\b)/.test(t)) return 'KR';
+  if (/\b(chinesisch|chinese|\bchn\b|\bcn\b|simplified|traditional)/.test(t)) return 'CN';
   return null;
 }
 
