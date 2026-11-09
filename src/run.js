@@ -67,9 +67,12 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     await melden(meldungen);
     bericht.push(`| ${h.name} | ✅ | ${roh.length} | ${sealed.length} | ${sealed.filter((p) => p.verfuegbar).length} | ${ersterLauf ? 'erster Lauf (nur merken)' : meldungen.length} |`);
   } catch (e) {
-    const pauseBis = /429/.test(e.message) ? new Date(jetzt.getTime() + einst.pauseNach429Minuten * 60000).toISOString() : null;
-    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString(), pauseBis };
-    bericht.push(`| ${h.name} | ❌ ${e.message}${pauseBis ? ` → Pause ${einst.pauseNach429Minuten} Min.` : ''} | – | – | – | – |`);
+    // Pause wächst bei wiederholtem 429: 10 → 20 → 40 → … höchstens 120 Min.
+    const stufe429 = /429/.test(e.message) ? (zustand.haendler[h.id]?.stufe429 || 0) + 1 : 0;
+    const pauseMin = stufe429 ? Math.min(120, einst.pauseNach429Minuten * 2 ** (stufe429 - 1)) : 0;
+    const pauseBis = pauseMin ? new Date(jetzt.getTime() + pauseMin * 60000).toISOString() : null;
+    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString(), pauseBis, stufe429 };
+    bericht.push(`| ${h.name} | ❌ ${e.message}${pauseBis ? ` → Pause ${pauseMin} Min.` : ''} | – | – | – | – |`);
   }
 }
 // Sitemap-Händler macht der GitHub-Wächter (Handy spart Datenvolumen)

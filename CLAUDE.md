@@ -151,6 +151,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   (genau mit Termux:API, sonst Schätzung, im Zweifel sparsam). Takte in einstellungen.json → handySpar: WLAN+lädt 1 Min. (wake lock),
   WLAN 2, mobil 5 (nur Schnellcheck, News 15), Akku<30 % 10, Akku<15 % Pause. git pull nur im WLAN.
 
+- 09.11.2026 (0.5.1): Sparmodus auf dem Handy bestätigt („WLAN → alle 2 Min.“, ohne Termux:API korrekt). Shopify-Shops geben dem Handy
+  weiter 429 → Pause wächst jetzt 10→20→40→80→120 Min., setzt sich nach Erfolg zurück. GitHub deckt die Shops solange ab.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
