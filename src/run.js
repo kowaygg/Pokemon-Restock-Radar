@@ -19,6 +19,9 @@ if (zustand.version !== 2) { zustand.feed = []; zustand.version = 2; }
 const kanal = process.env.NTFY_KANAL || '';
 // Handy-Wächter (MODUS=handy): jede Minute Schnellcheck der neuesten Produkte, alle handyVollMinuten ein kompletter Durchlauf
 const handy = process.env.MODUS === 'handy';
+// Sparmodus (mobile Daten / Akku niedrig): keine großen Durchläufe, News seltener
+const spar = handy && process.env.SPAR === '1';
+if (process.env.NEWS_MINUTEN) einst.newsMinuten = Number(process.env.NEWS_MINUTEN);
 const jetzt = new Date();
 
 const bericht = [];
@@ -45,7 +48,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
   if (pause && jetzt < Date.parse(pause)) { bericht.push(`| ${h.name} | ⏸ Pause bis ${pause.slice(11, 16)} UTC (zu viele Anfragen) | – | – | – | – |`); continue; }
   try {
     const vollZeit = zustand.haendler[h.id]?.vollScan;
-    const voll = !handy || !vollZeit || jetzt - Date.parse(vollZeit) >= einst.handyVollMinuten * 60000;
+    const voll = !handy || (!spar && (!vollZeit || jetzt - Date.parse(vollZeit) >= einst.handyVollMinuten * 60000));
     const roh = await shopifyHolen(h, voll ? { maxSeiten: einst.maxSeiten } : { maxSeiten: 1, limit: einst.handyLimit });
     const sealed = roh.filter(istPokemon).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), vorbestellung: istVorbestellung(p), haendler: h.name, haendlerId: h.id }));

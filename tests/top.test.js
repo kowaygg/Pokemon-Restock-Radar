@@ -40,3 +40,16 @@ test('Doppel-Push-Schutz liest gemeldete Links aus ntfy', async () => {
   assert.deepEqual([...await bereitsGemeldet('kanal', { holen })], ['https://a.de/1']);
   assert.equal((await bereitsGemeldet('', { holen })).size, 0);
 });
+
+test('Sparmodus: Takt nach WLAN und Akku', async () => {
+  const { sparStufe } = await import('../src/geraet.js');
+  const s = { taktWlanLaden: 1, taktWlan: 2, taktMobil: 5, taktAkkuNiedrig: 10, akkuNiedrig: 30, akkuPause: 15, pauseMinuten: 10, newsMobil: 15 };
+  assert.deepEqual([sparStufe({ wlan: true, laden: true, akku: 50 }, s).minuten, sparStufe({ wlan: true, laden: true, akku: 50 }, s).wachHalten], [1, true]);
+  assert.equal(sparStufe({ wlan: true, laden: false, akku: 80 }, s).minuten, 2);
+  assert.equal(sparStufe({ wlan: false, laden: false, akku: 80 }, s).spar, true);
+  assert.equal(sparStufe({ wlan: false, laden: false, akku: 80 }, s).minuten, 5);
+  assert.equal(sparStufe({ wlan: true, laden: false, akku: 20 }, s).minuten, 10);
+  assert.equal(sparStufe({ wlan: true, laden: false, akku: 10 }, s).pause, true);
+  assert.equal(sparStufe({ wlan: true, laden: true, akku: 10 }, s).pause, undefined);
+  assert.equal(sparStufe({ wlan: false, laden: false, akku: null }, s).minuten, 5);
+});

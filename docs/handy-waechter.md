@@ -23,14 +23,26 @@ Fragt `pkg` nach einer Auswahl (Spiegelserver / Konfigurationsdatei): einfach En
 
 ## 4. Starten
 ```
-termux-wake-lock
 npm run handy
 ```
-- Termux offen lassen (darf im Hintergrund sein). In der Benachrichtigungsleiste steht dann „Termux – wake lock held“.
-- Beenden: in Termux Lautstärke-runter + C drücken.
-- Nach einem Neustart des Handys: Termux öffnen → `cd Pokemon-Restock-Radar` → `termux-wake-lock` → `npm run handy`
+- Termux offen lassen (darf im Hintergrund sein). Beenden: Lautstärke-runter + C.
+- Nach einem Neustart des Handys: Termux öffnen → `cd Pokemon-Restock-Radar` → `npm run handy`
+
+## 5. Sparmodus (automatisch)
+| Lage | Takt | Umfang |
+|---|---|---|
+| WLAN + lädt | 1 Min. | alles, Handy bleibt wach (wake lock) |
+| WLAN | 2 Min. | alles |
+| mobile Daten | 5 Min. | nur Schnellcheck, News alle 15 Min. (ca. 20–30 MB/Tag bei ganztägig unterwegs) |
+| Akku < 30 % | 10 Min. | nur Schnellcheck |
+| Akku < 15 % | Pause | GitHub übernimmt |
+Werte änderbar in `config/einstellungen.json` → `handySpar`.
+
+Optional, für genaue Erkennung von WLAN/Akku: App **Termux:API** aus F-Droid installieren, dann in Termux `pkg install -y termux-api`.
+Ohne sie schätzt der Wächter (im Zweifel sparsam).
 
 ## Was der Wächter macht
-- Jede Minute die 30 zuletzt geänderten Produkte je Shop (~50 KB), alle 30 Min. kompletter Durchlauf
-- Holt sich stündlich selbst Updates (`git pull`)
+- Schnellcheck: die 30 zuletzt geänderten Produkte je Shop (~50 KB), im WLAN alle 30 Min. kompletter Durchlauf
+- News & Leaks (offizielle News, Fachseiten, mydealz) alle 5 Min. (unterwegs 15 Min.)
+- Holt sich stündlich selbst Updates (`git pull`, nur im WLAN)
 - Meldet nichts doppelt (prüft den ntfy-Kanal der letzten 12 Stunden)

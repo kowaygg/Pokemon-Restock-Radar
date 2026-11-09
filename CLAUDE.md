@@ -147,6 +147,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Pokémon Center: DataDome auch vom Handy → Abdeckung über News/Deal-Feeds (mydealz meldet PC-Drops schnell) + Link.
 - PokeBeach-Feed (EN-Leaks) liefert 500 → später erneut prüfen. Reddit-RSS (r/PKMNTCGDeals) ok, aber US-lastig + 429-anfällig → noch nicht drin.
 
+- 09.11.2026 (0.5.0): Sparmodus Handy-Wächter (Wunsch: normales Handy, Akku + Datenvolumen schonen): `src/geraet.js` erkennt WLAN/Akku
+  (genau mit Termux:API, sonst Schätzung, im Zweifel sparsam). Takte in einstellungen.json → handySpar: WLAN+lädt 1 Min. (wake lock),
+  WLAN 2, mobil 5 (nur Schnellcheck, News 15), Akku<30 % 10, Akku<15 % Pause. git pull nur im WLAN.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
