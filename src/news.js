@@ -51,7 +51,8 @@ export function einordnen(e, quelle) {
   const ttb = /top.?trainer|elite.?trainer|\betb\b|\bttb\b/.test(t);
   // „bei netto Online“ ist ein Online-Angebot – Ladenbezug nur ohne „online“ oder mit Filial-/Prospekt-Hinweis
   const vorOrt = VOR_ORT.test(t) && (!/\bonline\b/.test(t) || /filiale|prospekt|vor ort|im laden|in store|offline/.test(t));
-  return { art, pokemonCenter: pc, ttb, vorOrt, ...(vorOrt ? { abDatum: datumAus(e.titel) } : {}) };
+  const abDatum = datumAus(e.titel);
+  return { art, pokemonCenter: pc, ttb, vorOrt, ...(abDatum ? { abDatum } : {}) };
 }
 
 // Stationäre Ketten / Filial-Hinweise (Prospekt-Aktionen)

@@ -115,7 +115,16 @@ const ansichten = {
   },
   fruehwarnung() {
     const l = (daten.feed || []).filter((f) => f.typ === 'angekuendigt');
-    return '<p class="hinweis">ℹ️ <b>Nur Info – noch nicht kaufbar.</b> Neue Produktseiten, oft Tage vor dem Verkaufsstart (aus öffentlichen Sitemaps). Sobald etwas kaufbar wird, kommt ein Push und es steht unter ⭐ Top.</p>'
+    // Kalender: kommende Erscheinungstermine (UVP-Liste) + News mit Datum im Titel
+    const heute = new Date().toISOString().slice(0, 10);
+    const termine = (daten.uvp?.produkte || []).filter((p) => p.erscheint && p.erscheint >= heute)
+      .map((p) => ({ datum: p.erscheint, text: p.name + (p.sprache ? ` (${p.sprache})` : ''), quelle: 'UVP-Liste' }));
+    const newsTermine = (daten.news || []).filter((x) => x.abDatum && (x.art === 'release' || x.art === 'vorbestellung' || x.vorOrt || x.art === 'leak'))
+      .slice(0, 20).map((x) => ({ datum: x.abDatum, text: x.titel, quelle: x.quelle, link: x.link }));
+    const kalender = [...termine.sort((x, y) => x.datum.localeCompare(y.datum)), ...newsTermine];
+    const zeile = (t) => `<tr><td style="white-space:nowrap"><b>${esc(t.datum)}</b></td><td>${t.link && sicherLink(t.link) ? `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.text)}</a>` : esc(t.text)}<br><span class="unbekannt">${esc(t.quelle)}</span></td></tr>`;
+    const kal = '<h2>📅 Release- & Drop-Kalender</h2>' + (kalender.length ? `<div class="tabelle"><table>${kalender.map(zeile).join('')}</table></div>` : '<div class="leer">Noch keine kommenden Termine bekannt.</div>');
+    return kal + '<h2>🔭 Frühwarnung aus Shop-Seiten</h2><p class="hinweis">ℹ️ <b>Nur Info – noch nicht kaufbar.</b> Neue Produktseiten, oft Tage vor dem Verkaufsstart (aus öffentlichen Sitemaps). Sobald etwas kaufbar wird, kommt ein Push und es steht unter ⭐ Top.</p>'
       + (l.length ? l.map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Noch nichts Neues angekündigt.</div>');
   },
   markt() {

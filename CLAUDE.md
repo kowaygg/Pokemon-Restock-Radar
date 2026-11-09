@@ -207,6 +207,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 09.11.2026 (1.1.0): Set-Code-Radar (`src/setcodes.js`): sammelt Codes ME/SV/SWSH/M/KP + Nummer (≤ 30, .5) aus allen Händler-Produktnamen/-URLs;
   neuer Code → News „Leak“ (Quelle Set-Code-Radar) + Push 🔮. Nur bei GitHub-Läufen (Handy sieht nur Ausschnitte → Fehlalarme). Erster Lauf merkt nur.
 
+- 09.11.2026 (1.2.0): Reiter „Bald“ = Release-/Drop-Kalender (UVP-Liste erscheint ≥ heute + News mit Datum im Titel, datumAus jetzt für alle
+  News) + Frühwarnung. TRADER (Preis nur als Text) und Games-Island (kein Preis auf Produktseite) zurückgestellt – Leser wäre unzuverlässig.
+  Offen: neue Shops aus Deal-Feeds, Restock-Muster.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
