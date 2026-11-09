@@ -40,8 +40,22 @@ UVP-Liste pflegbar (Produkt, Set, EAN, UVP, Quelle, Stand) – UVPs recherchiere
 - Sofortkauf (eBay ≤ UVP + 5 €)
 - Auktionen (eBay, enden bald, aktuell ≤ UVP + 5 €, Countdown)
 - Releases & Kalender (Sets, Vorbestell-Starts, Newsletter-Ankündigungen)
+- Newsfeed (geprüfte News aus offiziellen, Fach- und Community-Quellen)
 - UVP-Liste (mit Wunsch-Häkchen)
 - Händler (Seriosität, Status läuft/blockiert, Bereit-für-Drop-Checkliste)
+
+**Community-Quellen + Newsfeed (Wunsch 09.11.2026):**
+- Discord, Reddit, WhatsApp-Gruppen/-Kanäle, Telegram usw. mit auswerten – aber NUR über erlaubte Wege:
+  - Reddit: offizielle API bzw. RSS der Subreddits
+  - Discord: eigener Server des Nutzers + eigener Bot; Ankündigungskanäle fremder Server per „Kanal folgen“ hineinholen
+    (kein Selfbot, kein Mitlesen mit Nutzerkonto)
+  - Telegram: öffentliche Kanäle (offizielle Bot-/Client-API)
+  - WhatsApp: keine erlaubte Lese-Schnittstelle → nicht automatisch (inoffizielle Werkzeuge = Sperrrisiko)
+- Alles wird gefiltert und GEPRÜFT: Community-Hinweise gelten als „unbestätigt“, bis der Wächter Verfügbarkeit + Preis
+  direkt auf der Händlerseite bzw. offiziellen Quelle bestätigt hat. Zahlen (Preis, UVP, Datum) nur aus geprüfter Quelle.
+- Vertrauensstufen: A = offiziell (Pokémon, Händlerseite), B = Fachseite, C = Community (nur mit Bestätigung)
+- Eigener Reiter „Newsfeed“: geprüfte News (Set-Ankündigungen, Release-Termine, Vorbestellungen, Restock-Hinweise)
+  mit Quelle, Vertrauensstufe und Status bestätigt/unbestätigt
 
 **Push:** ntfy, sofort, mit Direktlink; ETB als „dringend“ (eigener Ton, auch bei Nicht-stören).
 
