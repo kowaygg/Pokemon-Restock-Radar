@@ -83,6 +83,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   nächsten Stunden/Tagen/Wochen kommt; beim Release sofort Push mit Link, um als einer der Ersten zum UVP zu bestellen.
 - **Cardmarket ganz wichtig:** jede Top-/Elite-Trainer-Box (auch alte Sets) bis 60 € ohne Versand anzeigen („lieber mehr anzeigen“),
   dazu Displays, Booster-Bundles, Pin-/Poster-Kollektionen im Blick. Nur erlaubte Wege (offizielle API prüfen, kein Scraping gegen AGB/Bot-Schutz).
+- Eigener Reiter „Graded & Live“ (Wunsch 09.11.2026): gegradete Pokémon-Einzelkarten (PSA, CGC, BGS …) und Live-Shows (Whatnot, eBay Live).
+  Whatnot + eBay Live: keine offizielle Schnittstelle → nicht automatisch auslesen; stattdessen Folgen/Benachrichtigen in deren Apps + Such-Links.
+  Graded-Angebote (Sofortkauf + Auktionen) über die offizielle eBay Browse API (gleiches Entwicklerkonto wie M4). Getrennt vom Sealed-Filter.
 - Regel-Ergänzung: Top-Trainer-Boxen bis 60 € (ohne Versand) gelten immer als Treffer, egal welches Set.
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
   Von GitHub aus durch DataDome geblockt → nur über Handy-Wächter, Bot-Schutz nie umgehen.
