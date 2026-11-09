@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = wird überwacht, geplant = einbindbar, Leser fehlt noch, gesperrt = nicht erlaubt abfragbar (grund). Neue Händler einfach als weiteren Eintrag ergänzen. abfrage: shopify = products.json; sitemap-jsonld = Sitemap + Preis/Bestand aus der Produktseite; sitemap = nur Frühwarnung bei neuen Produkt-URLs. urlFilter: Pflichtwort im URL-Pfad (Regex). vorOrt: true = Kette mit Filialen (Treffer erscheinen zusätzlich im Reiter Vor Ort).",
+  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = wird überwacht, geplant = einbindbar, Leser fehlt noch, gesperrt = nicht erlaubt abfragbar (grund). Neue Händler einfach als weiteren Eintrag ergänzen. abfrage: shopify = products.json; sitemap-jsonld = Sitemap + Preis/Bestand aus der Produktseite; sitemap = nur Frühwarnung bei neuen Produkt-URLs. urlFilter: Pflichtwort im URL-Pfad (Regex). vorOrt: true = Kette mit Filialen (Treffer erscheinen zusätzlich im Reiter Vor Ort). abfrage mediamarkt = öffentliche Suche + Produktseite bei UVP-Treffer (nur Handy).",
   "haendler": [
     {
       "id": "alternate",
@@ -103,16 +103,18 @@
       "name": "MediaMarkt",
       "url": "https://www.mediamarkt.de",
       "art": "kette",
-      "status": "geplant",
-      "grund": "Erreichbar, Preis lesbar; eigener Leser nötig (riesige Sitemap, Marktplatz-Angebote ausfiltern)."
+      "status": "aktiv",
+      "grund": "Nur über den Handy-Wächter im WLAN (von GitHub aus gesperrt). Nur eigene Angebote, keine Marktplatz-Händler.",
+      "abfrage": "mediamarkt"
     },
     {
       "id": "saturn",
       "name": "Saturn",
       "url": "https://www.saturn.de",
       "art": "kette",
-      "status": "geplant",
-      "grund": "Wie MediaMarkt (gleiche Technik) – eigener Leser geplant."
+      "status": "aktiv",
+      "grund": "Nur über den Handy-Wächter im WLAN (von GitHub aus gesperrt). Nur eigene Angebote, keine Marktplatz-Händler.",
+      "abfrage": "mediamarkt"
     },
     {
       "id": "mueller",

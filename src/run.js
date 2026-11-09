@@ -7,6 +7,7 @@ import { uvpFinden, preisBewertung, pushWert } from './uvp.js';
 import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
 import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
+import { mediamarktHolen } from './mediamarkt.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
 const lies = async (pfad, ersatz) => { try { return JSON.parse(await readFile(pfad, 'utf8')); } catch { return ersatz; } };
@@ -97,6 +98,30 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x
     bericht.push(`| ${h.name} | ❌ ${e.message} | – | – | – | – |`);
   }
 }
+// MediaMarkt/Saturn: nur Handy im WLAN (GitHub ist dort gesperrt), alle mmMinuten; nur eigene Angebote zum UVP zählen
+for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'mediamarkt' && handy && !spar)) {
+  const vorher = zustand.haendler[h.id];
+  if (vorher?.stand && jetzt - Date.parse(vorher.stand) < einst.mmMinuten * 60000 - 30000) continue;
+  try {
+    const bewerte = (p) => { const a = produktArt(p.titel); return a ? preisBewertung(p.preis, uvpFinden(p.titel, a.art, uvpListe), uvpListe.spielraumEuro) : { stufe: 'unbekannt' }; };
+    const roh = await mediamarktHolen(h, { suchen: einst.mmSuchen, pruefen: (p) => bewerte(p).stufe === 'uvp' });
+    const sealed = roh.filter((p) => istPokemon(p)).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
+      .map((p) => ({ ...p, sprache: sprache(p.titel), haendler: h.name, haendlerId: h.id, quelle: 'shop' }));
+    for (const p of sealed.filter((x) => x.verfuegbar)) {
+      const b = bewerte(p);
+      if (b.stufe === 'uvp') top.push({ haendler: h.name, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: null });
+    }
+    const alt = vorher?.produkte || {};
+    const { meldungen, merker } = aenderungen(alt, sealed, { ersterLauf: !vorher?.produkte, jetzt });
+    zustand.haendler[h.id] = { produkte: { ...alt, ...merker }, stand: jetzt.toISOString(), fehler: null };
+    await melden(meldungen.filter((m) => !m.marktplatz && m.verfuegbar));
+    bericht.push(`| ${h.name} | ✅ Suche | ${roh.length} | ${sealed.length} | ${sealed.filter((p) => p.verfuegbar).length} eigene zum UVP | ${vorher?.produkte ? meldungen.length : 'erster Lauf (nur merken)'} |`);
+  } catch (e) {
+    zustand.haendler[h.id] = { ...(vorher || {}), stand: jetzt.toISOString(), fehler: e.message };
+    bericht.push(`| ${h.name} | ❌ ${e.message} | – | – | – | – |`);
+  }
+}
+
 // News & Leaks (alle newsMinuten)
 zustand.news ||= [];
 const newsFaellig = !zustand.newsZeit || jetzt - Date.parse(zustand.newsZeit) >= einst.newsMinuten * 60000 - 30000;

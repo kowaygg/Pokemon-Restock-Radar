@@ -160,6 +160,11 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Filiale, Prospekt; Startdatum „ab 16.11.“ wird gelesen; Push bei Laden-Deals). Marktguru: keine erlaubte Schnittstelle; kaufDA verbietet
   /search + /api in robots.txt → nur Tipp: in deren Apps Suchalarm „Pokémon“ für 79117 anlegen.
 
+- 09.11.2026 (0.7.0): MediaMarkt + Saturn (`src/mediamarkt.js`): öffentliche Suche (/de/search.html?query=…, robots erlaubt) liefert
+  schema.org-ItemList (Name, Preis, Link); fast alles Marktplatz/Scalper. Nur bei UVP-Treffer wird die Produktseite geöffnet: ohne
+  sellerName bzw. Verkäufer MediaMarkt/Saturn = eigenes Angebot, availability InStock = lieferbar. Nur Handy im WLAN (GitHub 403), alle 15 Min.,
+  5 Suchbegriffe (einstellungen.mmSuchen). Live-Test: ME01 TTB Lucario + Guardevoir für 59,99 € eigen + lieferbar bei MM und Saturn.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
@@ -182,9 +187,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - Versandkosten je Händler erfassen (Regel: Preis + Versand ≤ UVP + 5 €) – bisher nur Artikelpreis geprüft
 - Schneller als GitHub-Cron: Handy-Wächter (M3) oder externer Gratis-Taktgeber (cron-job.org → workflow_dispatch, braucht Token + Konto des Nutzers)
 - ✅ Handy-Wächter läuft auf dem Handy (09.11.2026)
-- MediaMarkt + Saturn: vom Heimnetz erreichbar (robots.txt + Sitemap-Index ok), ABER 308 Sitemap-Dateien (zu groß fürs Handy),
-  Produktseiten ohne JSON-LD-Preis, viele Marktplatz-Angebote (Fremdverkäufer). Plan: eigener Leser (Preis aus eingebettetem Seitenzustand),
-  nur neueste productdetailspages-Datei(en) für Frühwarnung, Marktplatz ausfiltern. Eigener Baustein.
+- ✅ (0.7.0) MediaMarkt + Saturn über Suche + Produktseite (nur Handy/WLAN). Treffer erscheinen als Push, aber nicht in der App (App-Daten kommen von GitHub).
 - ✅ 0.4.0 News & Leaks, Pokémon Center über Feeds, Cardmarket-Links. Offen: Newsletter (Gmail-Konnektor?), JP-Leaks (pokemon-card.com), PokeBeach
 - Eigenes App-Symbol „Feuerdrache“ (lokal mit ComfyUI, nichts Geschütztes nachbauen)
 - M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten

@@ -5,7 +5,7 @@ const ART_TEXT = {
 };
 const TYP_TEXT = { neu: 'Neu lieferbar', 'wieder-da': 'Wieder da', vorbestellung: 'Vorbestellung offen', angekuendigt: 'Angekündigt' };
 const SPRACHEN = [['DE', '🇩🇪 Deutsch'], ['EN', '🇬🇧 Englisch'], ['JP', '🇯🇵 Japanisch'], ['KR', '🇰🇷 Koreanisch'], ['CN', '🇨🇳 Chinesisch'], [null, 'Sprache nicht angegeben']];
-const ABFRAGE_TEXT = { shopify: 'Shop-Feed', 'sitemap-jsonld': 'Sitemap + Preis', sitemap: 'nur Frühwarnung' };
+const ABFRAGE_TEXT = { shopify: 'Shop-Feed', 'sitemap-jsonld': 'Sitemap + Preis', sitemap: 'nur Frühwarnung', mediamarkt: 'Suche – nur Handy im WLAN' };
 
 let daten = null;
 let reiter = 'top';
@@ -123,6 +123,7 @@ const ansichten = {
     const status = (h) => h.status === 'gesperrt' ? `⛔ nicht abfragbar – ${esc(h.grund || '')}`
       : h.status === 'geplant' ? `🛠️ geplant – ${esc(h.grund || '')}`
       : h.status !== 'aktiv' ? '⚪ noch nicht geprüft'
+      : h.abfrage === 'mediamarkt' ? '📱 läuft auf dem Handy (nur im WLAN, nur eigene Angebote)'
       : h.fehler ? `🔴 ${esc(h.fehler)}` : '🟢 läuft';
     const reihe = { aktiv: 0, geplant: 1, kandidat: 2, gesperrt: 3 };
     return `<p class="hinweis">Alle Händler mit Zustand. ⛔ = durch Bot-Schutz gesperrt (umgehen wir nie) – diese Shops decken News &amp; Leaks und der Reiter Vor Ort ab.</p>
