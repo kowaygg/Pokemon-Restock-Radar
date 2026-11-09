@@ -87,6 +87,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Whatnot + eBay Live: keine offizielle Schnittstelle → nicht automatisch auslesen; stattdessen Folgen/Benachrichtigen in deren Apps + Such-Links.
   Graded-Angebote (Sofortkauf + Auktionen) über die offizielle eBay Browse API (gleiches Entwicklerkonto wie M4). Getrennt vom Sealed-Filter.
 - Regel-Ergänzung: Top-Trainer-Boxen bis 60 € (ohne Versand) gelten immer als Treffer, egal welches Set.
+- Reiter „Vor Ort Freiburg“ (Wunsch 09.11.2026): Prospekte/Aktionen/Restocks stationärer Händler (Rossmann, Müller, Thalia, Rombach,
+  Aldi, Lidl …) im Raum 79117 Freiburg (Ebnet/Littenweiler) mit Datum, damit der Nutzer als Erster im Laden ist. Marktguru/kaufDA prüfen
+  (nur offizielle/erlaubte Wege), sonst öffentliche Angebotsseiten der Ketten.
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
   Von GitHub aus durch DataDome geblockt → nur über Handy-Wächter, Bot-Schutz nie umgehen.
 - **Daueraufgabe:** Immer prüfen, ob verfügbare Schnittstellen, APIs, MCP-Server/Konnektoren oder Downloads das Projekt verbessern,
@@ -166,7 +169,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - Versandkosten je Händler erfassen (Regel: Preis + Versand ≤ UVP + 5 €) – bisher nur Artikelpreis geprüft
 - Schneller als GitHub-Cron: Handy-Wächter (M3) oder externer Gratis-Taktgeber (cron-job.org → workflow_dispatch, braucht Token + Konto des Nutzers)
 - ✅ Handy-Wächter läuft auf dem Handy (09.11.2026)
-- MediaMarkt + Saturn in den Handy-Wächter (vom Handy aus erreichbar) – erlaubten Weg prüfen (öffentliche Produktseiten/JSON-LD, AGB)
+- MediaMarkt + Saturn: vom Heimnetz erreichbar (robots.txt + Sitemap-Index ok), ABER 308 Sitemap-Dateien (zu groß fürs Handy),
+  Produktseiten ohne JSON-LD-Preis, viele Marktplatz-Angebote (Fremdverkäufer). Plan: eigener Leser (Preis aus eingebettetem Seitenzustand),
+  nur neueste productdetailspages-Datei(en) für Frühwarnung, Marktplatz ausfiltern. Eigener Baustein.
 - ✅ 0.4.0 News & Leaks, Pokémon Center über Feeds, Cardmarket-Links. Offen: Newsletter (Gmail-Konnektor?), JP-Leaks (pokemon-card.com), PokeBeach
 - Eigenes App-Symbol „Feuerdrache“ (lokal mit ComfyUI, nichts Geschütztes nachbauen)
 - M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten
