@@ -15,7 +15,7 @@ export const ARTEN = [
 ];
 
 // Ausschluss: keine Sealed-Ware oder unerwünscht
-const AUSSCHLUSS = [/einzelkarte/, /\bsingle\b/, /\bpsa\b/, /\bcgc\b/, /\bbgs\b/, /graded/, /sleeves?\b/, /hullen/, /toploader/, /binder/, /sammelalbum/, /playmat/, /spielmatte/, /deckbox/, /plusch|plush/, /figur(?!en ?kollektion)/, /\bleer\b/, /\bempty\b/, /ohne booster/, /repack/, /proxy/, /\bcode ?karte|code card/, /einzelner? booster/, /\b1x booster\b/];
+const AUSSCHLUSS = [/einzelkarte/, /\bsingle\b/, /\bpsa\b/, /\bcgc\b/, /\bbgs\b/, /graded/, /sleeves?\b/, /acryl|acrylic/, /\bcase\b/, /protector|schutzh|magnetic|schutzbox|display ?case/, /\b(nm|lp|mp|hp)\)?$/, /\b(near mint|played)\b/, /hullen/, /toploader/, /binder/, /sammelalbum/, /playmat/, /spielmatte/, /deckbox/, /plusch|plush/, /figur(?!en ?kollektion)/, /\bleer\b/, /\bempty\b/, /ohne booster/, /repack/, /proxy/, /\bcode ?karte|code card/, /einzelner? booster/, /\b1x booster\b/];
 
 export function istPokemon(p) {
   const t = norm([p.titel, p.marke, ...(p.tags || [])].join(' '));

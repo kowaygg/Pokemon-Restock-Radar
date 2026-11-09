@@ -21,6 +21,8 @@ test('Produktart erkennen', () => {
   assert.equal(produktArt('Pokémon Top-Trainer-Box LEER ohne Booster'), null);
   assert.equal(produktArt('Pokémon Kartenhüllen 65 Sleeves'), null);
   assert.equal(produktArt('Pikachu Plüsch 20 cm'), null);
+  assert.equal(produktArt('The Acrylic Box – Elite Trainer Box Case'), null);
+  assert.equal(produktArt('Ultra Pro - Acrylic Display Case für Pokemon Elite Trainer Boxen'), null);
 });
 
 test('Pokémon, Sprache, Vorbestellung', () => {
@@ -55,6 +57,8 @@ test('Änderungen: erster Lauf still, danach neu/wieder-da/angekündigt', () => 
   const b = [{ id: '1', verfuegbar: true, preis: 50 }, { id: '2', verfuegbar: false }, { id: '3', verfuegbar: true, vorbestellung: true }];
   const typen = aenderungen(r1.merker, b, { ersterLauf: false }).meldungen.map((m) => m.typ);
   assert.deepEqual(typen, ['wieder-da', 'angekuendigt', 'vorbestellung']);
+  const alt = [{ id: '9', verfuegbar: true, veroeffentlicht: '2025-01-01T00:00:00Z' }];
+  assert.equal(aenderungen({ 1: { v: true } }, alt, { ersterLauf: false, jetzt: new Date('2026-11-09') }).meldungen.length, 0);
   assert.equal(aenderungen({ 1: { v: true } }, [{ id: '1', verfuegbar: true }], { ersterLauf: false }).meldungen.length, 0);
 });
 

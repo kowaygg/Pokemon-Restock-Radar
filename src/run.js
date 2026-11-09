@@ -12,6 +12,7 @@ const { haendler } = await lies('config/haendler.json');
 const uvpListe = await lies('config/uvp.json');
 const einst = await lies('config/einstellungen.json');
 const zustand = await lies('data/zustand.json', { haendler: {}, feed: [] });
+if (zustand.version !== 2) { zustand.feed = []; zustand.version = 2; }
 const kanal = process.env.NTFY_KANAL || '';
 const jetzt = new Date();
 
@@ -29,7 +30,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     }
     const alt = zustand.haendler[h.id]?.produkte || {};
     const ersterLauf = !zustand.haendler[h.id];
-    const { meldungen, merker } = aenderungen(alt, sealed, { ersterLauf });
+    const { meldungen, merker } = aenderungen(alt, sealed, { ersterLauf, jetzt });
     zustand.haendler[h.id] = { produkte: merker, stand: jetzt.toISOString(), fehler: null };
     for (const m of meldungen) {
       m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
