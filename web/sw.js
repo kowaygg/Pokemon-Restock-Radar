@@ -1,5 +1,5 @@
 // Offline-Modus: zuerst aus dem Netz, ohne Verbindung die zuletzt geladene Fassung.
-const SPEICHER = 'pkmn-radar-0.10.0';
+const SPEICHER = 'pkmn-radar-1.0.0';
 const GRUNDGERUEST = ['./', 'index.html', 'app.css', 'app.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {

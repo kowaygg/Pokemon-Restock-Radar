@@ -8,6 +8,9 @@ const SPRACHEN = [['DE', '🇩🇪 Deutsch'], ['EN', '🇬🇧 Englisch'], ['JP'
 const ABFRAGE_TEXT = { shopify: 'Shop-Feed', 'sitemap-jsonld': 'Sitemap + Preis', sitemap: 'nur Frühwarnung', mediamarkt: 'Suche – nur Handy im WLAN' };
 
 let daten = null;
+let filterArt = 'alle';
+const FILTER = [['alle', 'Alle'], ['ttb', 'Top-Trainer-Boxen'], ['display', 'Displays'], ['rest', 'Bundles & Kollektionen']];
+const passtFilter = (p) => filterArt === 'alle' || (filterArt === 'ttb' ? p.art === 'top-trainer-box' : filterArt === 'display' ? p.art === 'display-36' : !['top-trainer-box', 'display-36'].includes(p.art));
 let reiter = 'top';
 try { reiter = localStorage.getItem('reiter') || 'top'; } catch {}
 
@@ -41,9 +44,10 @@ function karte(p, { typ } = {}) {
 
 const ansichten = {
   top() {
-    const l = daten.top || [];
+    const l = (daten.top || []).filter(passtFilter);
+    const filter = `<div class="filter">${FILTER.map(([k, t]) => `<button data-filter="${k}" class="${filterArt === k ? 'aktiv' : ''}">${t}</button>`).join('')}</div>`;
     const gruppen = SPRACHEN.map(([k, name]) => [name, l.filter((p) => (p.sprache || null) === k)]).filter(([, g]) => g.length);
-    return `<p class="hinweis">Jetzt bestellbar, sealed, höchstens ${euro(daten.uvp?.spielraumEuro ?? 5)} über UVP – nach Sprache sortiert, Top-Trainer-Boxen zuerst. Preise inkl. Versand, wo der Händler ihn angibt.</p>`
+    return `<p class="hinweis">Jetzt bestellbar, sealed, höchstens ${euro(daten.uvp?.spielraumEuro ?? 5)} über UVP – nach Sprache sortiert, Top-Trainer-Boxen zuerst. Preise inkl. Versand, wo der Händler ihn angibt.</p>${filter}`
       + (l.length ? gruppen.map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.map((p) => karte(p)).join('')}`).join('')
         : '<div class="leer">Gerade kein Produkt zum UVP lieferbar. Sobald eins auftaucht, kommt sofort ein Push. 🔔</div>');
   },
@@ -146,6 +150,13 @@ function zeigen() {
   document.querySelectorAll('#reiter button').forEach((b) => b.classList.toggle('aktiv', b.dataset.reiter === reiter));
   document.getElementById('inhalt').innerHTML = daten ? (ansichten[reiter] || ansichten.top)() : '<div class="leer">Lade …</div>';
 }
+
+document.getElementById('inhalt').addEventListener('click', (e) => {
+  const f = e.target.closest('[data-filter]');
+  if (!f) return;
+  filterArt = f.dataset.filter;
+  zeigen();
+});
 
 document.getElementById('reiter').addEventListener('click', (e) => {
   const b = e.target.closest('button');

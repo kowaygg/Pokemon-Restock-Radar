@@ -1,33 +1,48 @@
+/* Pokémon-Restock-Radar – Gestaltung angelehnt an den KI-Finanz-Radar:
+   dunkles Grau statt Schwarz, gebrochenes Weiß, ein Akzent (Gelb), klare Karten, Knöpfe mit sichtbarem Rand. */
 :root {
-  --grund: #141a2e; --flaeche: #1d2540; --rand: #2c3760; --text: #e8ecf7; --leise: #9aa5c4;
-  --gelb: #ffcb05; --gruen: #3ecf7a; --rot: #ff6b6b; --blau: #3d7dd8;
+  --grund: #121417; --flaeche: #1b1e23; --flaeche-hoch: #23272e; --linie: #2f343b; --rand: #4a505a;
+  --text: #e6e4de; --leise: #a9a7a0; --gelb: #f2b84b; --gelb-text: #1a1408;
+  --gruen: #5fd08f; --gruen-hg: #16301f; --rot: #ff8b7e; --blau: #8fb8ff;
+  --radius: 12px; color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--grund); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-header { padding: 14px 16px 6px; }
-h1 { margin: 0; font-size: 1.25rem; color: var(--gelb); }
-#stand { margin: 2px 0 0; color: var(--leise); font-size: .85rem; }
-nav { display: flex; gap: 6px; overflow-x: auto; padding: 8px 16px; position: sticky; top: 0; background: var(--grund); z-index: 2; scrollbar-width: none; }
-nav button { flex: none; border: 1px solid var(--rand); background: var(--flaeche); color: var(--text); padding: 8px 12px; border-radius: 999px; font: inherit; cursor: pointer; }
-nav button.aktiv { background: var(--gelb); color: #141a2e; border-color: var(--gelb); font-weight: 600; }
-main { padding: 4px 16px 24px; max-width: 900px; margin: 0 auto; }
-h2 { font-size: 1rem; margin: 16px 0 8px; color: var(--gelb); }
-.hinweis { color: var(--leise); font-size: .9rem; margin: 8px 0 12px; }
-.leer { padding: 24px; text-align: center; color: var(--leise); background: var(--flaeche); border-radius: 12px; }
-.karte { background: var(--flaeche); border: 1px solid var(--rand); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
-.karte.ttb { border-color: var(--gelb); }
+body { margin: 0; background: var(--grund); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); -webkit-text-size-adjust: 100%; }
+header, nav, main, footer { max-width: 900px; margin: 0 auto; }
+header { padding: 16px 16px 4px; display: flex; align-items: center; gap: 12px; }
+header img { width: 40px; height: 40px; border-radius: 10px; }
+h1 { margin: 0; font-size: 1.15rem; letter-spacing: .2px; }
+#stand { margin: 0; color: var(--leise); font-size: .82rem; }
+nav { display: flex; gap: 6px; overflow-x: auto; padding: 10px 16px; position: sticky; top: 0; background: var(--grund);
+  z-index: 2; scrollbar-width: none; border-bottom: 1px solid var(--linie); }
+nav::-webkit-scrollbar { display: none; }
+nav button { flex: none; border: 1px solid var(--rand); background: var(--flaeche); color: var(--text); padding: 8px 14px;
+  border-radius: 999px; font: inherit; font-size: .92rem; cursor: pointer; }
+nav button.aktiv { background: var(--gelb); color: var(--gelb-text); border-color: var(--gelb); font-weight: 700; }
+main { padding: 8px 16px 28px; }
+h2 { font-size: .95rem; margin: 22px 0 8px; color: var(--leise); text-transform: uppercase; letter-spacing: .6px; }
+.hinweis { color: var(--leise); font-size: .9rem; margin: 10px 0 12px; }
+.leer { padding: 28px 16px; text-align: center; color: var(--leise); background: var(--flaeche); border: 1px dashed var(--rand); border-radius: var(--radius); }
+.karte { background: var(--flaeche); border: 1px solid var(--linie); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.karte.ttb { border-left: 4px solid var(--gelb); }
 .kopf { display: flex; justify-content: space-between; gap: 8px; font-size: .8rem; color: var(--leise); }
-.titel { font-weight: 600; margin: 4px 0; overflow-wrap: anywhere; }
-.preis { font-size: 1.1rem; font-weight: 700; }
-.ok { color: var(--gruen); } .drueber { color: var(--rot); } .unbekannt { color: var(--leise); }
-.marke { display: inline-block; font-size: .72rem; padding: 1px 7px; border-radius: 999px; background: var(--rand); margin-right: 4px; }
-.marke.gelb { background: var(--gelb); color: #141a2e; font-weight: 700; }
-.knoepfe { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-.knopf { display: inline-block; padding: 8px 12px; border-radius: 8px; background: var(--blau); color: #fff; text-decoration: none; font-weight: 600; }
-.knopf.kauf { background: var(--gruen); color: #0d2016; }
+.titel { font-weight: 650; margin: 6px 0; overflow-wrap: anywhere; line-height: 1.35; }
+.preis { font-size: 1.25rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ok { color: var(--gruen); } .drueber { color: var(--rot); } .unbekannt { color: var(--leise); font-size: .88rem; }
+.marke { display: inline-block; font-size: .72rem; padding: 2px 8px; border-radius: 999px; background: var(--flaeche-hoch); border: 1px solid var(--linie); margin: 0 4px 4px 0; }
+.marke.gelb { background: var(--gelb); color: var(--gelb-text); border-color: var(--gelb); font-weight: 700; }
+.knoepfe { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.knopf { display: inline-flex; align-items: center; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--rand);
+  background: var(--flaeche-hoch); color: var(--text); text-decoration: none; font-weight: 600; font-size: .92rem; }
+.knopf.kauf { background: var(--gruen); color: #0d2016; border-color: var(--gruen); flex: 1 1 auto; justify-content: center; font-size: 1rem; }
+.filter { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 8px; }
+.filter button { border: 1px solid var(--rand); background: transparent; color: var(--leise); padding: 6px 12px; border-radius: 999px; font: inherit; font-size: .85rem; cursor: pointer; }
+.filter button.aktiv { color: var(--text); border-color: var(--gelb); background: var(--flaeche-hoch); }
 table { width: 100%; border-collapse: collapse; font-size: .88rem; }
-th, td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--rand); vertical-align: top; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--linie); vertical-align: top; }
 th { color: var(--leise); font-weight: 500; }
-a { color: #8fb8ff; }
+.tabelle { overflow-x: auto; background: var(--flaeche); border: 1px solid var(--linie); border-radius: var(--radius); padding: 4px 8px; }
+a { color: var(--blau); }
+:focus-visible { outline: 2px solid var(--gelb); outline-offset: 2px; }
 footer { color: var(--leise); font-size: .78rem; text-align: center; padding: 16px; }
-.tabelle { overflow-x: auto; }

@@ -200,6 +200,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - Offen aus Plan B: Leser für TRADER + Games-Island; neue Shops aus Händlernamen in Deal-Feeds ermitteln; Leak-Radar (Set-Codes,
   Sitemap-lastmod, Restock-Muster); Reiter „Bald“ (Kalender); danach Design.
 
+- 09.11.2026 (1.0.0): Neues Design wie KI-Finanz-Radar (Grau #121417, Akzent Gelb #f2b84b, Karten mit gelbem Rand für TTB, großer grüner
+  Kaufen-Knopf), Kopf mit Drachen-Symbol, Reiter: Kaufen · News · Bald · Vor Ort · Meldungen · TTB-Markt · UVP · Händler; Filter-Knöpfe im Reiter
+  Kaufen (Alle/TTB/Displays/Bundles). Noch offen aus Plan B: TRADER/Games-Island-Leser, neue Shops aus Deal-Feeds, Leak-Radar, echter Kalender.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
