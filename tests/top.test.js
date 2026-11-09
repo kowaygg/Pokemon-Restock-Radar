@@ -79,3 +79,8 @@ test('Zubehör „für Top Trainer Box“ ist kein Produkt', () => {
   assert.equal(produktArt('Aufbewahrungsbox für Elite Trainer Box'), null);
   assert.equal(produktArt('Pokémon Delta-Herrschaft Top-Trainer-Box').art, 'top-trainer-box');
 });
+
+test('Leere / geöffnete Boxen fliegen raus (Fall 09.11.2026)', () => {
+  for (const t of ['Pokemon Karten LEERE Prismatische Entwicklungen Top Trainer Box Evoli ohne Inhalt', 'Top Trainer Box leer', 'Elite Trainer Box ohne Karten', 'ETB nur Box', 'Top-Trainer-Box Leerkarton', 'Elite Trainer Box opened box']) assert.equal(produktArt(t), null, t);
+  assert.equal(produktArt('Pokémon Prismatische Entwicklungen Top-Trainer-Box').art, 'top-trainer-box');
+});

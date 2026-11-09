@@ -211,6 +211,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   News) + Frühwarnung. TRADER (Preis nur als Text) und Games-Island (kein Preis auf Produktseite) zurückgestellt – Leser wäre unzuverlässig.
   Offen: neue Shops aus Deal-Feeds, Restock-Muster.
 
+- 09.11.2026 (1.2.1): FEHLER: „LEERE … Top Trainer Box … ohne Inhalt“ (Gate, 1,99 €) stand im TTB-Markt. Filter verschärft (leer/leere/leeren,
+  ohne Inhalt/Karten/Booster/Promo, nur Box/Verpackung, ausgepackt, opened box …) + TTB-Markt blendet „unplausibel“ (< 70 % UVP) aus.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

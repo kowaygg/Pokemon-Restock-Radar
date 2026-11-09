@@ -77,7 +77,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     for (const p of sealed.filter((x) => x.verfuegbar)) {
       const { bewertung: b, versand } = bewerteGesamt(p.titel, p.art, p.preis, h.id);
       if (b.stufe === 'uvp') top.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: p.warenkorb });
-      if (p.prioritaet !== 1) continue;
+      if (p.prioritaet !== 1 || b.stufe === 'unplausibel') continue; // leere/kaputte Boxen o. Ä. nie anzeigen
       lieferbar.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand, bewertung: b, link: p.link });
       lieferbarTop.push(`- ${b.stufe === 'uvp' ? '✅' : '⚠'} ${p.haendler}: ${p.titel} · ${p.preis} €${b.stufe === 'drueber' ? ` (+${b.differenz} € über UVP)` : ''}`);
     }
@@ -110,7 +110,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x
       if (!z.v || !a) continue;
       const { bewertung: b, versand } = bewerteGesamt(titelAusUrl(url), a.art, z.p, h.id);
       if (b.stufe === 'uvp') top.push({ haendler: h.name, titel: titelAusUrl(url), art: a.art, prioritaet: a.prioritaet, preis: z.p, versand, bewertung: b, sprache: sprache(titelAusUrl(url)), link: url, warenkorb: null });
-      if (a.prioritaet !== 1) continue;
+      if (a.prioritaet !== 1 || b.stufe === 'unplausibel') continue;
       lieferbar.push({ haendler: h.name, titel: titelAusUrl(url), art: a.art, prioritaet: 1, preis: z.p, versand, bewertung: b, link: url });
       lieferbarTop.push(`- ${b.stufe === 'uvp' ? '✅' : '⚠'} ${h.name}: ${titelAusUrl(url)} · ${z.p} €`);
     }
