@@ -93,11 +93,27 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   GitHub Actions als langsamer Ersatz (real 15–50 Min.), Push über ntfy, später PWA auf GitHub Pages
 - 09.11.2026: eBay über offizielle Browse API (kostenloses Entwicklerkonto)
 
+- 09.11.2026: Whatnot nicht einbauen (keine offizielle Schnittstelle). WhatsApp nicht (keine erlaubte Lese-Schnittstelle).
+- 09.11.2026 (M2, 0.1.0): GitHub-Wächter alle 5 Min. (Cron, real verzögert) für Shopify-Händler TCGViert, Geeks Heaven,
+  Cardcosmos über /products.json (bis 20 Seiten). Stand im Actions-Cache (data/zustand.json). Erster Lauf je Händler nur merken.
+  „Neu“ nur wenn published_at ≤ 72 h. Push nur bei Preis ≤ UVP + 5 € (pushNurUvp). Kanal nur im Secret NTFY_KANAL.
+- 09.11.2026: Erkenntnis erster Lauf: Fachhändler verkaufen ältere/beliebte ETBs weit über UVP (+35 bis +245 €) → UVP-Filter ist zentral.
+- 09.11.2026: Von GitHub aus geblockt (Cloudflare/DataDome/Imperva): MediaMarkt, Saturn, Thalia, Galeria, Kaufland,
+  Spiele-Offensive, Fantasywelt, Pokémon Center, Smyths → nur über Handy-Wächter (M3) testen, Bot-Schutz NIE umgehen.
+
 ### Aufbau
-- `CLAUDE.md` – diese Datei
-- `PLAN.md` – Meilensteine
-- `.gitignore`
+- `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
+- `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
+- `src/run.js` – Durchlauf · `src/shopify.js` · `src/produkt.js` (Erkennung Art/Sprache/Vorbestellung) · `src/uvp.js` · `src/aenderungen.js` · `src/push.js` (ntfy)
+- `src/haendler-pruefen.js` + `scripts/haendler-check.js` – technischer Händler-Check
+- `.github/workflows/` – `abruf.yml` (alle 5 Min.), `haendler-check.yml`, `tests.yml`
+- `docs/` – Recherche + Händler-Check-Ergebnisse
+
+### Befehle
+- `npm test` · `npm run abruf` · `npm run haendler-check`
 
 ### Offene Punkte
-- Repo auf GitHub anlegen (Nutzer) und Code hochladen
-- M1 Recherche: Händler, UVP-Liste, eBay-API-Bedingungen, Whatnot, Newsletter-Weg, Termux
+- Nutzer: Secret NTFY_KANAL anlegen + Kanal in ntfy-App abonnieren
+- UVPs mit Sicherheit „niedrig“ bestätigen; Händler-Impressen von Hand + handelsregister.de prüfen
+- M2 Rest: Release-Kalender (pokemon.com/de), Frühwarnung (Sitemaps), weitere Händler (Alternate u. a. per HTML/Sitemap)
+- M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten
