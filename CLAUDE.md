@@ -137,11 +137,18 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Fantasywelt/Spiele-Offensive (Cloudflare), Smyths (Imperva). Shopify products.json gab kurz 429 → 0.3.1: 10 Min. Pause nach 429,
   1,5 s zwischen Seiten. PC und Handy teilen evtl. dieselbe IP → vom PC nicht unnötig testen, solange das Handy läuft.
 
+- 09.11.2026 (0.4.0): News & Leaks (`src/news.js`, Quellen in `config/release-quellen.json` → newsFeeds): pokemon.com/de/news (A, Listen-Seite),
+  PokeZentrum (B), DealDoktor (B), Monsterdealz (B), mydealz Gruppe Pokémon (C, Deals). Alle 5 Min. (GitHub + Handy). Erster Lauf zeigt
+  letzte 7 Tage ohne Push. Push bei Vorbestellung/Release, Pokémon Center (dringend) und TTB-Deals; max. 3 News-Pushes pro Lauf.
+- 09.11.2026: Cardmarket: Website Cloudflare-403, alte API v2 antwortet 410 → keine automatische Abfrage; nur Such-Links im Reiter.
+  Pokémon Center: DataDome auch vom Handy → Abdeckung über News/Deal-Feeds (mydealz meldet PC-Drops schnell) + Link.
+- PokeBeach-Feed (EN-Leaks) liefert 500 → später erneut prüfen. Reddit-RSS (r/PKMNTCGDeals) ok, aber US-lastig + 429-anfällig → noch nicht drin.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
 - `src/run.js` – Durchlauf · `src/shopify.js` · `src/produkt.js` (Erkennung Art/Sprache/Vorbestellung) · `src/uvp.js` · `src/aenderungen.js` · `src/push.js` (ntfy)
-- `src/sitemap-waechter.js` (Sitemap + JSON-LD) · `web/` (App: Top · Meldungen · Frühwarnung · TTB-Markt · UVP-Liste · Händler) · `scripts/symbole.js` (App-Symbole) · `scripts/vorschau.js` (lokale Vorschau :8090)
+- `src/sitemap-waechter.js` (Sitemap + JSON-LD) · `src/news.js` (News & Leaks) · `web/` (App: Top · News & Leaks · Meldungen · Frühwarnung · TTB-Markt · UVP-Liste · Händler) · `scripts/symbole.js` (App-Symbole) · `scripts/vorschau.js` (lokale Vorschau :8090)
 - `src/haendler-pruefen.js` + `scripts/haendler-check.js` – technischer Händler-Check
 - `.github/workflows/` – `abruf.yml` (alle 5 Min.), `haendler-check.yml`, `tests.yml`
 - `docs/` – Recherche + Händler-Check-Ergebnisse
@@ -160,6 +167,6 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - Schneller als GitHub-Cron: Handy-Wächter (M3) oder externer Gratis-Taktgeber (cron-job.org → workflow_dispatch, braucht Token + Konto des Nutzers)
 - ✅ Handy-Wächter läuft auf dem Handy (09.11.2026)
 - MediaMarkt + Saturn in den Handy-Wächter (vom Handy aus erreichbar) – erlaubten Weg prüfen (öffentliche Produktseiten/JSON-LD, AGB)
-- DANACH (Reihenfolge vom Nutzer): Reiter News & Leaks · Pokémon Center · Cardmarket
+- ✅ 0.4.0 News & Leaks, Pokémon Center über Feeds, Cardmarket-Links. Offen: Newsletter (Gmail-Konnektor?), JP-Leaks (pokemon-card.com), PokeBeach
 - Eigenes App-Symbol „Feuerdrache“ (lokal mit ComfyUI, nichts Geschütztes nachbauen)
 - M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten

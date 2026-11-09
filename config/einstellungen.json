@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Zentrale Einstellungen. maxSeiten: Seiten à 250 Produkte pro Shopify-Shop. pushNurUvp: true = keine Push-Meldung bei Preisen über UVP + Spielraum (stehen trotzdem im Feed). sitemapMinuten: wie oft die Sitemap neu gelesen wird. seitenProLauf: Produktseiten pro Lauf und Händler (sitemap-jsonld). Handy-Wächter: handyMinuten = Abstand der Schnellchecks, handyLimit = Produkte pro Shop im Schnellcheck, handyVollMinuten = Abstand kompletter Durchläufe. pauseNach429Minuten: so lange wird ein Händler nach „zu viele Anfragen“ (HTTP 429) ausgelassen.",
+  "_hinweis": "Zentrale Einstellungen. maxSeiten: Seiten à 250 Produkte pro Shopify-Shop. pushNurUvp: true = keine Push-Meldung bei Preisen über UVP + Spielraum (stehen trotzdem im Feed). sitemapMinuten: wie oft die Sitemap neu gelesen wird. seitenProLauf: Produktseiten pro Lauf und Händler (sitemap-jsonld). Handy-Wächter: handyMinuten = Abstand der Schnellchecks, handyLimit = Produkte pro Shop im Schnellcheck, handyVollMinuten = Abstand kompletter Durchläufe. pauseNach429Minuten: so lange wird ein Händler nach „zu viele Anfragen“ (HTTP 429) ausgelassen. newsMinuten: wie oft die News-Quellen gelesen werden. maxNewsPushProLauf: höchstens so viele News-Pushes pro Lauf.",
   "maxSeiten": 20,
   "maxPushProLauf": 8,
   "pushNurUvp": true,
@@ -9,5 +9,8 @@
   "handyMinuten": 1,
   "handyLimit": 30,
   "handyVollMinuten": 30,
-  "pauseNach429Minuten": 10
+  "pauseNach429Minuten": 10,
+  "newsMinuten": 5,
+  "maxNewsPushProLauf": 3,
+  "newsTage": 21
 }

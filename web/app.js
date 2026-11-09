@@ -44,6 +44,33 @@ const ansichten = {
       + (l.length ? gruppen.map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.map((p) => karte(p)).join('')}`).join('')
         : '<div class="leer">Gerade kein Produkt zum UVP lieferbar. Sobald eins auftaucht, kommt sofort ein Push. 🔔</div>');
   },
+  news() {
+    const l = [...(daten.news || [])].sort((a, b) => b.zeit.localeCompare(a.zeit));
+    const gruppen = [
+      ['🚨 Pokémon Center', l.filter((n) => n.pokemonCenter)],
+      ['📅 Releases & Vorbestellungen', l.filter((n) => !n.pokemonCenter && (n.art === 'release' || n.art === 'vorbestellung'))],
+      ['🔮 Leaks & Ankündigungen', l.filter((n) => !n.pokemonCenter && n.art === 'leak')],
+      ['💸 Deal-Hinweise (Community – Preis beim Händler prüfen)', l.filter((n) => !n.pokemonCenter && n.art === 'deal')],
+      ['📰 Weitere News', l.filter((n) => !n.pokemonCenter && n.art === 'news')],
+    ].filter(([, g]) => g.length);
+    const STUFE = { A: 'offiziell', B: 'Fachseite', C: 'Community' };
+    const eintrag = (n) => `<div class="karte${n.pokemonCenter || n.ttb ? ' ttb' : ''}">
+      <div class="kopf"><span>${esc(n.quelle)} · ${esc(STUFE[n.stufe] || '')}</span><span>${zeit(n.zeit)}</span></div>
+      <div class="titel">${esc(n.titel)}</div>
+      ${n.bestaetigt ? '' : '<div><span class="marke">unbestätigt</span></div>'}
+      <div class="knoepfe">${sicherLink(n.link) ? `<a class="knopf" href="${esc(n.link)}" target="_blank" rel="noopener">Lesen</a>` : ''}</div>
+    </div>`;
+    const links = [
+      ['Pokémon Center DE', 'https://www.pokemoncenter.com/de-de'],
+      ['Cardmarket: Top-Trainer-Boxen', 'https://www.cardmarket.com/de/Pokemon/Products/Search?searchString=Top-Trainer-Box'],
+      ['Cardmarket: Elite Trainer Box', 'https://www.cardmarket.com/de/Pokemon/Products/Search?searchString=Elite+Trainer+Box'],
+      ['mydealz Pokémon', 'https://www.mydealz.de/gruppe/pokemon'],
+    ];
+    return `<p class="hinweis">Offizielle News, Fachseiten und Community-Deals – neueste zuerst. Push kommt bei Vorbestellung/Release, Pokémon Center und Top-Trainer-Box-Deals. Leaks aus Shop-Quelltexten stehen im Reiter 🔭 Frühwarnung.</p>
+      <div class="knoepfe" style="margin-bottom:12px">${links.map(([t, u]) => `<a class="knopf" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}</div>`
+      + (gruppen.length ? gruppen.map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.slice(0, 40).map(eintrag).join('')}`).join('')
+        : '<div class="leer">Noch keine News gesammelt.</div>');
+  },
   meldungen() {
     const l = (daten.feed || []).filter((f) => f.typ !== 'angekuendigt');
     return '<p class="hinweis">Neu lieferbar, wieder da oder Vorbestellung offen (letzte 14 Tage).</p>'

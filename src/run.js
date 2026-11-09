@@ -6,11 +6,13 @@ import { istPokemon, produktArt, sprache, istVorbestellung } from './produkt.js'
 import { uvpFinden, preisBewertung, pushWert } from './uvp.js';
 import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
+import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
 const lies = async (pfad, ersatz) => { try { return JSON.parse(await readFile(pfad, 'utf8')); } catch { return ersatz; } };
 const { haendler } = await lies('config/haendler.json');
 const uvpListe = await lies('config/uvp.json');
+const { newsFeeds = [] } = await lies('config/release-quellen.json', {});
 const einst = await lies('config/einstellungen.json');
 const zustand = await lies('data/zustand.json', { haendler: {}, feed: [] });
 if (zustand.version !== 2) { zustand.feed = []; zustand.version = 2; }
@@ -89,6 +91,26 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x
     bericht.push(`| ${h.name} | ❌ ${e.message} | – | – | – | – |`);
   }
 }
+// News & Leaks (alle newsMinuten)
+zustand.news ||= [];
+const newsFaellig = !zustand.newsZeit || jetzt - Date.parse(zustand.newsZeit) >= einst.newsMinuten * 60000 - 30000;
+if (newsFaellig && newsFeeds.length) {
+  const { neu, stand, fehler } = await newsAbruf(newsFeeds, zustand.newsStand, { jetzt });
+  zustand.newsStand = stand;
+  zustand.newsFehler = fehler;
+  zustand.newsZeit = jetzt.toISOString();
+  let newsPushes = 0;
+  if (neu.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
+  for (const n of neu) {
+    const { still, ...eintrag } = n;
+    zustand.news.unshift(eintrag);
+    if (!n.still && newsPushWert(n) && newsPushes < einst.maxNewsPushProLauf && !gemeldet.has(n.link)) {
+      if (await pushSenden(newsPushNachricht(n), { kanal })) { newsPushes++; pushes++; gemeldet.add(n.link); }
+    }
+  }
+  bericht.push(`| News & Leaks | ${Object.keys(fehler).length ? '⚠ ' + Object.entries(fehler).map(([k, v]) => k + ': ' + v).join(', ') : '✅'} | ${newsFeeds.length} Quellen | ${neu.length} neu | – | – |`);
+}
+zustand.news = zustand.news.filter((n) => Date.parse(n.zeit) >= jetzt.getTime() - einst.newsTage * 86400000).slice(0, 300);
 const grenze = jetzt.getTime() - einst.feedTage * 86400000;
 zustand.feed = zustand.feed.filter((f) => Date.parse(f.zeit) >= grenze).slice(0, 500);
 zustand.letzterLauf = jetzt.toISOString();
@@ -101,6 +123,8 @@ const oeffentlich = {
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),
   haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
   uvp: uvpListe,
+  news: zustand.news.slice(0, 200),
+  newsFehler: zustand.newsFehler || {},
 };
 await writeFile('data/oeffentlich.json', JSON.stringify(oeffentlich));
 
