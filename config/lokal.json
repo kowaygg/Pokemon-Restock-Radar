@@ -1,0 +1,22 @@
+{
+  "_hinweis": "Reiter 'Freiburg lokal': Angebote in der Nähe (Abholung/Versand). Standort nur grob (PLZ-Bereich), keine Adresse. Kleinanzeigen hat keine offizielle Schnittstelle → nur fertige Such-Links + Kleinanzeigen-eigene Suchaufträge (Push in deren App). eBay: offizielle Browse API mit Abhol-Filter (M4).",
+  "ort": "Freiburg-Littenweiler",
+  "plz": "79117",
+  "radiusKm": 20,
+  "suchen": [
+    { "begriff": "pokemon top trainer box", "art": "top-trainer-box", "maxPreis": 60 },
+    { "begriff": "pokemon elite trainer box", "art": "top-trainer-box", "maxPreis": 60 },
+    { "begriff": "pokemon display ovp", "art": "display-36", "maxPreis": 185 },
+    { "begriff": "pokemon booster bundle", "art": "booster-bundle", "maxPreis": 33 },
+    { "begriff": "pokemon tin ovp", "art": "tin", "maxPreis": 30 },
+    { "begriff": "pokemon kollektion ovp", "art": "kollektion", "maxPreis": 45 }
+  ],
+  "bewertung": {
+    "gut": "Preis ≤ UVP",
+    "ok": "Preis ≤ UVP + 5 €",
+    "bonusWoerter": ["rechnung", "quittung", "kassenbon", "kaufbeleg", "originalverpackt", "ovp", "sealed", "eingeschweißt", "ungeöffnet"],
+    "warnWoerter": ["leer", "ohne booster", "geöffnet", "offen", "repack", "nur box", "proxy", "fake", "paypal freunde", "nur überweisung", "nur vorkasse", "western union"],
+    "zuBilligAnteil": 0.6,
+    "zuBilligHinweis": "Unter 60 % der UVP: Vorsicht, häufig Betrug – nur bei Abholung und Barzahlung nach Prüfung"
+  }
+}

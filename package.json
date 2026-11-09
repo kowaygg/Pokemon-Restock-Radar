@@ -10,6 +10,8 @@
   "scripts": {
     "test": "node --test \"tests/*.test.js\"",
     "haendler-check": "node scripts/haendler-check.js",
-    "abruf": "node src/run.js"
+    "abruf": "node src/run.js",
+    "erkunden": "node scripts/erkunden.js",
+    "lokal-links": "node scripts/lokal-links.js"
   }
 }
