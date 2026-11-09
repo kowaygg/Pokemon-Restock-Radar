@@ -128,6 +128,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 09.11.2026: Shopify-Warenkorb-Link `/cart/<variante>:1` als Knopf in App + Push („In den Warenkorb“).
 - 09.11.2026: PWA in `web/`, wird bei jedem Abruf mit `data/oeffentlich.json` auf GitHub Pages veröffentlicht.
 
+- 09.11.2026 (0.3.0): Handy-Wächter `scripts/handy-waechter.js` (Termux, `npm run handy`): jede Minute Schnellcheck der 30 zuletzt
+  geänderten Produkte je Shopify-Shop (~50 KB gzip), alle 30 Min. kompletter Durchlauf, Gedächtnis bleibt erhalten (Restocks alter Produkte).
+  Sitemap-Händler nur auf GitHub. Stündlich `git pull`. Doppel-Push-Schutz: vor dem Senden ntfy-Kanal der letzten 12 h abfragen (gleicher Link → kein Push).
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
@@ -138,7 +142,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - `docs/` – Recherche + Händler-Check-Ergebnisse
 
 ### Befehle
-- `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run symbole`
+- `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run symbole` · `npm run handy` (Handy-Wächter)
 
 ### Offene Punkte
 - ✅ 09.11.2026: Secret NTFY_KANAL angelegt (Kanal nur in Secret + lokaler .env), Test-Push gesendet; Kanal in ntfy-App auf dem Handy abonniert, Test-Push angekommen ✅
@@ -149,6 +153,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - UVPs für JP/KR/CN-Ware recherchieren (je Produkt, mit Quelle) – sonst erscheint Asien-Ware nie in „Top“
 - Versandkosten je Händler erfassen (Regel: Preis + Versand ≤ UVP + 5 €) – bisher nur Artikelpreis geprüft
 - Schneller als GitHub-Cron: Handy-Wächter (M3) oder externer Gratis-Taktgeber (cron-job.org → workflow_dispatch, braucht Token + Konto des Nutzers)
-- NÄCHSTES (Reihenfolge vom Nutzer): Reiter News & Leaks · Pokémon Center einbinden · Handy-Wächter im Minutentakt
+- Handy-Wächter (0.3.0) auf dem Handy des Nutzers einrichten (Termux) + dort `npm run haendler-check` für Cloudflare-Shops/Pokémon Center
+- DANACH (Reihenfolge vom Nutzer): Reiter News & Leaks · Pokémon Center · Cardmarket
 - Eigenes App-Symbol „Feuerdrache“ (lokal mit ComfyUI, nichts Geschütztes nachbauen)
 - M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten

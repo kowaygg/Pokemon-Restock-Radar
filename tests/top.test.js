@@ -33,3 +33,10 @@ test('Push nur bei UVP-Treffer, mit Warenkorb-Knopf', () => {
   assert.equal(n.priority, 5);
   assert.equal(n.actions[0].url, 'https://s.de/cart/1:1');
 });
+
+test('Doppel-Push-Schutz liest gemeldete Links aus ntfy', async () => {
+  const { bereitsGemeldet } = await import('../src/push.js');
+  const holen = async (url) => { assert.match(url, /\/kanal\/json\?poll=1&since=12h$/); return { ok: true, text: async () => '{"click":"https://a.de/1"}\n{"event":"message"}\nkaputt\n' }; };
+  assert.deepEqual([...await bereitsGemeldet('kanal', { holen })], ['https://a.de/1']);
+  assert.equal((await bereitsGemeldet('', { holen })).size, 0);
+});

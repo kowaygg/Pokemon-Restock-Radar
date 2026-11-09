@@ -6,7 +6,7 @@ import { istPokemon, produktArt, sprache, istVorbestellung } from './produkt.js'
 import { uvpFinden, preisBewertung, pushWert } from './uvp.js';
 import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
-import { pushNachricht, pushSenden } from './push.js';
+import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
 const lies = async (pfad, ersatz) => { try { return JSON.parse(await readFile(pfad, 'utf8')); } catch { return ersatz; } };
 const { haendler } = await lies('config/haendler.json');
@@ -15,18 +15,23 @@ const einst = await lies('config/einstellungen.json');
 const zustand = await lies('data/zustand.json', { haendler: {}, feed: [] });
 if (zustand.version !== 2) { zustand.feed = []; zustand.version = 2; }
 const kanal = process.env.NTFY_KANAL || '';
+// Handy-Wächter (MODUS=handy): jede Minute Schnellcheck der neuesten Produkte, alle handyVollMinuten ein kompletter Durchlauf
+const handy = process.env.MODUS === 'handy';
 const jetzt = new Date();
 
 const bericht = [];
 const lieferbarTop = [];
 let pushes = 0;
+let gemeldet = null;
 async function melden(meldungen) {
+  if (meldungen.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
   for (const m of meldungen) {
     m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
     m.zeit = jetzt.toISOString();
     zustand.feed.unshift({ zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop' });
     if (pushes < einst.maxPushProLauf && (!einst.pushNurUvp || pushWert(m))) {
-      if (await pushSenden(pushNachricht(m), { kanal })) pushes++;
+      if (gemeldet.has(m.link)) continue;
+      if (await pushSenden(pushNachricht(m), { kanal })) { pushes++; gemeldet.add(m.link); }
     }
   }
 }
@@ -34,7 +39,9 @@ const lieferbar = [];
 const top = []; // jetzt bestellbar, sealed, ≤ UVP + Spielraum
 for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'shopify')) {
   try {
-    const roh = await shopifyHolen(h, { maxSeiten: einst.maxSeiten });
+    const vollZeit = zustand.haendler[h.id]?.vollScan;
+    const voll = !handy || !vollZeit || jetzt - Date.parse(vollZeit) >= einst.handyVollMinuten * 60000;
+    const roh = await shopifyHolen(h, voll ? { maxSeiten: einst.maxSeiten } : { maxSeiten: 1, limit: einst.handyLimit });
     const sealed = roh.filter(istPokemon).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), vorbestellung: istVorbestellung(p), haendler: h.name, haendlerId: h.id }));
     for (const p of sealed.filter((x) => x.verfuegbar)) {
@@ -47,7 +54,8 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     const alt = zustand.haendler[h.id]?.produkte || {};
     const ersterLauf = !zustand.haendler[h.id];
     const { meldungen, merker } = aenderungen(alt, sealed, { ersterLauf, jetzt });
-    zustand.haendler[h.id] = { produkte: merker, stand: jetzt.toISOString(), fehler: null };
+    // Schnellcheck sieht nur einen Ausschnitt → Gedächtnis behalten, damit Restocks alter Produkte erkannt werden
+    zustand.haendler[h.id] = { produkte: voll ? merker : { ...alt, ...merker }, stand: jetzt.toISOString(), fehler: null, vollScan: voll ? jetzt.toISOString() : vollZeit };
     await melden(meldungen);
     bericht.push(`| ${h.name} | ✅ | ${roh.length} | ${sealed.length} | ${sealed.filter((p) => p.verfuegbar).length} | ${ersterLauf ? 'erster Lauf (nur merken)' : meldungen.length} |`);
   } catch (e) {
@@ -55,7 +63,8 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     bericht.push(`| ${h.name} | ❌ ${e.message} | – | – | – | – |`);
   }
 }
-for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x.abfrage))) {
+// Sitemap-Händler macht der GitHub-Wächter (Handy spart Datenvolumen)
+for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x.abfrage) && !handy)) {
   try {
     const alt = zustand.haendler[h.id]?.sitemap;
     const { meldungen, stand, info } = await sitemapWaechter(h, alt, { jetzt, sitemapMinuten: einst.sitemapMinuten, seitenProLauf: einst.seitenProLauf });

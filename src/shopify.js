@@ -23,16 +23,17 @@ export function produkteAusShopify(json, basis) {
   });
 }
 
-export async function shopifyHolen(haendler, { holen = fetch, maxSeiten = 8 } = {}) {
+// limit < 250: nur die zuletzt geänderten Produkte (Schnellcheck des Handy-Wächters, spart Datenvolumen)
+export async function shopifyHolen(haendler, { holen = fetch, maxSeiten = 8, limit = 250 } = {}) {
   const basis = new URL(haendler.url).origin;
   const pfad = haendler.sammlung ? `/collections/${haendler.sammlung}/products.json` : '/products.json';
   const alle = [];
   for (let seite = 1; seite <= maxSeiten; seite++) {
-    const r = await holen(`${basis}${pfad}?limit=250&page=${seite}`, { headers: { 'user-agent': USER_AGENT, accept: 'application/json' }, signal: AbortSignal.timeout(20000) });
+    const r = await holen(`${basis}${pfad}?limit=${limit}&page=${seite}`, { headers: { 'user-agent': USER_AGENT, accept: 'application/json' }, signal: AbortSignal.timeout(20000) });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const teil = produkteAusShopify(await r.json(), basis);
     alle.push(...teil);
-    if (teil.length < 250) break;
+    if (teil.length < limit) break;
     await new Promise((res) => setTimeout(res, 800));
   }
   return alle;

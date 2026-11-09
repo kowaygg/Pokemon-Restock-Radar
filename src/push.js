@@ -16,6 +16,18 @@ export function pushNachricht(m) {
   };
 }
 
+// Links, die in den letzten 12 h schon auf dem Kanal gemeldet wurden (ntfy hält Nachrichten 12 h vor).
+// Verhindert doppelte Pushes, wenn Handy-Wächter und GitHub-Wächter dasselbe finden.
+export async function bereitsGemeldet(kanal, { server = 'https://ntfy.sh', holen = fetch } = {}) {
+  if (!kanal) return new Set();
+  try {
+    const r = await holen(`${server}/${kanal}/json?poll=1&since=12h`, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) return new Set();
+    const zeilen = (await r.text()).split(/\r?\n/).filter(Boolean);
+    return new Set(zeilen.map((z) => { try { return JSON.parse(z).click; } catch { return null; } }).filter(Boolean));
+  } catch { return new Set(); }
+}
+
 export async function pushSenden(nachricht, { kanal, server = 'https://ntfy.sh', holen = fetch, protokoll = console.log }) {
   if (!kanal) { protokoll(`(Probelauf) Push: ${nachricht.title} – ${nachricht.message.replace(/\n/g, ' | ')}`); return false; }
   try {
