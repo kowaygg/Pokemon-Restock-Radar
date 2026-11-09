@@ -132,6 +132,11 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   geänderten Produkte je Shopify-Shop (~50 KB gzip), alle 30 Min. kompletter Durchlauf, Gedächtnis bleibt erhalten (Restocks alter Produkte).
   Sitemap-Händler nur auf GitHub. Stündlich `git pull`. Doppel-Push-Schutz: vor dem Senden ntfy-Kanal der letzten 12 h abfragen (gleicher Link → kein Push).
 
+- 09.11.2026: Handy-Wächter läuft auf dem Handy des Nutzers (Termux aus F-Droid, Node v24.17). Händler-Check vom Handy (Heim-WLAN):
+  MediaMarkt + Saturn 200 ohne Bot-Schutz → nur dort einbauen. Weiter gesperrt: Pokémon Center (DataDome), Thalia/Galeria/Kaufland/
+  Fantasywelt/Spiele-Offensive (Cloudflare), Smyths (Imperva). Shopify products.json gab kurz 429 → 0.3.1: 10 Min. Pause nach 429,
+  1,5 s zwischen Seiten. PC und Handy teilen evtl. dieselbe IP → vom PC nicht unnötig testen, solange das Handy läuft.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
@@ -153,7 +158,8 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - UVPs für JP/KR/CN-Ware recherchieren (je Produkt, mit Quelle) – sonst erscheint Asien-Ware nie in „Top“
 - Versandkosten je Händler erfassen (Regel: Preis + Versand ≤ UVP + 5 €) – bisher nur Artikelpreis geprüft
 - Schneller als GitHub-Cron: Handy-Wächter (M3) oder externer Gratis-Taktgeber (cron-job.org → workflow_dispatch, braucht Token + Konto des Nutzers)
-- Handy-Wächter (0.3.0) auf dem Handy des Nutzers einrichten (Termux) + dort `npm run haendler-check` für Cloudflare-Shops/Pokémon Center
+- ✅ Handy-Wächter läuft auf dem Handy (09.11.2026)
+- MediaMarkt + Saturn in den Handy-Wächter (vom Handy aus erreichbar) – erlaubten Weg prüfen (öffentliche Produktseiten/JSON-LD, AGB)
 - DANACH (Reihenfolge vom Nutzer): Reiter News & Leaks · Pokémon Center · Cardmarket
 - Eigenes App-Symbol „Feuerdrache“ (lokal mit ComfyUI, nichts Geschütztes nachbauen)
 - M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten
