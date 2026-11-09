@@ -27,7 +27,9 @@ for (;;) {
   }
   try {
     const { stdout } = await ausfuehren(process.execPath, ['src/run.js'], { env: { ...process.env, MODUS: 'handy' }, timeout: 5 * 60000, maxBuffer: 10 * 1024 * 1024 });
-    const fehler = stdout.split('\n').filter((z) => z.includes('❌')).length;
+    const zeilen = stdout.split('\n');
+    const fehler = zeilen.filter((z) => z.includes('❌')).map((z) => z.split('|')[1].trim() + (z.includes('429') ? ' (zu viele Anfragen)' : ''));
+    const pausen = zeilen.filter((z) => z.includes('⏸')).length;
     const push = (stdout.match(/Push: (.*)/) || [])[1] || '';
     console.log(`${uhr()} geprüft in ${Math.round((Date.now() - start) / 1000)} s · ${push}${fehler.length ? ` · Fehler: ${fehler.join(', ')}` : ''}${pausen ? ` · ${pausen} Händler in Pause` : ''}`);
   } catch (e) {
