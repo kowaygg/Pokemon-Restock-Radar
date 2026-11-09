@@ -170,17 +170,20 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   „Benachrichtige mich“). Jetzt zählt nur `isAvailableAndBuyable` (fehlt = nicht kaufbar). Regel vom Nutzer: In der App NUR direkt Kaufbares
   zeigen → Meldungen-Reiter blendet inzwischen Ausverkauftes aus (Feld `jetzt` aus letztem Stand); Frühwarnung klar als „Nur Info“ markiert.
 
+- 09.11.2026 (0.8.0): App-Symbol = eigener Feuerdrache (Entwurf 1, lokal mit ComfyUI/SDXL erzeugt, kein Glurak-Nachbau).
+  Vorlage `design/drache_11.png` (Entwürfe 27/43 daneben); Symbole in `web/icons/` per Zuschnitt (normal 92–932 px, maskable 42–982 px).
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
 - `src/run.js` – Durchlauf · `src/shopify.js` · `src/produkt.js` (Erkennung Art/Sprache/Vorbestellung) · `src/uvp.js` · `src/aenderungen.js` · `src/push.js` (ntfy)
-- `src/sitemap-waechter.js` (Sitemap + JSON-LD) · `src/news.js` (News & Leaks) · `web/` (App: Top · News & Leaks · Meldungen · Frühwarnung · TTB-Markt · UVP-Liste · Händler) · `scripts/symbole.js` (App-Symbole) · `scripts/vorschau.js` (lokale Vorschau :8090)
+- `src/sitemap-waechter.js` (Sitemap + JSON-LD) · `src/news.js` (News & Leaks) · `web/` (App: Top · News & Leaks · Meldungen · Frühwarnung · TTB-Markt · UVP-Liste · Händler) · `design/` (Vorlage App-Symbol) · `scripts/vorschau.js` (lokale Vorschau :8090)
 - `src/haendler-pruefen.js` + `scripts/haendler-check.js` – technischer Händler-Check
 - `.github/workflows/` – `abruf.yml` (alle 5 Min.), `haendler-check.yml`, `tests.yml`
 - `docs/` – Recherche + Händler-Check-Ergebnisse
 
 ### Befehle
-- `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run symbole` · `npm run handy` (Handy-Wächter)
+- `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run handy` (Handy-Wächter)
 
 ### Offene Punkte
 - ✅ 09.11.2026: Secret NTFY_KANAL angelegt (Kanal nur in Secret + lokaler .env), Test-Push gesendet; Kanal in ntfy-App auf dem Handy abonniert, Test-Push angekommen ✅
@@ -194,5 +197,5 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - ✅ Handy-Wächter läuft auf dem Handy (09.11.2026)
 - ✅ (0.7.0) MediaMarkt + Saturn über Suche + Produktseite (nur Handy/WLAN). Treffer erscheinen als Push, aber nicht in der App (App-Daten kommen von GitHub).
 - ✅ 0.4.0 News & Leaks, Pokémon Center über Feeds, Cardmarket-Links. Offen: Newsletter (Gmail-Konnektor?), JP-Leaks (pokemon-card.com), PokeBeach
-- Eigenes App-Symbol „Feuerdrache“ (lokal mit ComfyUI, nichts Geschütztes nachbauen)
+- ✅ (0.8.0) App-Symbol Feuerdrache
 - M3 Handy-Wächter (Termux) für Cloudflare-geschützte Ketten
