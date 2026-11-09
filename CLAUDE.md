@@ -179,6 +179,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   noch leer → aus). Reiter 🛒 eBay Sofortkauf · ⏱️ Auktionen · 🏅 Graded & Live (Whatnot/eBay Live nur Links + App-Folgen-Tipp).
   Schlüssel: Secrets EBAY_CLIENT_ID / EBAY_CLIENT_SECRET (GitHub) bzw. .env (Handy) – trägt der Nutzer selbst ein. Ohne Schlüssel: aus.
 
+- 09.11.2026 (0.9.1): Nutzer legt KEIN eBay-Entwicklerkonto an → eBay-Reiter entfernt, einstellungen.ebay.aktiv = false (Code bleibt ruhend).
+  Ohne Konto kein erlaubter Weg: robots.txt „Disallow: /sch/“, eBay-RSS abgeschaltet (403). Ersatz: Tipp im News-Reiter (eBay-App:
+  gespeicherte Suche mit Benachrichtigung; Whatnot/eBay Live: Verkäufern folgen). Graded-Wunsch damit vorerst erledigt/zurückgestellt.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
