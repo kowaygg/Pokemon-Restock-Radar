@@ -194,6 +194,12 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Produkt noch Microdata → eigener Leser offen. Einzelkarten-Filter: Wort „Karte“. Sitemap-Händler laufen jetzt auch auf dem Handy (nur WLAN,
   4 Seiten/Händler/Lauf), weil GitHub selten läuft.
 
+- 09.11.2026 (0.12.0): Reddit-RSS (r/PokemonTCG, r/PKMNTCGDeals, r/pokemoncardcollectors) als Stufe C, nur Anzeige (push: false), eigener Takt
+  (minuten 20/30) und Gruppe „reddit“ = max. 1 Reddit-Feed pro Durchlauf (sonst 429). Geprüft und verworfen: PokeBeach-Feed (HTTP 500),
+  PokeGuardian (kein Feed), pokemon-card.com/products (Liste per Skript nachgeladen → nicht ohne verdeckte Schnittstelle).
+- Offen aus Plan B: Leser für TRADER + Games-Island; neue Shops aus Händlernamen in Deal-Feeds ermitteln; Leak-Radar (Set-Codes,
+  Sitemap-lastmod, Restock-Muster); Reiter „Bald“ (Kalender); danach Design.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

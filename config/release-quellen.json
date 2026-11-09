@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Quellen für Release-Kalender und Newsfeed. stufe: A = offiziell, B = Fachseite, C = Community (nur mit Bestätigung). newsFeeds = automatisch gelesene Quellen für den Reiter News & Leaks (typ rss oder pokemon-news). nurPokemon: Titel muss Pokémon enthalten. deal: Meldungen sind Deal-Hinweise (Community).",
+  "_hinweis": "Quellen für Release-Kalender und Newsfeed. stufe: A = offiziell, B = Fachseite, C = Community (nur mit Bestätigung). newsFeeds = automatisch gelesene Quellen für den Reiter News & Leaks (typ rss oder pokemon-news). nurPokemon: Titel muss Pokémon enthalten. deal: Meldungen sind Deal-Hinweise (Community). minuten: eigener Abfrage-Takt (Reddit drosselt). push: false = nur anzeigen, kein Push (Community-Masse).",
   "quellen": [
     {
       "id": "pokemon-de-news",
@@ -80,6 +80,37 @@
       "url": "https://www.monsterdealz.de/feed/",
       "stufe": "B",
       "nurPokemon": true
+    },
+    {
+      "id": "reddit-pokemontcg",
+      "name": "Reddit r/PokemonTCG",
+      "typ": "rss",
+      "url": "https://www.reddit.com/r/PokemonTCG/new/.rss",
+      "stufe": "C",
+      "minuten": 20,
+      "push": false,
+      "gruppe": "reddit"
+    },
+    {
+      "id": "reddit-pkmntcgdeals",
+      "name": "Reddit r/PKMNTCGDeals",
+      "typ": "rss",
+      "url": "https://www.reddit.com/r/PKMNTCGDeals/new/.rss",
+      "stufe": "C",
+      "minuten": 20,
+      "push": false,
+      "deal": true,
+      "gruppe": "reddit"
+    },
+    {
+      "id": "reddit-collectors",
+      "name": "Reddit r/pokemoncardcollectors",
+      "typ": "rss",
+      "url": "https://www.reddit.com/r/pokemoncardcollectors/new/.rss",
+      "stufe": "C",
+      "minuten": 30,
+      "push": false,
+      "gruppe": "reddit"
     }
   ]
 }

@@ -200,9 +200,9 @@ if (newsFaellig && newsFeeds.length) {
   let newsPushes = 0;
   if (neu.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
   for (const n of neu) {
-    const { still, ...eintrag } = n;
+    const { still, push, ...eintrag } = n;
     zustand.news.unshift(eintrag);
-    if (!n.still && newsPushWert(n) && newsPushes < einst.maxNewsPushProLauf && !gemeldet.has(n.link)) {
+    if (!n.still && n.push !== false && newsPushWert(n) && newsPushes < einst.maxNewsPushProLauf && !gemeldet.has(n.link)) {
       if (await pushSenden(newsPushNachricht(n), { kanal })) { newsPushes++; pushes++; gemeldet.add(n.link); }
     }
   }

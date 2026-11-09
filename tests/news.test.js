@@ -49,3 +49,16 @@ test('Vor Ort: Ketten erkennen, Startdatum lesen, Push', async () => {
   assert.equal(datumAus('Lidl: Pokémon Kollektion ab Montag'), 'ab Montag');
   assert.equal(einordnen({ titel: 'Pokémon Display online bei TCGViert', text: '' }, { stufe: 'B' }).vorOrt, false);
 });
+
+test('Reddit-Gruppe: pro Durchlauf nur eine Quelle, eigener Takt', async () => {
+  const quellen = ['a', 'b'].map((id) => ({ id, name: id, typ: 'rss', url: `https://r/${id}`, stufe: 'C', gruppe: 'reddit', minuten: 20 }));
+  const geholt = [];
+  const holen = async (url) => { geholt.push(url); return { ok: true, text: async () => '<rss></rss>' }; };
+  const t0 = new Date('2026-11-09T12:00:00Z');
+  let r = await newsAbruf(quellen, {}, { holen, jetzt: t0 });
+  assert.deepEqual(geholt, ['https://r/a']);
+  r = await newsAbruf(quellen, r.stand, { holen, jetzt: new Date(t0.getTime() + 60000) });
+  assert.deepEqual(geholt, ['https://r/a', 'https://r/b']);
+  r = await newsAbruf(quellen, r.stand, { holen, jetzt: new Date(t0.getTime() + 120000) });
+  assert.equal(geholt.length, 2); // beide im 20-Minuten-Takt noch nicht wieder dran
+});

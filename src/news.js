@@ -77,8 +77,14 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
   const stand = {};
   const neu = [];
   const fehler = {};
+  const gruppeDran = new Set();
   for (const q of quellen) {
     const vorher = alt[q.id];
+    // Quellen mit eigenem Takt (z. B. Reddit, das schnell „429“ meldet) nur alle q.minuten abfragen
+    if (q.minuten && vorher?.zeit && jetzt - Date.parse(vorher.zeit) < q.minuten * 60000 - 30000) { stand[q.id] = vorher; continue; }
+    // Höchstens eine Quelle je Gruppe pro Durchlauf (Reddit: sonst 429)
+    if (q.gruppe && gruppeDran.has(q.gruppe)) { if (vorher) stand[q.id] = vorher; continue; }
+    if (q.gruppe) gruppeDran.add(q.gruppe);
     try {
       const roh = await textHolen(q.url, holen);
       const eintraege = q.typ === 'pokemon-news' ? pokemonNewsEintraege(roh) : feedEintraege(roh);
@@ -90,7 +96,7 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
         const still = !vorher;
         if (still && (e.zeit ? jetzt - Date.parse(e.zeit) > 7 * 86400000 : i >= 10)) continue;
         const einordnung = einordnen(e, q);
-        if (einordnung) neu.push({ ...e, ...einordnung, zeit: e.zeit || jetzt.toISOString(), quelle: q.name, quelleId: q.id, stufe: q.stufe, bestaetigt: q.stufe !== 'C', still });
+        if (einordnung) neu.push({ ...e, ...einordnung, zeit: e.zeit || jetzt.toISOString(), quelle: q.name, quelleId: q.id, stufe: q.stufe, bestaetigt: q.stufe !== 'C', still, push: q.push !== false });
       }
       // Gedächtnis begrenzen (älteste zuerst raus)
       const liste = Object.entries(gesehen).sort((a, b) => b[1].localeCompare(a[1])).slice(0, 400);
