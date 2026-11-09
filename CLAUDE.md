@@ -87,7 +87,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Whatnot + eBay Live: keine offizielle Schnittstelle → nicht automatisch auslesen; stattdessen Folgen/Benachrichtigen in deren Apps + Such-Links.
   Graded-Angebote (Sofortkauf + Auktionen) über die offizielle eBay Browse API (gleiches Entwicklerkonto wie M4). Getrennt vom Sealed-Filter.
 - Regel-Ergänzung: Top-Trainer-Boxen bis 60 € (ohne Versand) gelten immer als Treffer, egal welches Set.
-- Reiter „Vor Ort Freiburg“ (Wunsch 09.11.2026): Prospekte/Aktionen/Restocks stationärer Händler (Rossmann, Müller, Thalia, Rombach,
+- ✅ (0.6.0) Reiter „Vor Ort Freiburg“ (Wunsch 09.11.2026): Prospekte/Aktionen/Restocks stationärer Händler (Rossmann, Müller, Thalia, Rombach,
   Aldi, Lidl …) im Raum 79117 Freiburg (Ebnet/Littenweiler) mit Datum, damit der Nutzer als Erster im Laden ist. Marktguru/kaufDA prüfen
   (nur offizielle/erlaubte Wege), sonst öffentliche Angebotsseiten der Ketten.
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
@@ -153,6 +153,12 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 
 - 09.11.2026 (0.5.1): Sparmodus auf dem Handy bestätigt („WLAN → alle 2 Min.“, ohne Termux:API korrekt). Shopify-Shops geben dem Handy
   weiter 429 → Pause wächst jetzt 10→20→40→80→120 Min., setzt sich nach Erfolg zurück. GitHub deckt die Shops solange ab.
+
+- 09.11.2026 (0.6.0): Händler-Abdeckung: Gate to the Games, Games-Island, Cardmex (Promo-Einzelkarten raus) als Sitemap-Frühwarnung aktiv.
+  Alle nicht abfragbaren Shops haben jetzt status gesperrt/geplant + grund (App zeigt ⛔/🛠️ statt grau). Otto: keine Pokémon in Sitemap.
+- 09.11.2026 (0.6.0): Reiter „📍 Vor Ort“: Lidl, Aldi Süd, Rossmann, Müller (vorOrt: true, Sitemap) + News/Deals mit Ladenbezug (Ketten-Namen,
+  Filiale, Prospekt; Startdatum „ab 16.11.“ wird gelesen; Push bei Laden-Deals). Marktguru: keine erlaubte Schnittstelle; kaufDA verbietet
+  /search + /api in robots.txt → nur Tipp: in deren Apps Suchalarm „Pokémon“ für 79117 anlegen.
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen

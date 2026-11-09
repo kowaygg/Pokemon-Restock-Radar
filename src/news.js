@@ -49,7 +49,21 @@ export function einordnen(e, quelle) {
   else if (/enthullt|angekundigt|vorschau|leak|geleakt|revealed|announced|japan|kartenliste|neue .*karten/.test(t)) art = 'leak';
   if (quelle.deal) art = 'deal';
   const ttb = /top.?trainer|elite.?trainer|\betb\b|\bttb\b/.test(t);
-  return { art, pokemonCenter: pc, ttb };
+  // „bei netto Online“ ist ein Online-Angebot – Ladenbezug nur ohne „online“ oder mit Filial-/Prospekt-Hinweis
+  const vorOrt = VOR_ORT.test(t) && (!/\bonline\b/.test(t) || /filiale|prospekt|vor ort|im laden|in store|offline/.test(t));
+  return { art, pokemonCenter: pc, ttb, vorOrt, ...(vorOrt ? { abDatum: datumAus(e.titel) } : {}) };
+}
+
+// Stationäre Ketten / Filial-Hinweise (Prospekt-Aktionen)
+const VOR_ORT = /\b(aldi|lidl|netto|penny|kaufland|rossmann|muller|thalia|rombach|edeka|rewe|globus|smyths|toys ?r ?us|mediamarkt|saturn|woolworth|tedi)\b|filiale|in store|offline|prospekt|vor ort|im laden/;
+
+// „ab 16.11.“, „ab Montag“, „ab dem 3.12.2026“ → lesbarer Starttermin (oder null)
+export function datumAus(text) {
+  const t = String(text || '');
+  const m = t.match(/\bab\s+(?:dem\s+|den\s+)?(\d{1,2}\.\s?\d{1,2}\.(?:\s?\d{2,4})?)/i) || t.match(/\b(\d{1,2}\.\s?\d{1,2}\.(?:\d{2,4})?)/);
+  if (m) return m[1].replace(/\s/g, '');
+  const w = t.match(/\bab\s+(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|morgen|heute)\b/i);
+  return w ? 'ab ' + w[1].charAt(0).toUpperCase() + w[1].slice(1).toLowerCase() : null;
 }
 
 async function textHolen(url, holen) {
@@ -91,15 +105,15 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
 
 // Push nur für das Wichtige: Vorbestellung/Release, Pokémon Center, Top-Trainer-Box-Deals
 export function newsPushWert(n) {
-  return n.pokemonCenter || n.art === 'vorbestellung' || n.art === 'release' || (n.art === 'deal' && n.ttb);
+  return n.pokemonCenter || n.art === 'vorbestellung' || n.art === 'release' || (n.art === 'deal' && n.ttb) || (n.vorOrt && n.art === 'deal');
 }
 
 export function newsPushNachricht(n) {
   const art = { vorbestellung: 'VORBESTELLUNG', release: 'RELEASE', leak: 'Leak/Ankündigung', deal: 'Deal-Hinweis', news: 'News' }[n.art];
   const dringend = n.pokemonCenter || (n.ttb && n.art !== 'leak');
   return {
-    title: `${dringend ? '🚨 ' : '📰 '}${n.pokemonCenter ? 'Pokémon Center · ' : ''}${art} · ${n.quelle}`.slice(0, 250),
-    message: [n.titel, n.bestaetigt ? null : '(Community-Hinweis – Preis beim Händler prüfen)'].filter(Boolean).join('\n').slice(0, 2000),
+    title: `${dringend ? '🚨 ' : n.vorOrt ? '📍 ' : '📰 '}${n.pokemonCenter ? 'Pokémon Center · ' : n.vorOrt ? 'Vor Ort · ' : ''}${art} · ${n.quelle}`.slice(0, 250),
+    message: [n.titel, n.abDatum ? `Start: ${n.abDatum}` : null, n.bestaetigt ? null : '(Community-Hinweis – Preis beim Händler prüfen)'].filter(Boolean).join('\n').slice(0, 2000),
     priority: dringend ? 5 : 4,
     tags: [dringend ? 'rotating_light' : 'newspaper'],
     click: n.link,

@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = geprüft und wird überwacht, gesperrt = nicht abfragbar/unseriös. Neue Händler einfach als weiteren Eintrag ergänzen. abfrage: shopify = products.json; sitemap-jsonld = Sitemap + Preis/Bestand aus der Produktseite; sitemap = nur Frühwarnung bei neuen Produkt-URLs. urlFilter: Pflichtwort im URL-Pfad (Regex).",
+  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = wird überwacht, geplant = einbindbar, Leser fehlt noch, gesperrt = nicht erlaubt abfragbar (grund). Neue Händler einfach als weiteren Eintrag ergänzen. abfrage: shopify = products.json; sitemap-jsonld = Sitemap + Preis/Bestand aus der Produktseite; sitemap = nur Frühwarnung bei neuen Produkt-URLs. urlFilter: Pflichtwort im URL-Pfad (Regex). vorOrt: true = Kette mit Filialen (Treffer erscheinen zusätzlich im Reiter Vor Ort).",
   "haendler": [
     {
       "id": "alternate",
@@ -31,21 +31,24 @@
       "name": "Gate to the Games",
       "url": "https://www.gate-to-the-games.de",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap"
     },
     {
       "id": "spiele-offensive",
       "name": "Spiele-Offensive",
       "url": "https://www.spiele-offensive.de",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Bot-Schutz (Cloudflare) – auch vom Handy. Abdeckung über News/Deals."
     },
     {
       "id": "fantasywelt",
       "name": "Fantasywelt",
       "url": "https://www.fantasywelt.de",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Bot-Schutz (Cloudflare) – auch vom Handy. Abdeckung über News/Deals."
     },
     {
       "id": "gameshop-marli",
@@ -60,7 +63,8 @@
       "name": "Cardmex",
       "url": "https://cardmex-shop.de",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap"
     },
     {
       "id": "geeks-heaven",
@@ -91,21 +95,24 @@
       "name": "Games-Island",
       "url": "https://www.games-island.eu",
       "art": "fachhandel",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap"
     },
     {
       "id": "mediamarkt",
       "name": "MediaMarkt",
       "url": "https://www.mediamarkt.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "geplant",
+      "grund": "Erreichbar, Preis lesbar; eigener Leser nötig (riesige Sitemap, Marktplatz-Angebote ausfiltern)."
     },
     {
       "id": "saturn",
       "name": "Saturn",
       "url": "https://www.saturn.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "geplant",
+      "grund": "Wie MediaMarkt (gleiche Technik) – eigener Leser geplant."
     },
     {
       "id": "mueller",
@@ -113,63 +120,91 @@
       "url": "https://www.mueller.de",
       "art": "kette",
       "status": "aktiv",
-      "abfrage": "sitemap"
+      "abfrage": "sitemap",
+      "vorOrt": true
     },
     {
       "id": "thalia",
       "name": "Thalia",
       "url": "https://www.thalia.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Bot-Schutz (Cloudflare) – auch vom Handy. Filiale Freiburg → Reiter Vor Ort."
     },
     {
       "id": "smyths",
       "name": "Smyths Toys",
       "url": "https://www.smythstoys.com/de/de-de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Bot-Schutz (Imperva). Abdeckung über News/Deals."
     },
     {
       "id": "galeria",
       "name": "Galeria",
       "url": "https://www.galeria.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Bot-Schutz (Cloudflare) – auch vom Handy. Abdeckung über News/Deals."
     },
     {
       "id": "otto",
       "name": "Otto",
       "url": "https://www.otto.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Keine Pokémon-Produkte in der öffentlichen Sitemap; überwiegend Marktplatz."
     },
     {
       "id": "kaufland",
       "name": "Kaufland",
       "url": "https://www.kaufland.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Bot-Schutz (Cloudflare) – auch vom Handy. Prospekte → Reiter Vor Ort."
     },
     {
       "id": "rossmann",
       "name": "Rossmann",
       "url": "https://www.rossmann.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "aktiv",
+      "abfrage": "sitemap",
+      "vorOrt": true
     },
     {
       "id": "rombach",
       "name": "Rombach",
       "url": "https://www.rombach.de",
       "art": "kette",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Keine Sitemap/kein Online-Feed → Freiburger Laden im Reiter Vor Ort."
     },
     {
       "id": "pokemoncenter",
       "name": "Pokémon Center",
       "url": "https://www.pokemoncenter.com",
       "art": "offiziell",
-      "status": "kandidat"
+      "status": "gesperrt",
+      "grund": "Bot-Schutz (DataDome) – auch vom Handy. Abdeckung über mydealz/PokeZentrum (Push dringend) + Link."
+    },
+    {
+      "id": "aldi-sued",
+      "name": "Aldi Süd",
+      "url": "https://www.aldi-sued.de",
+      "art": "discounter",
+      "status": "aktiv",
+      "abfrage": "sitemap",
+      "vorOrt": true
+    },
+    {
+      "id": "lidl",
+      "name": "Lidl",
+      "url": "https://www.lidl.de",
+      "art": "discounter",
+      "status": "aktiv",
+      "abfrage": "sitemap",
+      "vorOrt": true
     }
   ]
 }

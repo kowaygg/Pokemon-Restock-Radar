@@ -38,3 +38,14 @@ test('News-Abruf: erster Lauf still, danach neu + Push-Regeln', async () => {
   assert.equal(newsPushNachricht(r.neu[0]).priority, 5);
   assert.match(newsPushNachricht(r.neu[0]).message, /Community-Hinweis/);
 });
+
+test('Vor Ort: Ketten erkennen, Startdatum lesen, Push', async () => {
+  const { datumAus } = await import('../src/news.js');
+  const n = einordnen({ titel: '[Aldi Süd] Pokémon Top-Trainer-Box ab 16.11. für 39,99€', text: '' }, { stufe: 'C', deal: true, nurPokemon: true });
+  assert.equal(n.vorOrt, true);
+  assert.equal(n.abDatum, '16.11.');
+  assert.equal(newsPushWert({ ...n, art: 'deal' }), true);
+  assert.match(newsPushNachricht({ ...n, titel: 'x', quelle: 'mydealz', bestaetigt: false }).message, /Start: 16\.11\./);
+  assert.equal(datumAus('Lidl: Pokémon Kollektion ab Montag'), 'ab Montag');
+  assert.equal(einordnen({ titel: 'Pokémon Display online bei TCGViert', text: '' }, { stufe: 'B' }).vorOrt, false);
+});

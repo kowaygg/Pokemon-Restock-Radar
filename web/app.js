@@ -71,6 +71,31 @@ const ansichten = {
       + (gruppen.length ? gruppen.map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.slice(0, 40).map(eintrag).join('')}`).join('')
         : '<div class="leer">Noch keine News gesammelt.</div>');
   },
+  vorort() {
+    const news = [...(daten.news || [])].filter((n) => n.vorOrt).sort((a, b) => b.zeit.localeCompare(a.zeit));
+    const neu = (daten.feed || []).filter((f) => f.vorOrt);
+    const nachricht = (n) => `<div class="karte${n.ttb ? ' ttb' : ''}">
+      <div class="kopf"><span>${esc(n.quelle)}</span><span>${zeit(n.zeit)}</span></div>
+      <div class="titel">${esc(n.titel)}</div>
+      <div>${n.abDatum ? `<span class="marke gelb">Start: ${esc(n.abDatum)}</span>` : ''}${n.bestaetigt ? '' : '<span class="marke">unbestätigt</span>'}</div>
+      <div class="knoepfe">${sicherLink(n.link) ? `<a class="knopf" href="${esc(n.link)}" target="_blank" rel="noopener">Ansehen</a>` : ''}</div>
+    </div>`;
+    const laeden = [
+      ['Müller Filialen', 'https://www.mueller.de/filialfinder/'],
+      ['Rossmann Filialen', 'https://www.rossmann.de/de/filialen'],
+      ['Thalia Freiburg', 'https://www.thalia.de/filialen'],
+      ['Rombach Freiburg', 'https://www.rombach.de'],
+      ['Aldi Süd Angebote', 'https://www.aldi-sued.de'],
+      ['Lidl Angebote', 'https://www.lidl.de'],
+      ['Kaufland Prospekt', 'https://www.kaufland.de'],
+      ['Marktguru „Pokémon“', 'https://www.marktguru.de/search/pokemon'],
+    ];
+    return `<p class="hinweis">Aktionen und Neuheiten bei Ketten mit Filialen (Raum Freiburg 79117) – damit du als Erster im Laden stehst. Quellen: Deal-/News-Meldungen mit Ladenbezug und neue Pokémon-Produkte in den öffentlichen Seiten von Lidl, Aldi Süd, Rossmann und Müller.</p>
+      <div class="karte"><div class="titel">💡 Tipp: Prospekt-Alarm</div><div class="hinweis" style="margin:4px 0 0">In den kostenlosen Apps <b>Marktguru</b> oder <b>kaufDA</b> „Pokémon“ als Favorit/Suchalarm speichern und Freiburg 79117 einstellen – die Apps melden dann neue Prospekt-Angebote. (Automatisch auslesen dürfen wir sie nicht.)</div></div>
+      <div class="knoepfe" style="margin-bottom:12px">${laeden.map(([t, u]) => `<a class="knopf" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}</div>
+      <h2>🗞️ Aktionen & Prospekt-Hinweise (${news.length})</h2>${news.length ? news.slice(0, 40).map(nachricht).join('') : '<div class="leer">Gerade keine Laden-Aktion gemeldet.</div>'}
+      <h2>🆕 Neu bei den Ketten (${neu.length})</h2>${neu.length ? neu.slice(0, 40).map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Noch keine neuen Pokémon-Produkte bei Lidl, Aldi, Rossmann oder Müller entdeckt.</div>'}`;
+  },
   meldungen() {
     const l = (daten.feed || []).filter((f) => f.typ !== 'angekuendigt');
     return '<p class="hinweis">Neu lieferbar, wieder da oder Vorbestellung offen (letzte 14 Tage).</p>'
@@ -95,10 +120,14 @@ const ansichten = {
   },
   haendler() {
     const l = daten.haendler || [];
-    const status = (h) => h.status !== 'aktiv' ? '⚪ noch nicht überwacht' : h.fehler ? `🔴 ${esc(h.fehler)}` : '🟢 läuft';
-    return `<p class="hinweis">Überwachte Händler und ihr Zustand. Geschützte Shops (MediaMarkt, Saturn, Pokémon Center …) kommen mit dem Handy-Wächter.</p>
+    const status = (h) => h.status === 'gesperrt' ? `⛔ nicht abfragbar – ${esc(h.grund || '')}`
+      : h.status === 'geplant' ? `🛠️ geplant – ${esc(h.grund || '')}`
+      : h.status !== 'aktiv' ? '⚪ noch nicht geprüft'
+      : h.fehler ? `🔴 ${esc(h.fehler)}` : '🟢 läuft';
+    const reihe = { aktiv: 0, geplant: 1, kandidat: 2, gesperrt: 3 };
+    return `<p class="hinweis">Alle Händler mit Zustand. ⛔ = durch Bot-Schutz gesperrt (umgehen wir nie) – diese Shops decken News &amp; Leaks und der Reiter Vor Ort ab.</p>
       <div class="tabelle"><table><tr><th>Händler</th><th>Status</th><th>Art</th><th>Zuletzt</th></tr>
-      ${l.sort((a, b) => (a.status === 'aktiv' ? 0 : 1) - (b.status === 'aktiv' ? 0 : 1)).map((h) => `<tr><td><a href="${esc(sicherLink(h.url) || '#')}" target="_blank" rel="noopener">${esc(h.name)}</a></td><td>${status(h)}</td><td>${esc(ABFRAGE_TEXT[h.abfrage] || '')}</td><td>${zeit(h.stand)}</td></tr>`).join('')}</table></div>`;
+      ${l.sort((a, b) => (reihe[a.status] ?? 9) - (reihe[b.status] ?? 9)).map((h) => `<tr><td><a href="${esc(sicherLink(h.url) || '#')}" target="_blank" rel="noopener">${esc(h.name)}</a></td><td>${status(h)}</td><td>${esc(ABFRAGE_TEXT[h.abfrage] || '')}</td><td>${zeit(h.stand)}</td></tr>`).join('')}</table></div>`;
   },
 };
 

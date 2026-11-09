@@ -66,7 +66,7 @@ export async function sitemapWaechter(h, alt, { jetzt = new Date(), holen = fetc
   const meldung = (k, typ, p) => ({
     typ, id: k.url, titel: p?.name || k.titel, art: k.art, prioritaet: k.prioritaet, link: k.url,
     preis: p ? p.preis : NaN, verfuegbar: !!p?.verfuegbar, vorbestellung: !!p?.vorbestellung,
-    sprache: sprache(p?.name || k.titel), haendler: h.name, haendlerId: h.id, quelle: 'sitemap',
+    sprache: sprache(p?.name || k.titel), haendler: h.name, haendlerId: h.id, quelle: 'sitemap', vorOrt: !!h.vorOrt,
   });
 
   // 2) Nur Sitemap: jede neue URL ist eine Frühwarnung

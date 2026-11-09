@@ -33,7 +33,7 @@ async function melden(meldungen) {
   for (const m of meldungen) {
     m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
     m.zeit = jetzt.toISOString();
-    zustand.feed.unshift({ zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop' });
+    zustand.feed.unshift({ zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop', vorOrt: !!m.vorOrt });
     if (pushes < einst.maxPushProLauf && (!einst.pushNurUvp || pushWert(m))) {
       if (gemeldet.has(m.link)) continue;
       if (await pushSenden(pushNachricht(m), { kanal })) { pushes++; gemeldet.add(m.link); }
@@ -127,7 +127,7 @@ const oeffentlich = {
   letzterLauf: zustand.letzterLauf, feed: zustand.feed.slice(0, 300),
   top: top.sort((a, b) => a.prioritaet - b.prioritaet || a.bewertung.differenz - b.bewertung.differenz).slice(0, 100),
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),
-  haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
+  haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
   uvp: uvpListe,
   news: zustand.news.slice(0, 200),
   newsFehler: zustand.newsFehler || {},
