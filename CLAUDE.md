@@ -196,6 +196,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run handy` (Handy-Wächter)
 
 ### Offene Punkte
+- NÄCHSTE RUNDE (Wunsch 09.11.2026 spät, Reihenfolge mit Nutzer klären): 1) Design wie KI-Finanz-Radar (ruhige Farben, weniger klarere
+  Reiter: Kaufen · Bald · News · Vor Ort · Händler/UVP, Filter-Chips); 2) mehr Händler MIT Preis (Preis-Leser für Sitemap-Shops, weitere
+  Shopify-Shops DE/AT/NL/BE); 3) Quellen Reddit-RSS, PokeBeach, PokeGuardian, Serebii, pokemon-card.com (JP); 4) Leak-Radar nur aus
+  öffentlichen Daten (Set-Codes, Sitemap-lastmod, Shopify noch-nicht-kaufbar, Restock-Muster); 5) Reiter „Bald“ = Release-/Drop-Kalender.
 - ✅ 09.11.2026: Secret NTFY_KANAL angelegt (Kanal nur in Secret + lokaler .env), Test-Push gesendet; Kanal in ntfy-App auf dem Handy abonniert, Test-Push angekommen ✅
 - ✅ 09.11.2026: Vault-Notizen unter Projekte/Pokemon-Restock-Radar/ angelegt
 - UVPs mit Sicherheit „niedrig“ bestätigen; Händler-Impressen von Hand + handelsregister.de prüfen
