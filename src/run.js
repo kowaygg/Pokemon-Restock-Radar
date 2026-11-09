@@ -8,6 +8,7 @@ import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
 import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
 import { mediamarktHolen } from './mediamarkt.js';
+import { ebaySuche, ebayGraded, serioes } from './ebay.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
 const lies = async (pfad, ersatz) => { try { return JSON.parse(await readFile(pfad, 'utf8')); } catch { return ersatz; } };
@@ -122,6 +123,55 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'me
   }
 }
 
+// eBay (offizielle Browse API) – nur wenn Schlüssel vorhanden; unterwegs seltener
+zustand.ebay ||= { gesehen: {} };
+const eb = einst.ebay || {};
+const ebayAktiv = !!(process.env.EBAY_CLIENT_ID && process.env.EBAY_CLIENT_SECRET) && eb.aktiv !== false;
+const ebayTakt = (spar ? eb.minutenMobil : eb.minuten) || 5;
+if (ebayAktiv && (!zustand.ebay.zeit || jetzt - Date.parse(zustand.ebay.zeit) >= ebayTakt * 60000 - 30000)) {
+  const ersterEbay = !zustand.ebay.zeit;
+  const sofort = [];
+  const auktionen = [];
+  const graded = [];
+  const fehler = [];
+  const bewerte = (a) => { const art = produktArt(a.titel); if (!art) return null; return { ...art, bewertung: preisBewertung(a.gesamt, uvpFinden(a.titel, art.art, uvpListe), uvpListe.spielraumEuro) }; };
+  for (const s of eb.suchen || []) {
+    try {
+      const liste = await ebaySuche(s.q, { art: s.art, maxPreis: s.maxPreis });
+      for (const a of liste || []) {
+        const b = bewerte(a);
+        if (!b || b.bewertung.stufe !== 'uvp' || a.versandUnbekannt || !serioes(a, eb)) continue;
+        const eintrag = { ...a, art: b.art, prioritaet: b.prioritaet, bewertung: b.bewertung, sprache: sprache(a.titel), haendler: 'eBay' };
+        if (a.auktion) {
+          const rest = (Date.parse(a.endet) - jetzt) / 60000;
+          if (rest > 0 && rest <= eb.auktionMinuten) auktionen.push({ ...eintrag, restMinuten: Math.round(rest) });
+        } else sofort.push(eintrag);
+      }
+    } catch (e) { fehler.push(`${s.q}: ${e.message}`); }
+  }
+  for (const s of eb.graded?.suchen || []) {
+    try {
+      for (const a of (await ebayGraded(s, { maxPreis: eb.graded.maxPreis })) || []) {
+        if (!/\b(psa|cgc|bgs|beckett|tag)\s?\d/i.test(a.titel) || !serioes({ ...a, titel: a.titel.replace(/graded/ig, '') }, eb)) continue;
+        graded.push({ ...a, haendler: 'eBay', suche: s });
+      }
+    } catch (e) { fehler.push(`Graded ${s}: ${e.message}`); }
+  }
+  // Push: neue Sofortkauf-Treffer, Auktionen einmal beim Eintritt ins Zeitfenster, neue Graded-Treffer
+  const neu = [...sofort.map((a) => ({ ...a, typ: 'ebay-sofort' })), ...auktionen.map((a) => ({ ...a, typ: 'ebay-auktion' })), ...graded.map((a) => ({ ...a, typ: 'graded', prioritaet: 2 }))]
+    .filter((a) => !zustand.ebay.gesehen[a.typ + a.id]);
+  for (const a of neu) zustand.ebay.gesehen[a.typ + a.id] = jetzt.toISOString();
+  if (!ersterEbay) {
+    await melden(neu.map((a) => ({ ...a, verfuegbar: true, preis: a.gesamt, quelle: 'ebay',
+      titel: `${a.titel} · inkl. ${(a.versand ?? 0).toFixed(2).replace('.', ',')} € Versand${a.auktion ? ` · ${a.gebote ?? 0} Gebote · endet ${new Date(a.endet).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' })}` : ''}`,
+      bewertung: a.bewertung || { stufe: 'unbekannt' } })));
+  }
+  const grenzeEbay = jetzt.getTime() - 3 * 86400000;
+  zustand.ebay.gesehen = Object.fromEntries(Object.entries(zustand.ebay.gesehen).filter(([, z]) => Date.parse(z) >= grenzeEbay));
+  Object.assign(zustand.ebay, { zeit: jetzt.toISOString(), sofort, auktionen, graded, fehler });
+  bericht.push(`| eBay | ${fehler.length ? '⚠ ' + fehler.join('; ') : '✅'} | ${(eb.suchen || []).length} Suchen | ${sofort.length} Sofortkauf | ${auktionen.length} Auktionen | ${graded.length} Graded |`);
+}
+
 // News & Leaks (alle newsMinuten)
 zustand.news ||= [];
 const newsFaellig = !zustand.newsZeit || jetzt - Date.parse(zustand.newsZeit) >= einst.newsMinuten * 60000 - 30000;
@@ -161,6 +211,7 @@ const oeffentlich = {
   haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
   uvp: uvpListe,
   news: zustand.news.slice(0, 200),
+  ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},
 };
 await writeFile('data/oeffentlich.json', JSON.stringify(oeffentlich));

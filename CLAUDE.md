@@ -173,11 +173,17 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 09.11.2026 (0.8.0): App-Symbol = eigener Feuerdrache (Entwurf 1, lokal mit ComfyUI/SDXL erzeugt, kein Glurak-Nachbau).
   Vorlage `design/drache_11.png` (Entwürfe 27/43 daneben); Symbole in `web/icons/` per Zuschnitt (normal 92–932 px, maskable 42–982 px).
 
+- 09.11.2026 (0.9.0): eBay-Wächter (`src/ebay.js`, offizielle Browse API, Marktplatz EBAY_DE, nur Zustand „neu“, Lieferung nach DE):
+  Sofortkauf (sort newlyListed) + Auktionen (endingSoonest, enden in ≤ 30 Min.), Regel Preis + Versand ≤ UVP + 5 €, Versand unbekannt = raus,
+  Verkäufer ≥ 98 % / ≥ 50 Bewertungen, Warnwörter (leer, reseal, Konvolut …). Graded: eigene Suchbegriffe + Preisgrenze (einstellungen.ebay.graded,
+  noch leer → aus). Reiter 🛒 eBay Sofortkauf · ⏱️ Auktionen · 🏅 Graded & Live (Whatnot/eBay Live nur Links + App-Folgen-Tipp).
+  Schlüssel: Secrets EBAY_CLIENT_ID / EBAY_CLIENT_SECRET (GitHub) bzw. .env (Handy) – trägt der Nutzer selbst ein. Ohne Schlüssel: aus.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
 - `src/run.js` – Durchlauf · `src/shopify.js` · `src/produkt.js` (Erkennung Art/Sprache/Vorbestellung) · `src/uvp.js` · `src/aenderungen.js` · `src/push.js` (ntfy)
-- `src/sitemap-waechter.js` (Sitemap + JSON-LD) · `src/news.js` (News & Leaks) · `web/` (App: Top · News & Leaks · Meldungen · Frühwarnung · TTB-Markt · UVP-Liste · Händler) · `design/` (Vorlage App-Symbol) · `scripts/vorschau.js` (lokale Vorschau :8090)
+- `src/sitemap-waechter.js` (Sitemap + JSON-LD) · `src/news.js` (News & Leaks) · `src/ebay.js` (eBay) · `src/mediamarkt.js` · `web/` (App: Top · News & Leaks · Meldungen · Frühwarnung · TTB-Markt · UVP-Liste · Händler) · `design/` (Vorlage App-Symbol) · `scripts/vorschau.js` (lokale Vorschau :8090)
 - `src/haendler-pruefen.js` + `scripts/haendler-check.js` – technischer Händler-Check
 - `.github/workflows/` – `abruf.yml` (alle 5 Min.), `haendler-check.yml`, `tests.yml`
 - `docs/` – Recherche + Händler-Check-Ergebnisse

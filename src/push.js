@@ -1,5 +1,5 @@
 // Push über ntfy. Kanalname NUR aus Secret/Umgebung NTFY_KANAL – nie im Repo. Ohne Kanal: Probelauf (nur Anzeige).
-const TYP_TEXT = { neu: 'NEU lieferbar', 'wieder-da': 'WIEDER DA', vorbestellung: 'VORBESTELLUNG offen', angekuendigt: 'Angekündigt (noch nicht bestellbar)' };
+const TYP_TEXT = { neu: 'NEU lieferbar', 'wieder-da': 'WIEDER DA', vorbestellung: 'VORBESTELLUNG offen', angekuendigt: 'Angekündigt (noch nicht bestellbar)', 'ebay-sofort': 'eBay Sofortkauf', 'ebay-auktion': 'eBay Auktion endet bald', graded: 'Graded-Karte' };
 
 export function pushNachricht(m) {
   const preis = Number.isFinite(m.preis) ? `${m.preis.toFixed(2).replace('.', ',')} €` : 'Preis ?';

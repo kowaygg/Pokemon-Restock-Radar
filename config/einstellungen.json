@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Zentrale Einstellungen. maxSeiten: Seiten à 250 Produkte pro Shopify-Shop. pushNurUvp: true = keine Push-Meldung bei Preisen über UVP + Spielraum (stehen trotzdem im Feed). sitemapMinuten: wie oft die Sitemap neu gelesen wird. seitenProLauf: Produktseiten pro Lauf und Händler (sitemap-jsonld). Handy-Wächter: handyLimit = Produkte pro Shop im Schnellcheck, handyVollMinuten = Abstand kompletter Durchläufe. pauseNach429Minuten: so lange wird ein Händler nach „zu viele Anfragen“ (HTTP 429) ausgelassen. newsMinuten: wie oft die News-Quellen gelesen werden. maxNewsPushProLauf: höchstens so viele News-Pushes pro Lauf. handySpar: Takt des Handy-Wächters in Minuten je Lage (WLAN+lädt, WLAN, mobile Daten, Akku niedrig) und Akku-Grenzen in %; newsMobil = News-Abstand unterwegs. mmMinuten/mmSuchen: Takt und Suchbegriffe für MediaMarkt/Saturn (nur Handy im WLAN).",
+  "_hinweis": "Zentrale Einstellungen. maxSeiten: Seiten à 250 Produkte pro Shopify-Shop. pushNurUvp: true = keine Push-Meldung bei Preisen über UVP + Spielraum (stehen trotzdem im Feed). sitemapMinuten: wie oft die Sitemap neu gelesen wird. seitenProLauf: Produktseiten pro Lauf und Händler (sitemap-jsonld). Handy-Wächter: handyLimit = Produkte pro Shop im Schnellcheck, handyVollMinuten = Abstand kompletter Durchläufe. pauseNach429Minuten: so lange wird ein Händler nach „zu viele Anfragen“ (HTTP 429) ausgelassen. newsMinuten: wie oft die News-Quellen gelesen werden. maxNewsPushProLauf: höchstens so viele News-Pushes pro Lauf. handySpar: Takt des Handy-Wächters in Minuten je Lage (WLAN+lädt, WLAN, mobile Daten, Akku niedrig) und Akku-Grenzen in %; newsMobil = News-Abstand unterwegs. mmMinuten/mmSuchen: Takt und Suchbegriffe für MediaMarkt/Saturn (nur Handy im WLAN). ebay: Browse API (Schlüssel nur als Secret/.env). suchen: q + art (sofortkauf/auktion) + maxPreis (spart Abfragen); auktionMinuten = Auktionen, die so bald enden; minProzent/minBewertungen = Verkäufer-Mindestwerte; graded.suchen leer = Graded aus.",
   "maxSeiten": 20,
   "maxPushProLauf": 8,
   "pushNurUvp": true,
@@ -29,5 +29,54 @@
     "pokemon display",
     "pokemon booster bundle",
     "pokemon sammelkartenspiel"
-  ]
+  ],
+  "ebay": {
+    "aktiv": true,
+    "minuten": 5,
+    "minutenMobil": 15,
+    "auktionMinuten": 30,
+    "minProzent": 98,
+    "minBewertungen": 50,
+    "suchen": [
+      {
+        "q": "pokemon top trainer box",
+        "art": "sofortkauf",
+        "maxPreis": 70
+      },
+      {
+        "q": "pokemon elite trainer box",
+        "art": "sofortkauf",
+        "maxPreis": 70
+      },
+      {
+        "q": "pokemon display 36 booster",
+        "art": "sofortkauf",
+        "maxPreis": 200
+      },
+      {
+        "q": "pokemon booster bundle",
+        "art": "sofortkauf",
+        "maxPreis": 45
+      },
+      {
+        "q": "pokemon top trainer box",
+        "art": "auktion",
+        "maxPreis": 70
+      },
+      {
+        "q": "pokemon elite trainer box",
+        "art": "auktion",
+        "maxPreis": 70
+      },
+      {
+        "q": "pokemon display",
+        "art": "auktion",
+        "maxPreis": 200
+      }
+    ],
+    "graded": {
+      "suchen": [],
+      "maxPreis": null
+    }
+  }
 }

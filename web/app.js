@@ -36,6 +36,19 @@ function karte(p, { typ } = {}) {
   </div>`;
 }
 
+const EBAY_FEHLT = '<div class="leer">eBay ist noch nicht verbunden – es fehlt noch der kostenlose Zugang (eBay-Entwicklerkonto). Danach erscheinen hier die Treffer.</div>';
+const ebayFehler = (e) => (e.fehler || []).length ? `<p class="hinweis">⚠ ${esc(e.fehler.join(' · '))}</p>` : '';
+function ebayKarte(a) {
+  const rest = a.endet ? Math.round((Date.parse(a.endet) - Date.now()) / 60000) : null;
+  return `<div class="karte${a.prioritaet === 1 ? ' ttb' : ''}">
+    <div class="kopf"><span>eBay · ${esc(a.verkaeufer || '')}${Number.isFinite(a.bewertungProzent) ? ` (${a.bewertungProzent} %)` : ''}</span><span>${a.auktion ? `⏱️ noch ${rest} Min. · ${a.gebote ?? 0} Gebote` : 'Sofortkauf'}</span></div>
+    <div class="titel">${esc(a.titel)}</div>
+    <div>${a.art ? `<span class="marke${a.prioritaet === 1 ? ' gelb' : ''}">${esc(ART_TEXT[a.art] || a.art)}</span>` : ''}${a.sprache ? `<span class="marke">${esc(a.sprache)}</span>` : ''}</div>
+    <div><span class="preis">${euro(a.gesamt)}</span> <span class="unbekannt">(${euro(a.preis)} + ${euro(a.versand)} Versand)</span>${a.bewertung ? ' · ' + bewertungHtml(a.bewertung) : ''}</div>
+    <div class="knoepfe">${sicherLink(a.link) ? `<a class="knopf kauf" href="${esc(a.link)}" target="_blank" rel="noopener">${a.auktion ? 'Zur Auktion' : '🛒 Zum Angebot'}</a>` : ''}</div>
+  </div>`;
+}
+
 const ansichten = {
   top() {
     const l = daten.top || [];
@@ -70,6 +83,33 @@ const ansichten = {
       <div class="knoepfe" style="margin-bottom:12px">${links.map(([t, u]) => `<a class="knopf" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}</div>`
       + (gruppen.length ? gruppen.map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.slice(0, 40).map(eintrag).join('')}`).join('')
         : '<div class="leer">Noch keine News gesammelt.</div>');
+  },
+  sofort() {
+    const e = daten.ebay || {};
+    if (!e.aktiv) return EBAY_FEHLT;
+    const l = e.sofort || [];
+    return `<p class="hinweis">eBay-Sofortkauf, neu und versiegelt, <b>Preis + Versand</b> höchstens ${euro(daten.uvp?.spielraumEuro ?? 5)} über UVP, nur Verkäufer mit ≥ 98 % positiven Bewertungen. Stand ${zeit(e.zeit)}.</p>`
+      + (l.length ? l.map((a) => ebayKarte(a)).join('') : '<div class="leer">Gerade kein Sofortkauf zum UVP. Sobald einer auftaucht, kommt ein Push.</div>') + ebayFehler(e);
+  },
+  auktionen() {
+    const e = daten.ebay || {};
+    if (!e.aktiv) return EBAY_FEHLT;
+    const l = (e.auktionen || []).filter((a) => Date.parse(a.endet) > Date.now()).sort((a, b) => a.endet.localeCompare(b.endet));
+    return `<p class="hinweis">Auktionen, die bald enden und gerade (inkl. Versand) höchstens ${euro(daten.uvp?.spielraumEuro ?? 5)} über UVP stehen. Achtung: Bis zum Ende kann der Preis noch steigen. Stand ${zeit(e.zeit)}.</p>`
+      + (l.length ? l.map((a) => ebayKarte(a)).join('') : '<div class="leer">Gerade keine Auktion im Zeitfenster.</div>') + ebayFehler(e);
+  },
+  graded() {
+    const e = daten.ebay || {};
+    const live = [
+      ['Whatnot: Pokémon PSA', 'https://www.whatnot.com/search?query=pokemon%20psa'],
+      ['eBay: Pokémon PSA 10', 'https://www.ebay.de/sch/i.html?_nkw=pokemon+psa+10'],
+      ['eBay: Pokémon CGC', 'https://www.ebay.de/sch/i.html?_nkw=pokemon+cgc'],
+    ];
+    const links = `<div class="karte"><div class="titel">📺 Live-Shows</div><div class="hinweis" style="margin:4px 0 8px">Whatnot und eBay Live haben keine offizielle Schnittstelle. Tipp: In deren Apps Graded-Verkäufern folgen und Benachrichtigungen einschalten – dann meldet die App jede Show selbst.</div><div class="knoepfe">${live.map(([t, u]) => `<a class="knopf" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}</div></div>`;
+    if (!e.aktiv) return links + EBAY_FEHLT;
+    if (!e.gradedEingerichtet) return links + '<div class="leer">Graded-Suche noch nicht eingerichtet – dafür fehlen noch deine Wunschkarten, Noten und die Preisgrenze.</div>';
+    const l = e.graded || [];
+    return links + `<p class="hinweis">Gegradete Karten nach deinen Suchbegriffen und deiner Preisgrenze. Stand ${zeit(e.zeit)}.</p>` + (l.length ? l.map((a) => ebayKarte(a)).join('') : '<div class="leer">Gerade nichts Passendes.</div>');
   },
   vorort() {
     const news = [...(daten.news || [])].filter((n) => n.vorOrt).sort((a, b) => b.zeit.localeCompare(a.zeit));

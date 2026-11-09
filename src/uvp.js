@@ -33,5 +33,5 @@ export function preisBewertung(preis, uvp, spielraum) {
   return { stufe, differenz, uvp: uvp.uvp, sicherheit: uvp.sicherheit };
 }
 
-// Push bei pushNurUvp: nur echte UVP-Treffer und Frühwarnungen ohne Preis
-export const pushWert = (m) => m.bewertung.stufe === 'uvp' || (m.bewertung.stufe === 'unbekannt' && !Number.isFinite(m.preis));
+// Push bei pushNurUvp: nur echte UVP-Treffer, Frühwarnungen ohne Preis und Graded-Treffer (eigene Preisgrenze)
+export const pushWert = (m) => m.typ === 'graded' || m.bewertung.stufe === 'uvp' || (m.bewertung.stufe === 'unbekannt' && !Number.isFinite(m.preis));

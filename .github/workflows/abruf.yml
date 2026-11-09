@@ -47,6 +47,8 @@ jobs:
       - name: Händler abfragen
         env:
           NTFY_KANAL: ${{ secrets.NTFY_KANAL }}
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
         run: npm run abruf
 
       - name: Stand sichern
