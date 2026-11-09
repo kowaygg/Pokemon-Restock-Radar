@@ -20,9 +20,13 @@ export function sucheLesen(html, basis) {
 export function produktseiteLesen(html) {
   const verkaeufer = (html.match(/"sellerName":"([^"]+)"/) || [])[1] || null;
   const eigen = !verkaeufer || /media ?markt|saturn/i.test(verkaeufer);
-  const verfuegbar = /"availability":"https?:\/\/schema\.org\/(InStock|LimitedAvailability|OnlineOnly)"/.test(html);
-  const vorbestellung = /"availability":"https?:\/\/schema\.org\/(PreOrder|PreSale)"/.test(html);
-  return { verkaeufer, eigen, verfuegbar, vorbestellung };
+  // Nur das Feld des Hauptprodukts zählt – „InStock“ im Seitentext kann von Empfehlungen stammen.
+  // isAvailableAndBuyable fehlt → als nicht kaufbar werten (lieber eine Meldung zu wenig als eine falsche).
+  const kaufbar = (html.match(/"isAvailableAndBuyable":(true|false)/) || [])[1] === 'true';
+  const status = (html.match(/"onlineStatus":"([A-Z_]+)"/) || [])[1] || null;
+  const vorbestellung = kaufbar && /PRE_?ORDER|PRE_?SALE/.test(status || '');
+  const verfuegbar = kaufbar;
+  return { verkaeufer, eigen, verfuegbar, vorbestellung, status };
 }
 
 async function text(url, holen) {

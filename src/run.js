@@ -34,7 +34,7 @@ async function melden(meldungen) {
   for (const m of meldungen) {
     m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
     m.zeit = jetzt.toISOString();
-    zustand.feed.unshift({ zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop', vorOrt: !!m.vorOrt });
+    zustand.feed.unshift({ id: m.id, haendlerId: m.haendlerId, zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop', vorOrt: !!m.vorOrt });
     if (pushes < einst.maxPushProLauf && (!einst.pushNurUvp || pushWert(m))) {
       if (gemeldet.has(m.link)) continue;
       if (await pushSenden(pushNachricht(m), { kanal })) { pushes++; gemeldet.add(m.link); }
@@ -149,7 +149,13 @@ await mkdir('data', { recursive: true });
 await writeFile('data/zustand.json', JSON.stringify(zustand));
 // Öffentlicher Auszug für die App (nur Produktdaten, nichts Persönliches)
 const oeffentlich = {
-  letzterLauf: zustand.letzterLauf, feed: zustand.feed.slice(0, 300),
+  letzterLauf: zustand.letzterLauf,
+  // jetzt = laut letztem Stand noch kaufbar (Meldungen von vorhin können schon ausverkauft sein)
+  feed: zustand.feed.slice(0, 300).map((f) => {
+    const hz = zustand.haendler[f.haendlerId] || {};
+    const z = hz.produkte?.[f.id] || hz.sitemap?.urls?.[f.id];
+    return { ...f, jetzt: f.typ === 'angekuendigt' ? false : z ? z.v === true : null };
+  }),
   top: top.sort((a, b) => a.prioritaet - b.prioritaet || a.bewertung.differenz - b.bewertung.differenz).slice(0, 100),
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),
   haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),

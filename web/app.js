@@ -97,13 +97,16 @@ const ansichten = {
       <h2>🆕 Neu bei den Ketten (${neu.length})</h2>${neu.length ? neu.slice(0, 40).map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Noch keine neuen Pokémon-Produkte bei Lidl, Aldi, Rossmann oder Müller entdeckt.</div>'}`;
   },
   meldungen() {
-    const l = (daten.feed || []).filter((f) => f.typ !== 'angekuendigt');
-    return '<p class="hinweis">Neu lieferbar, wieder da oder Vorbestellung offen (letzte 14 Tage).</p>'
-      + (l.length ? l.map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Noch keine Meldungen.</div>');
+    const alle = (daten.feed || []).filter((f) => f.typ !== 'angekuendigt');
+    const l = alle.filter((f) => f.jetzt === true);
+    const weg = alle.length - l.length;
+    return '<p class="hinweis">Neu lieferbar, wieder da oder Vorbestellung offen (letzte 14 Tage) – nur was laut letzter Prüfung <b>jetzt noch kaufbar</b> ist.</p>'
+      + (l.length ? l.map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Gerade nichts davon kaufbar.</div>')
+      + (weg ? `<p class="hinweis">${weg} ältere Meldung(en) ausgeblendet – inzwischen ausverkauft oder nicht mehr prüfbar.</p>` : '');
   },
   fruehwarnung() {
     const l = (daten.feed || []).filter((f) => f.typ === 'angekuendigt');
-    return '<p class="hinweis">Neue Produktseiten, die noch nicht bestellbar sind – oft Tage vor dem Verkaufsstart (aus öffentlichen Sitemaps).</p>'
+    return '<p class="hinweis">ℹ️ <b>Nur Info – noch nicht kaufbar.</b> Neue Produktseiten, oft Tage vor dem Verkaufsstart (aus öffentlichen Sitemaps). Sobald etwas kaufbar wird, kommt ein Push und es steht unter ⭐ Top.</p>'
       + (l.length ? l.map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Noch nichts Neues angekündigt.</div>');
   },
   markt() {

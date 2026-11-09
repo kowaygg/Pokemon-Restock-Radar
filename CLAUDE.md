@@ -90,6 +90,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - ✅ (0.6.0) Reiter „Vor Ort Freiburg“ (Wunsch 09.11.2026): Prospekte/Aktionen/Restocks stationärer Händler (Rossmann, Müller, Thalia, Rombach,
   Aldi, Lidl …) im Raum 79117 Freiburg (Ebnet/Littenweiler) mit Datum, damit der Nutzer als Erster im Laden ist. Marktguru/kaufDA prüfen
   (nur offizielle/erlaubte Wege), sonst öffentliche Angebotsseiten der Ketten.
+- **Regel (09.11.2026): In der App nur anzeigen, was direkt kaufbar ist** (Ausnahme: klar markierte Info-Reiter Frühwarnung/News).
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
   Von GitHub aus durch DataDome geblockt → nur über Handy-Wächter, Bot-Schutz nie umgehen.
 - **Daueraufgabe:** Immer prüfen, ob verfügbare Schnittstellen, APIs, MCP-Server/Konnektoren oder Downloads das Projekt verbessern,
@@ -164,6 +165,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   schema.org-ItemList (Name, Preis, Link); fast alles Marktplatz/Scalper. Nur bei UVP-Treffer wird die Produktseite geöffnet: ohne
   sellerName bzw. Verkäufer MediaMarkt/Saturn = eigenes Angebot, availability InStock = lieferbar. Nur Handy im WLAN (GitHub 403), alle 15 Min.,
   5 Suchbegriffe (einstellungen.mmSuchen). Live-Test: ME01 TTB Lucario + Guardevoir für 59,99 € eigen + lieferbar bei MM und Saturn.
+
+- 09.11.2026 (0.7.1): FEHLER in 0.7.0 behoben: MediaMarkt-Seiten enthalten „InStock“ von Empfehlungen → falsch „lieferbar“ (Nutzer sah
+  „Benachrichtige mich“). Jetzt zählt nur `isAvailableAndBuyable` (fehlt = nicht kaufbar). Regel vom Nutzer: In der App NUR direkt Kaufbares
+  zeigen → Meldungen-Reiter blendet inzwischen Ausverkauftes aus (Feld `jetzt` aus letztem Stand); Frühwarnung klar als „Nur Info“ markiert.
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
