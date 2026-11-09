@@ -1,18 +1,173 @@
 {
-  "_hinweis": "UVP-Liste (deutsche Ware). Treffer, wenn Preis + Versand <= uvp + spielraumEuro. sicherheit: hoch = offizielle/mehrere übereinstimmende Quellen, mittel = mehrere Händler/Portale, niedrig = einzelne oder widersprüchliche Angaben (vor Nutzung bestätigen). Stand und Quellen bei jeder Änderung pflegen.",
+  "_hinweis": "UVP-Liste (deutsche Ware). Treffer, wenn Preis + Versand <= uvp + spielraumEuro. sicherheit: hoch = offizielle/mehrere übereinstimmende Quellen, mittel = mehrere Händler/Portale, niedrig = einzelne oder widersprüchliche Angaben (vor Nutzung bestätigen). Stand und Quellen bei jeder Änderung pflegen. Asien-Ware: Einträge mit sprache (JP/KR/CN) und betrag + waehrung (JPY/KRW) werden zum EZB-Tageskurs umgerechnet, plus einfuhrUst (19 %).",
   "spielraumEuro": 5,
   "stand": "2026-11-09",
   "standardUvp": [
-    { "art": "top-trainer-box", "uvp": 54.99, "sicherheit": "mittel", "quellen": ["https://www.dealdoktor.de/magazin/pokemon-top-trainer-box/", "https://www.tcgcheck.de/pokemon/set/de/30-jahre/30-jahre-top-trainer-box"] },
-    { "art": "display-36", "uvp": 179.64, "sicherheit": "niedrig", "notiz": "Portale nennen 179,64 € (36 × 4,99 €) bzw. 179,99 € – bestätigen", "quellen": ["https://www.monsterdealz.de/magazin/pokemon-delta-herrschaft"] }
+    {
+      "art": "top-trainer-box",
+      "uvp": 54.99,
+      "sicherheit": "mittel",
+      "quellen": [
+        "https://www.dealdoktor.de/magazin/pokemon-top-trainer-box/",
+        "https://www.tcgcheck.de/pokemon/set/de/30-jahre/30-jahre-top-trainer-box"
+      ]
+    },
+    {
+      "art": "display-36",
+      "uvp": 179.64,
+      "sicherheit": "niedrig",
+      "notiz": "Portale nennen 179,64 € (36 × 4,99 €) bzw. 179,99 € – bestätigen",
+      "quellen": [
+        "https://www.monsterdealz.de/magazin/pokemon-delta-herrschaft"
+      ]
+    },
+    {
+      "art": "display-36",
+      "sprache": "JP",
+      "betrag": 6000,
+      "waehrung": "JPY",
+      "sicherheit": "hoch",
+      "notiz": "Japanisches Display = 30 Packs à 200 Yen (Sets ab Mai 2026; ältere Sets 30 × 180 = 5.400 Yen)",
+      "quellen": [
+        "https://gamebiz.jp/news/420166",
+        "https://news.denfaminicogamer.jp/news/260130y"
+      ]
+    }
   ],
   "produkte": [
-    { "id": "me06-ttb", "name": "Delta-Herrschaft Top-Trainer-Box", "set": "Mega-Entwicklung – Delta-Herrschaft", "erscheint": "2026-11-06", "art": "top-trainer-box", "prioritaet": 1, "uvp": 54.99, "sicherheit": "niedrig", "notiz": "Standard-UVP angenommen, für dieses Set noch nicht bestätigt", "quellen": ["https://www.pokemon.com/de/news/die-erweiterung-mega-entwicklung-delta-herrschaft-des-pokemon-sammelkartenspiels-erscheint-am-6-november-2026"] },
-    { "id": "me06-ttb-pc", "name": "Delta-Herrschaft Pokémon-Center-Top-Trainer-Box (11 Booster, 2 Promos)", "set": "Mega-Entwicklung – Delta-Herrschaft", "erscheint": "2026-11-06", "art": "top-trainer-box", "prioritaet": 1, "uvp": 61.99, "sicherheit": "mittel", "notiz": "Preis im Pokémon Center DE (+ Versand)", "nurHaendler": ["pokemoncenter"], "quellen": ["https://www.mydealz.de/deals/pokemon-center-deutschland-pokemon-tcg-delta-herrschaft-top-trainer-box-ttb-6199-euro-6-euro-versand-display-und-bundle-verfugbar-2853478"] },
-    { "id": "me06-display", "name": "Delta-Herrschaft Display (36 Booster)", "set": "Mega-Entwicklung – Delta-Herrschaft", "erscheint": "2026-11-06", "art": "display-36", "prioritaet": 2, "uvp": 179.64, "sicherheit": "niedrig", "notiz": "Pokémon Center DE verkaufte für 165,99 €", "quellen": ["https://www.monsterdealz.de/magazin/pokemon-delta-herrschaft", "https://pokezentrum.de/pokemon-karten-news/pokemon-delta-herrschaft-kaufen-alle-boxen-und-kollektionen/"] },
-    { "id": "me06-bundle", "name": "Delta-Herrschaft Booster-Bundle (6 Booster)", "set": "Mega-Entwicklung – Delta-Herrschaft", "erscheint": "2026-11-06", "art": "booster-bundle", "prioritaet": 2, "uvp": 27.99, "sicherheit": "niedrig", "notiz": "Preis im Pokémon Center DE, UVP unbestätigt", "quellen": ["https://pokezentrum.de/pokemon-karten-news/pokemon-delta-herrschaft-kaufen-alle-boxen-und-kollektionen/"] },
-    { "id": "30j-ttb", "name": "30 Jahre Top-Trainer-Box", "set": "30 Jahre", "erscheint": "2026-09-16", "art": "top-trainer-box", "prioritaet": 1, "uvp": 54.99, "sicherheit": "niedrig", "notiz": "Angaben schwanken 52,99 € / 54,99 € – höherer Wert genommen", "quellen": ["https://www.it-boltwise.de/pokemon-30-jahre-top-trainer-box-vorbestellung-ab-sofort-fuer-5299-euro.html", "https://www.tcgcheck.de/pokemon/set/de/30-jahre/30-jahre-top-trainer-box"] },
-    { "id": "30j-figur-mew", "name": "30 Jahre Figuren-Kollektion Mew", "set": "30 Jahre", "art": "kollektion", "prioritaet": 3, "uvp": 36.99, "sicherheit": "niedrig", "quellen": ["https://pcgames.de/Pokemon-Serie-204702/News/30-Jahre-Pokemon-TCG-Sammelkarten-Mew-Mewtu-Kollektion-Scalper-Preise-UVP-1556730"] },
-    { "id": "30j-figur-mewtu", "name": "30 Jahre Figuren-Kollektion Mewtu", "set": "30 Jahre", "art": "kollektion", "prioritaet": 3, "uvp": 36.99, "sicherheit": "niedrig", "quellen": ["https://pcgames.de/Pokemon-Serie-204702/News/30-Jahre-Pokemon-TCG-Sammelkarten-Mew-Mewtu-Kollektion-Scalper-Preise-UVP-1556730"] }
-  ]
+    {
+      "id": "me06-ttb",
+      "name": "Delta-Herrschaft Top-Trainer-Box",
+      "set": "Mega-Entwicklung – Delta-Herrschaft",
+      "erscheint": "2026-11-06",
+      "art": "top-trainer-box",
+      "prioritaet": 1,
+      "uvp": 54.99,
+      "sicherheit": "niedrig",
+      "notiz": "Standard-UVP angenommen, für dieses Set noch nicht bestätigt",
+      "quellen": [
+        "https://www.pokemon.com/de/news/die-erweiterung-mega-entwicklung-delta-herrschaft-des-pokemon-sammelkartenspiels-erscheint-am-6-november-2026"
+      ]
+    },
+    {
+      "id": "me06-ttb-pc",
+      "name": "Delta-Herrschaft Pokémon-Center-Top-Trainer-Box (11 Booster, 2 Promos)",
+      "set": "Mega-Entwicklung – Delta-Herrschaft",
+      "erscheint": "2026-11-06",
+      "art": "top-trainer-box",
+      "prioritaet": 1,
+      "uvp": 61.99,
+      "sicherheit": "mittel",
+      "notiz": "Preis im Pokémon Center DE (+ Versand)",
+      "nurHaendler": [
+        "pokemoncenter"
+      ],
+      "quellen": [
+        "https://www.mydealz.de/deals/pokemon-center-deutschland-pokemon-tcg-delta-herrschaft-top-trainer-box-ttb-6199-euro-6-euro-versand-display-und-bundle-verfugbar-2853478"
+      ]
+    },
+    {
+      "id": "me06-display",
+      "name": "Delta-Herrschaft Display (36 Booster)",
+      "set": "Mega-Entwicklung – Delta-Herrschaft",
+      "erscheint": "2026-11-06",
+      "art": "display-36",
+      "prioritaet": 2,
+      "uvp": 179.64,
+      "sicherheit": "niedrig",
+      "notiz": "Pokémon Center DE verkaufte für 165,99 €",
+      "quellen": [
+        "https://www.monsterdealz.de/magazin/pokemon-delta-herrschaft",
+        "https://pokezentrum.de/pokemon-karten-news/pokemon-delta-herrschaft-kaufen-alle-boxen-und-kollektionen/"
+      ]
+    },
+    {
+      "id": "me06-bundle",
+      "name": "Delta-Herrschaft Booster-Bundle (6 Booster)",
+      "set": "Mega-Entwicklung – Delta-Herrschaft",
+      "erscheint": "2026-11-06",
+      "art": "booster-bundle",
+      "prioritaet": 2,
+      "uvp": 27.99,
+      "sicherheit": "niedrig",
+      "notiz": "Preis im Pokémon Center DE, UVP unbestätigt",
+      "quellen": [
+        "https://pokezentrum.de/pokemon-karten-news/pokemon-delta-herrschaft-kaufen-alle-boxen-und-kollektionen/"
+      ]
+    },
+    {
+      "id": "30j-ttb",
+      "name": "30 Jahre Top-Trainer-Box",
+      "set": "30 Jahre",
+      "erscheint": "2026-09-16",
+      "art": "top-trainer-box",
+      "prioritaet": 1,
+      "uvp": 54.99,
+      "sicherheit": "niedrig",
+      "notiz": "Angaben schwanken 52,99 € / 54,99 € – höherer Wert genommen",
+      "quellen": [
+        "https://www.it-boltwise.de/pokemon-30-jahre-top-trainer-box-vorbestellung-ab-sofort-fuer-5299-euro.html",
+        "https://www.tcgcheck.de/pokemon/set/de/30-jahre/30-jahre-top-trainer-box"
+      ]
+    },
+    {
+      "id": "30j-figur-mew",
+      "name": "30 Jahre Figuren-Kollektion Mew",
+      "set": "30 Jahre",
+      "art": "kollektion",
+      "prioritaet": 3,
+      "uvp": 36.99,
+      "sicherheit": "niedrig",
+      "quellen": [
+        "https://pcgames.de/Pokemon-Serie-204702/News/30-Jahre-Pokemon-TCG-Sammelkarten-Mew-Mewtu-Kollektion-Scalper-Preise-UVP-1556730"
+      ]
+    },
+    {
+      "id": "30j-figur-mewtu",
+      "name": "30 Jahre Figuren-Kollektion Mewtu",
+      "set": "30 Jahre",
+      "art": "kollektion",
+      "prioritaet": 3,
+      "uvp": 36.99,
+      "sicherheit": "niedrig",
+      "quellen": [
+        "https://pcgames.de/Pokemon-Serie-204702/News/30-Jahre-Pokemon-TCG-Sammelkarten-Mew-Mewtu-Kollektion-Scalper-Preise-UVP-1556730"
+      ]
+    },
+    {
+      "id": "jp-30th-box",
+      "name": "30th Celebration Booster Box (20 Packs)",
+      "set": "30th Celebration",
+      "erscheint": "2026-09-16",
+      "art": "display-36",
+      "prioritaet": 2,
+      "sprache": "JP",
+      "betrag": 7200,
+      "waehrung": "JPY",
+      "sicherheit": "mittel",
+      "notiz": "1 Pack 360 Yen, Box 20 Packs",
+      "quellen": [
+        "https://samuraiswordtokyo.com/ko/blogs/news/pokemon-30th-anniversary-japanese-products-complete-list-2026",
+        "https://www.pokemoncenter-online.com/9900000008505.html"
+      ]
+    },
+    {
+      "id": "kr-30th-box",
+      "name": "30th Celebration Booster Box (20 Packs, Korea)",
+      "set": "30th Celebration",
+      "erscheint": "2026-09-16",
+      "art": "display-36",
+      "prioritaet": 2,
+      "sprache": "KR",
+      "betrag": 70000,
+      "waehrung": "KRW",
+      "sicherheit": "niedrig",
+      "notiz": "Nur Händlerangabe (foxcg) – offiziell bestätigen",
+      "quellen": [
+        "https://foxcg.com/pokemon-card-30th-celebration/",
+        "https://jab-guyver.co.kr/7516"
+      ]
+    }
+  ],
+  "einfuhrUst": 0.19
 }

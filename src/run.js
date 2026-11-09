@@ -3,7 +3,7 @@
 import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { shopifyHolen } from './shopify.js';
 import { istPokemon, produktArt, sprache, istVorbestellung } from './produkt.js';
-import { uvpFinden, preisBewertung, pushWert } from './uvp.js';
+import { uvpFinden, preisBewertung, pushWert, versandFuer } from './uvp.js';
 import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
 import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
@@ -33,9 +33,10 @@ let gemeldet = null;
 async function melden(meldungen) {
   if (meldungen.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
   for (const m of meldungen) {
-    m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
+    if (m.quelle !== 'ebay') Object.assign(m, (({ bewertung, versand }) => ({ bewertung, versand }))(bewerteGesamt(m.titel, m.art, m.preis, m.haendlerId)));
+    else m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
     m.zeit = jetzt.toISOString();
-    zustand.feed.unshift({ id: m.id, haendlerId: m.haendlerId, zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop', vorOrt: !!m.vorOrt });
+    zustand.feed.unshift({ id: m.id, haendlerId: m.haendlerId, zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, versand: m.versand ?? null, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop', vorOrt: !!m.vorOrt });
     if (pushes < einst.maxPushProLauf && (!einst.pushNurUvp || pushWert(m))) {
       if (gemeldet.has(m.link)) continue;
       if (await pushSenden(pushNachricht(m), { kanal })) { pushes++; gemeldet.add(m.link); }
@@ -43,6 +44,22 @@ async function melden(meldungen) {
   }
 }
 const lieferbar = [];
+const haendlerNach = Object.fromEntries(haendler.map((h) => [h.id, h]));
+// Wechselkurse (EZB, offiziell, kostenlos) für UVPs in Yen/Won – einmal am Tag
+if (!zustand.kurse || jetzt - Date.parse(zustand.kurse.zeit) > 20 * 3600000) {
+  try {
+    const xml = await (await fetch('https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml', { signal: AbortSignal.timeout(15000) })).text();
+    const werte = Object.fromEntries([...xml.matchAll(/currency='([A-Z]{3})' rate='([\d.]+)'/g)].map((m) => [m[1], Number(m[2])]));
+    if (werte.JPY) zustand.kurse = { zeit: jetzt.toISOString(), stand: (xml.match(/time='([\d-]+)'/) || [])[1], werte };
+  } catch {}
+}
+uvpListe.kurse = zustand.kurse?.werte || {};
+// Bewertung mit Versand: gesamt = Preis + Versand (falls bekannt); unbekannter Versand wird angezeigt, nicht geraten
+function bewerteGesamt(titel, art, preis, haendlerId) {
+  const versand = Number.isFinite(preis) ? versandFuer(haendlerNach[haendlerId], preis) : null;
+  const gesamt = Number.isFinite(preis) ? Math.round((preis + (versand ?? 0)) * 100) / 100 : NaN;
+  return { bewertung: preisBewertung(gesamt, uvpFinden(titel, art, uvpListe), uvpListe.spielraumEuro), versand, gesamt };
+}
 const top = []; // jetzt bestellbar, sealed, ≤ UVP + Spielraum
 for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'shopify')) {
   // Nach „zu viele Anfragen“ (HTTP 429) den Händler eine Weile in Ruhe lassen
@@ -55,10 +72,10 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     const sealed = roh.filter(istPokemon).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), vorbestellung: istVorbestellung(p), haendler: h.name, haendlerId: h.id }));
     for (const p of sealed.filter((x) => x.verfuegbar)) {
-      const b = preisBewertung(p.preis, uvpFinden(p.titel, p.art, uvpListe), uvpListe.spielraumEuro);
-      if (b.stufe === 'uvp') top.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: p.warenkorb });
+      const { bewertung: b, versand } = bewerteGesamt(p.titel, p.art, p.preis, h.id);
+      if (b.stufe === 'uvp') top.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: p.warenkorb });
       if (p.prioritaet !== 1) continue;
-      lieferbar.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, bewertung: b, link: p.link });
+      lieferbar.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand, bewertung: b, link: p.link });
       lieferbarTop.push(`- ${b.stufe === 'uvp' ? '✅' : '⚠'} ${p.haendler}: ${p.titel} · ${p.preis} €${b.stufe === 'drueber' ? ` (+${b.differenz} € über UVP)` : ''}`);
     }
     const alt = zustand.haendler[h.id]?.produkte || {};
@@ -87,10 +104,10 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x
     for (const [url, z] of Object.entries(stand.urls)) {
       const a = produktArt(titelAusUrl(url));
       if (!z.v || !a) continue;
-      const b = preisBewertung(z.p, uvpFinden(titelAusUrl(url), a.art, uvpListe), uvpListe.spielraumEuro);
-      if (b.stufe === 'uvp') top.push({ haendler: h.name, titel: titelAusUrl(url), art: a.art, prioritaet: a.prioritaet, preis: z.p, bewertung: b, sprache: sprache(titelAusUrl(url)), link: url, warenkorb: null });
+      const { bewertung: b, versand } = bewerteGesamt(titelAusUrl(url), a.art, z.p, h.id);
+      if (b.stufe === 'uvp') top.push({ haendler: h.name, titel: titelAusUrl(url), art: a.art, prioritaet: a.prioritaet, preis: z.p, versand, bewertung: b, sprache: sprache(titelAusUrl(url)), link: url, warenkorb: null });
       if (a.prioritaet !== 1) continue;
-      lieferbar.push({ haendler: h.name, titel: titelAusUrl(url), art: a.art, prioritaet: 1, preis: z.p, bewertung: b, link: url });
+      lieferbar.push({ haendler: h.name, titel: titelAusUrl(url), art: a.art, prioritaet: 1, preis: z.p, versand, bewertung: b, link: url });
       lieferbarTop.push(`- ${b.stufe === 'uvp' ? '✅' : '⚠'} ${h.name}: ${titelAusUrl(url)} · ${z.p} €`);
     }
     bericht.push(`| ${h.name} | ✅ ${h.abfrage}${info.sitemapGelesen ? ' (Sitemap gelesen)' : ''} | ${info.kandidaten} URLs | ${info.seiten} Seiten geprüft | – | ${alt ? meldungen.length : 'erster Lauf (nur merken)'} |`);
@@ -104,13 +121,13 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'me
   const vorher = zustand.haendler[h.id];
   if (vorher?.stand && jetzt - Date.parse(vorher.stand) < einst.mmMinuten * 60000 - 30000) continue;
   try {
-    const bewerte = (p) => { const a = produktArt(p.titel); return a ? preisBewertung(p.preis, uvpFinden(p.titel, a.art, uvpListe), uvpListe.spielraumEuro) : { stufe: 'unbekannt' }; };
+    const bewerte = (p) => { const a = produktArt(p.titel); return a ? bewerteGesamt(p.titel, a.art, p.preis, h.id).bewertung : { stufe: 'unbekannt' }; };
     const roh = await mediamarktHolen(h, { suchen: einst.mmSuchen, pruefen: (p) => bewerte(p).stufe === 'uvp' });
     const sealed = roh.filter((p) => istPokemon(p)).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), haendler: h.name, haendlerId: h.id, quelle: 'shop' }));
     for (const p of sealed.filter((x) => x.verfuegbar)) {
       const b = bewerte(p);
-      if (b.stufe === 'uvp') top.push({ haendler: h.name, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: null });
+      if (b.stufe === 'uvp') top.push({ haendler: h.name, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand: versandFuer(h, p.preis), bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: null });
     }
     const alt = vorher?.produkte || {};
     const { meldungen, merker } = aenderungen(alt, sealed, { ersterLauf: !vorher?.produkte, jetzt });
@@ -208,8 +225,8 @@ const oeffentlich = {
   }),
   top: top.sort((a, b) => a.prioritaet - b.prioritaet || a.bewertung.differenz - b.bewertung.differenz).slice(0, 100),
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),
-  haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
-  uvp: uvpListe,
+  haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, versand: h.versand || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
+  uvp: { ...uvpListe, kurseStand: zustand.kurse?.stand || null },
   news: zustand.news.slice(0, 200),
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},

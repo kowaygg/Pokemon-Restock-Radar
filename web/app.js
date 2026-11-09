@@ -24,6 +24,9 @@ function bewertungHtml(b) {
   return `<span class="${b.stufe === 'uvp' ? 'ok' : 'drueber'}">${b.stufe === 'uvp' ? '✅' : '⚠'} ${text} (UVP ${euro(b.uvp)})</span>`;
 }
 
+// Versand: bekannt → im Preis enthalten; 0 → versandkostenfrei; unbekannt → ehrlich „zzgl. Versand“
+const versandText = (p) => p.versand === 0 ? '(versandkostenfrei)' : Number.isFinite(p.versand) ? `(inkl. ${euro(p.versand)} Versand)` : '(zzgl. Versand)';
+
 function karte(p, { typ } = {}) {
   const link = sicherLink(p.link);
   const korb = sicherLink(p.warenkorb);
@@ -31,7 +34,7 @@ function karte(p, { typ } = {}) {
     <div class="kopf"><span>${esc(p.haendler)}</span><span>${typ ? esc(TYP_TEXT[typ] || typ) + ' · ' : ''}${p.zeit ? zeit(p.zeit) : ''}</span></div>
     <div class="titel">${esc(p.titel)}</div>
     <div><span class="marke${p.prioritaet === 1 ? ' gelb' : ''}">${esc(ART_TEXT[p.art] || p.art || '?')}</span>${p.sprache ? `<span class="marke">${esc(p.sprache)}</span>` : ''}${p.vorbestellung ? '<span class="marke">Vorbestellung</span>' : ''}</div>
-    <div><span class="preis">${euro(p.preis)}</span> · ${bewertungHtml(p.bewertung)}</div>
+    <div><span class="preis">${euro(Number.isFinite(p.versand) ? p.preis + p.versand : p.preis)}</span> <span class="unbekannt">${versandText(p)}</span> · ${bewertungHtml(p.bewertung)}</div>
     <div class="knoepfe">${korb ? `<a class="knopf kauf" href="${esc(korb)}" target="_blank" rel="noopener">🛒 In den Warenkorb</a>` : ''}${link ? `<a class="knopf" href="${esc(link)}" target="_blank" rel="noopener">Zum Shop</a>` : ''}</div>
   </div>`;
 }
@@ -40,7 +43,7 @@ const ansichten = {
   top() {
     const l = daten.top || [];
     const gruppen = SPRACHEN.map(([k, name]) => [name, l.filter((p) => (p.sprache || null) === k)]).filter(([, g]) => g.length);
-    return `<p class="hinweis">Jetzt bestellbar, sealed, höchstens ${euro(daten.uvp?.spielraumEuro ?? 5)} über UVP – nach Sprache sortiert, Top-Trainer-Boxen zuerst. Versand kommt beim Händler noch dazu.</p>`
+    return `<p class="hinweis">Jetzt bestellbar, sealed, höchstens ${euro(daten.uvp?.spielraumEuro ?? 5)} über UVP – nach Sprache sortiert, Top-Trainer-Boxen zuerst. Preise inkl. Versand, wo der Händler ihn angibt.</p>`
       + (l.length ? gruppen.map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.map((p) => karte(p)).join('')}`).join('')
         : '<div class="leer">Gerade kein Produkt zum UVP lieferbar. Sobald eins auftaucht, kommt sofort ein Push. 🔔</div>');
   },
@@ -118,8 +121,10 @@ const ansichten = {
   },
   uvp() {
     const u = daten.uvp || { produkte: [], standardUvp: [] };
-    const zeile = (p) => `<tr><td>${esc(p.name || ART_TEXT[p.art])}</td><td>${euro(p.uvp)}</td><td>${esc(p.sicherheit)}</td><td>${esc(p.erscheint || '')}</td></tr>`;
-    return `<p class="hinweis">Treffer, wenn Preis + Versand ≤ UVP + ${euro(u.spielraumEuro)}. Stand ${esc(u.stand)}. Sicherheit „niedrig“ = noch nicht bestätigt.</p>
+    // Asien-Ware: Yen/Won zum EZB-Kurs + Einfuhr-USt
+    const inEuro = (p) => Number.isFinite(p.uvp) ? p.uvp : (u.kurse?.[p.waehrung] ? Math.round(p.betrag / u.kurse[p.waehrung] * (1 + (u.einfuhrUst ?? 0.19)) * 100) / 100 : NaN);
+    const zeile = (p) => `<tr><td>${esc(p.name || ART_TEXT[p.art])}${p.sprache ? ` (${esc(p.sprache)})` : ''}</td><td>${euro(inEuro(p))}${p.betrag ? `<br><span class="unbekannt">${esc(p.betrag.toLocaleString('de-DE'))} ${esc(p.waehrung)}</span>` : ''}</td><td>${esc(p.sicherheit)}</td><td>${esc(p.erscheint || '')}</td></tr>`;
+    return `<p class="hinweis">Treffer, wenn Preis + Versand ≤ UVP + ${euro(u.spielraumEuro)}. Stand ${esc(u.stand)}. Sicherheit „niedrig“ = noch nicht bestätigt. Asien-Ware: Preis in Yen/Won zum EZB-Kurs${u.kurseStand ? ` vom ${esc(u.kurseStand)}` : ''} + 19 % Einfuhr-USt.</p>
       <div class="tabelle"><table><tr><th>Produkt</th><th>UVP</th><th>Sicherheit</th><th>Erscheint</th></tr>
       ${u.produkte.map(zeile).join('')}${u.standardUvp.map((s) => zeile({ ...s, name: 'Standard: ' + (ART_TEXT[s.art] || s.art) })).join('')}</table></div>`;
   },

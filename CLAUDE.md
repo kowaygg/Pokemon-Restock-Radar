@@ -183,6 +183,12 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Ohne Konto kein erlaubter Weg: robots.txt „Disallow: /sch/“, eBay-RSS abgeschaltet (403). Ersatz: Tipp im News-Reiter (eBay-App:
   gespeicherte Suche mit Benachrichtigung; Whatnot/eBay Live: Verkäufern folgen). Graded-Wunsch damit vorerst erledigt/zurückgestellt.
 
+- 09.11.2026 (0.10.0): Versand je Händler (haendler.json → versand {euro, freiAb, quelle, sicherheit}); Treffer-Regel jetzt Preis + Versand.
+  Belegt: Cardcosmos 4,99; Alternate 5,99 (Spielzeug); Gate 6,49; MediaMarkt 4,99 < 69 € (Abholung 0); TCGViert frei ab 150 € (darunter
+  unbekannt); Geeks Heaven unbekannt → App „zzgl. Versand“, nie geraten. Asien-UVPs: JP-Display 6.000 Yen (30 × 200, offiziell ab Mai 2026),
+  JP 30th Celebration 7.200 Yen (20 Packs), KR 30th Celebration 70.000 Won (niedrig); CN nichts Belastbares. Umrechnung EZB-Tageskurs
+  (eurofxref-daily.xml, 1×/Tag) + 19 % Einfuhr-USt.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
@@ -205,8 +211,8 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - UVPs mit Sicherheit „niedrig“ bestätigen; Händler-Impressen von Hand + handelsregister.de prüfen
 - ✅ 09.11.2026: Alternate + Sitemap-Frühwarnung (0.2.0), App mit Reiter Top
 - M2 Rest: Release-Kalender (pokemon.com/de)
-- UVPs für JP/KR/CN-Ware recherchieren (je Produkt, mit Quelle) – sonst erscheint Asien-Ware nie in „Top“
-- Versandkosten je Händler erfassen (Regel: Preis + Versand ≤ UVP + 5 €) – bisher nur Artikelpreis geprüft
+- ✅ (0.10.0) UVPs JP/KR (CN offen: keine belastbare Quelle)
+- ✅ (0.10.0) Versand je Händler (TCGViert < 150 € und Geeks Heaven unbekannt)
 - Schneller als GitHub-Cron: Handy-Wächter (M3) oder externer Gratis-Taktgeber (cron-job.org → workflow_dispatch, braucht Token + Konto des Nutzers)
 - ✅ Handy-Wächter läuft auf dem Handy (09.11.2026)
 - ✅ (0.7.0) MediaMarkt + Saturn über Suche + Produktseite (nur Handy/WLAN). Treffer erscheinen als Push, aber nicht in der App (App-Daten kommen von GitHub).

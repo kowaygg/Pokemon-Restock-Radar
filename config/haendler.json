@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = wird überwacht, geplant = einbindbar, Leser fehlt noch, gesperrt = nicht erlaubt abfragbar (grund). Neue Händler einfach als weiteren Eintrag ergänzen. abfrage: shopify = products.json; sitemap-jsonld = Sitemap + Preis/Bestand aus der Produktseite; sitemap = nur Frühwarnung bei neuen Produkt-URLs. urlFilter: Pflichtwort im URL-Pfad (Regex). vorOrt: true = Kette mit Filialen (Treffer erscheinen zusätzlich im Reiter Vor Ort). abfrage mediamarkt = öffentliche Suche + Produktseite bei UVP-Treffer (nur Handy).",
+  "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = wird überwacht, geplant = einbindbar, Leser fehlt noch, gesperrt = nicht erlaubt abfragbar (grund). Neue Händler einfach als weiteren Eintrag ergänzen. abfrage: shopify = products.json; sitemap-jsonld = Sitemap + Preis/Bestand aus der Produktseite; sitemap = nur Frühwarnung bei neuen Produkt-URLs. urlFilter: Pflichtwort im URL-Pfad (Regex). vorOrt: true = Kette mit Filialen (Treffer erscheinen zusätzlich im Reiter Vor Ort). abfrage mediamarkt = öffentliche Suche + Produktseite bei UVP-Treffer (nur Handy). versand: { euro, freiAb, quelle, stand, sicherheit } – euro null = unbekannt (wird angezeigt, nicht geraten).",
   "haendler": [
     {
       "id": "alternate",
@@ -8,7 +8,14 @@
       "art": "elektronik",
       "status": "aktiv",
       "abfrage": "sitemap-jsonld",
-      "urlFilter": "Sammelkarten|TCG"
+      "urlFilter": "Sammelkarten|TCG",
+      "versand": {
+        "euro": 5.99,
+        "quelle": "https://www.alternate.de/HILFE/Versand-Lieferung",
+        "stand": "2026-11-09",
+        "sicherheit": "mittel",
+        "notiz": "Versandkosten für Spielzeug"
+      }
     },
     {
       "id": "tcgviert",
@@ -16,7 +23,15 @@
       "url": "https://tcgviert.com",
       "art": "fachhandel",
       "status": "aktiv",
-      "abfrage": "shopify"
+      "abfrage": "shopify",
+      "versand": {
+        "euro": null,
+        "freiAb": 150,
+        "quelle": "https://tcgviert.com/policies/shipping-policy",
+        "stand": "2026-11-09",
+        "sicherheit": "mittel",
+        "notiz": "Versandpreis unter 150 € nicht öffentlich angegeben"
+      }
     },
     {
       "id": "card-corner",
@@ -32,7 +47,14 @@
       "url": "https://www.gate-to-the-games.de",
       "art": "fachhandel",
       "status": "aktiv",
-      "abfrage": "sitemap"
+      "abfrage": "sitemap",
+      "versand": {
+        "euro": 6.49,
+        "quelle": "https://www.gate-to-the-games.de/info/Versandinformationen",
+        "stand": "2026-11-09",
+        "sicherheit": "hoch",
+        "notiz": "DHL-Paket (Display/Box)"
+      }
     },
     {
       "id": "spiele-offensive",
@@ -72,7 +94,13 @@
       "url": "https://geeksheaven.de",
       "art": "fachhandel",
       "status": "aktiv",
-      "abfrage": "shopify"
+      "abfrage": "shopify",
+      "versand": {
+        "euro": null,
+        "quelle": "nicht öffentlich angegeben",
+        "stand": "2026-11-09",
+        "sicherheit": "niedrig"
+      }
     },
     {
       "id": "cardcosmos",
@@ -80,7 +108,13 @@
       "url": "https://cardcosmos.de",
       "art": "fachhandel",
       "status": "aktiv",
-      "abfrage": "shopify"
+      "abfrage": "shopify",
+      "versand": {
+        "euro": 4.99,
+        "quelle": "https://cardcosmos.de/policies/shipping-policy",
+        "stand": "2026-11-09",
+        "sicherheit": "hoch"
+      }
     },
     {
       "id": "trader-online",
@@ -105,7 +139,16 @@
       "art": "kette",
       "status": "aktiv",
       "grund": "Nur über den Handy-Wächter im WLAN (von GitHub aus gesperrt). Nur eigene Angebote, keine Marktplatz-Händler.",
-      "abfrage": "mediamarkt"
+      "abfrage": "mediamarkt",
+      "versand": {
+        "euro": 4.99,
+        "freiAb": 69,
+        "abholungKostenlos": true,
+        "quelle": "https://www.monsterdealz.de/magazin/mediamarkt-lieferando",
+        "stand": "2026-11-09",
+        "sicherheit": "mittel",
+        "notiz": "Standardversand unter 69 €; Abholung im Markt kostenlos"
+      }
     },
     {
       "id": "saturn",
@@ -114,7 +157,15 @@
       "art": "kette",
       "status": "aktiv",
       "grund": "Nur über den Handy-Wächter im WLAN (von GitHub aus gesperrt). Nur eigene Angebote, keine Marktplatz-Händler.",
-      "abfrage": "mediamarkt"
+      "abfrage": "mediamarkt",
+      "versand": {
+        "euro": 4.99,
+        "freiAb": 69,
+        "abholungKostenlos": true,
+        "quelle": "wie MediaMarkt (gleiche Gruppe) – nicht einzeln bestätigt",
+        "stand": "2026-11-09",
+        "sicherheit": "niedrig"
+      }
     },
     {
       "id": "mueller",

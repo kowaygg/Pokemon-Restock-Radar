@@ -53,3 +53,23 @@ test('Sparmodus: Takt nach WLAN und Akku', async () => {
   assert.equal(sparStufe({ wlan: true, laden: true, akku: 10 }, s).pause, undefined);
   assert.equal(sparStufe({ wlan: false, laden: false, akku: null }, s).minuten, 5);
 });
+
+test('Asien-UVP: Yen/Won zum EZB-Kurs + 19 % EUSt, ohne Kurs kein Treffer', async () => {
+  const { readFileSync } = await import('node:fs');
+  const liste = { ...JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url))), kurse: { JPY: 176.79, KRW: 1507.46 } };
+  const jp = uvpFinden('Pokemon Paradise Dragona 30er Display - JPN', 'display-36', liste);
+  assert.equal(jp.uvp, 40.39); // 6000 / 176.79 × 1,19
+  assert.equal(uvpFinden('Pokémon 30th Celebration Booster Box JP', 'display-36', liste).uvp, 48.46);
+  assert.equal(uvpFinden('Pokémon 30th Celebration Booster Box Korean', 'display-36', liste).uvp, 55.26);
+  assert.equal(uvpFinden('Pokémon Gem Pack Display CHN', 'display-36', liste), null);
+  assert.equal(uvpFinden('Pokemon Paradise Dragona Display JPN', 'display-36', { ...liste, kurse: {} }), null);
+});
+
+test('Versand: Pauschale, frei ab, unbekannt', async () => {
+  const { versandFuer } = await import('../src/uvp.js');
+  assert.equal(versandFuer({ versand: { euro: 4.99, freiAb: 69 } }, 54.99), 4.99);
+  assert.equal(versandFuer({ versand: { euro: 4.99, freiAb: 69 } }, 179.99), 0);
+  assert.equal(versandFuer({ versand: { euro: null, freiAb: 150 } }, 54.99), null);
+  assert.equal(versandFuer({ versand: { euro: null, freiAb: 150 } }, 179.99), 0);
+  assert.equal(versandFuer({}, 10), null);
+});
