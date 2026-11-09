@@ -57,6 +57,14 @@ UVP-Liste pflegbar (Produkt, Set, EAN, UVP, Quelle, Stand) – UVPs recherchiere
 - Eigener Reiter „Newsfeed“: geprüfte News (Set-Ankündigungen, Release-Termine, Vorbestellungen, Restock-Hinweise)
   mit Quelle, Vertrauensstufe und Status bestätigt/unbestätigt
 
+**Frühwarnung / „Leaks“ (Wunsch 09.11.2026) – nur aus öffentlich ausgelieferten Daten:**
+- Erlaubt: öffentlichen Seitenquelltext, `sitemap.xml`, öffentliche Produkt-Feeds, „Demnächst“-/Vorbestellseiten auswerten
+  → neue Pokémon-Produkt-URLs erscheinen dort oft Tage vor dem Verkaufsstart
+- Japanische Releases laufen dem DE/EN-Markt Monate voraus → Inhalt künftiger Sets früh bekannt (offizielle JP-Seite)
+- Offizielle Produktvorschauen (pokemon.com/de/news), Händler-Ankündigungen, EAN tauchen bei Händlern auf
+- NICHT erlaubt: Bot-Schutz/IP-Sperren umgehen (wechselnde Proxys, Captcha-Löser), nicht-öffentliche Schnittstellen,
+  massenhaftes Raten versteckter URLs, Zugriff auf geschützte Bereiche (§ 202a StGB, AGB, Hausrecht)
+
 **Push:** ntfy, sofort, mit Direktlink; ETB als „dringend“ (eigener Ton, auch bei Nicht-stören).
 
 **Ergänzungen (vom Nutzer am 09.11.2026 freigegeben):**
