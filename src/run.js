@@ -16,12 +16,17 @@ const kanal = process.env.NTFY_KANAL || '';
 const jetzt = new Date();
 
 const bericht = [];
+const lieferbarTop = [];
 let pushes = 0;
 for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'shopify')) {
   try {
     const roh = await shopifyHolen(h, { maxSeiten: einst.maxSeiten });
     const sealed = roh.filter(istPokemon).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), vorbestellung: istVorbestellung(p), haendler: h.name, haendlerId: h.id }));
+    for (const p of sealed.filter((x) => x.verfuegbar && x.prioritaet === 1)) {
+      const b = preisBewertung(p.preis, uvpFinden(p.titel, p.art, uvpListe), uvpListe.spielraumEuro);
+      lieferbarTop.push(`- ${b.stufe === 'uvp' ? '✅' : '⚠'} ${p.haendler}: ${p.titel} · ${p.preis} €${b.stufe === 'drueber' ? ` (+${b.differenz} € über UVP)` : ''}`);
+    }
     const alt = zustand.haendler[h.id]?.produkte || {};
     const ersterLauf = !zustand.haendler[h.id];
     const { meldungen, merker } = aenderungen(alt, sealed, { ersterLauf });
@@ -48,6 +53,7 @@ await writeFile('data/zustand.json', JSON.stringify(zustand));
 
 const md = ['| Händler | Status | Produkte gesamt | Pokémon-Sealed | davon lieferbar | Meldungen |', '|---|---|---|---|---|---|', ...bericht,
   '', `Push: ${kanal ? `${pushes} gesendet` : 'Probelauf (kein Kanal eingerichtet)'}`, '',
+  `**Jetzt lieferbare Top-Trainer-Boxen (${lieferbarTop.length}):**`, ...lieferbarTop.slice(0, 60), '',
   '**Letzte Meldungen:**', ...zustand.feed.slice(0, 15).map((f) => `- ${f.zeit.slice(0, 16)} · ${f.typ} · ${f.haendler} · ${f.titel} · ${Number.isFinite(f.preis) ? f.preis + ' €' : '?'} · ${f.bewertung?.stufe}`)].join('\n');
 console.log(md);
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, '## Pokémon-Restock-Radar\n\n' + md + '\n');
