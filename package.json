@@ -1,0 +1,12 @@
+{
+  "name": "pokemon-restock-radar",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Meldet Pokémon-TCG-Sealed-Produkte zum UVP bei seriösen Händlern",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test tests/",
+    "haendler-check": "node scripts/haendler-check.js"
+  }
+}
