@@ -227,6 +227,8 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run handy` (Handy-Wächter)
 
 ### Offene Punkte
+- **ALLERERSTES nächste Sitzung:** Push für JEDEN neuen Eintrag in der Top-Liste (Vergleich mit vorheriger Top-Liste je ID), auch bei Preissenkung
+  auf UVP und bei Treffern aus dem ersten Lauf – bisher nur Push bei neu/wieder-da/vorbestellung. Danach mit echtem ntfy-Push prüfen.
 - NÄCHSTE RUNDE (Wunsch 09.11.2026 spät, Reihenfolge mit Nutzer klären): 1) Design wie KI-Finanz-Radar (ruhige Farben, weniger klarere
   Reiter: Kaufen · Bald · News · Vor Ort · Händler/UVP, Filter-Chips); 2) mehr Händler MIT Preis (Preis-Leser für Sitemap-Shops, weitere
   Shopify-Shops DE/AT/NL/BE); 3) Quellen Reddit-RSS, PokeBeach, PokeGuardian, Serebii, pokemon-card.com (JP); 4) Leak-Radar nur aus
