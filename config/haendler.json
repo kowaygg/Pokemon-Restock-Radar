@@ -1,28 +1,169 @@
 {
   "_hinweis": "Händlerliste. status: kandidat = noch nicht geprüft, aktiv = geprüft und wird überwacht, gesperrt = nicht abfragbar/unseriös. Neue Händler einfach als weiteren Eintrag ergänzen.",
   "haendler": [
-    { "id": "alternate", "name": "Alternate", "url": "https://www.alternate.de", "art": "elektronik", "status": "kandidat" },
-    { "id": "tcgviert", "name": "TCGViert", "url": "https://tcgviert.com", "art": "fachhandel", "status": "kandidat" },
-    { "id": "card-corner", "name": "Card-Corner", "url": "https://www.card-corner.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "gate-to-the-games", "name": "Gate to the Games", "url": "https://www.gate-to-the-games.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "spiele-offensive", "name": "Spiele-Offensive", "url": "https://www.spiele-offensive.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "fantasywelt", "name": "Fantasywelt", "url": "https://www.fantasywelt.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "gameshop-marli", "name": "Gameshop Marli", "url": "https://www.gameshop-marli.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "cardmex", "name": "Cardmex", "url": "https://cardmex-shop.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "geeks-heaven", "name": "Geeks Heaven", "url": "https://geeksheaven.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "cardcosmos", "name": "Cardcosmos", "url": "https://cardcosmos.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "trader-online", "name": "TRADER Online", "url": "https://www.trader-online.de", "art": "fachhandel", "status": "kandidat" },
-    { "id": "games-island", "name": "Games-Island", "url": "https://www.games-island.eu", "art": "fachhandel", "status": "kandidat" },
-    { "id": "mediamarkt", "name": "MediaMarkt", "url": "https://www.mediamarkt.de", "art": "kette", "status": "kandidat" },
-    { "id": "saturn", "name": "Saturn", "url": "https://www.saturn.de", "art": "kette", "status": "kandidat" },
-    { "id": "mueller", "name": "Müller", "url": "https://www.mueller.de", "art": "kette", "status": "kandidat" },
-    { "id": "thalia", "name": "Thalia", "url": "https://www.thalia.de", "art": "kette", "status": "kandidat" },
-    { "id": "smyths", "name": "Smyths Toys", "url": "https://www.smythstoys.com/de/de-de", "art": "kette", "status": "kandidat" },
-    { "id": "galeria", "name": "Galeria", "url": "https://www.galeria.de", "art": "kette", "status": "kandidat" },
-    { "id": "otto", "name": "Otto", "url": "https://www.otto.de", "art": "kette", "status": "kandidat" },
-    { "id": "kaufland", "name": "Kaufland", "url": "https://www.kaufland.de", "art": "kette", "status": "kandidat" },
-    { "id": "rossmann", "name": "Rossmann", "url": "https://www.rossmann.de", "art": "kette", "status": "kandidat" },
-    { "id": "rombach", "name": "Rombach", "url": "https://www.rombach.de", "art": "kette", "status": "kandidat" },
-    { "id": "pokemoncenter", "name": "Pokémon Center", "url": "https://www.pokemoncenter.com", "art": "offiziell", "status": "kandidat" }
+    {
+      "id": "alternate",
+      "name": "Alternate",
+      "url": "https://www.alternate.de",
+      "art": "elektronik",
+      "status": "kandidat"
+    },
+    {
+      "id": "tcgviert",
+      "name": "TCGViert",
+      "url": "https://tcgviert.com",
+      "art": "fachhandel",
+      "status": "aktiv",
+      "abfrage": "shopify"
+    },
+    {
+      "id": "card-corner",
+      "name": "Card-Corner",
+      "url": "https://www.card-corner.de",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "gate-to-the-games",
+      "name": "Gate to the Games",
+      "url": "https://www.gate-to-the-games.de",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "spiele-offensive",
+      "name": "Spiele-Offensive",
+      "url": "https://www.spiele-offensive.de",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "fantasywelt",
+      "name": "Fantasywelt",
+      "url": "https://www.fantasywelt.de",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "gameshop-marli",
+      "name": "Gameshop Marli",
+      "url": "https://www.gameshop-marli.de",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "cardmex",
+      "name": "Cardmex",
+      "url": "https://cardmex-shop.de",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "geeks-heaven",
+      "name": "Geeks Heaven",
+      "url": "https://geeksheaven.de",
+      "art": "fachhandel",
+      "status": "aktiv",
+      "abfrage": "shopify"
+    },
+    {
+      "id": "cardcosmos",
+      "name": "Cardcosmos",
+      "url": "https://cardcosmos.de",
+      "art": "fachhandel",
+      "status": "aktiv",
+      "abfrage": "shopify"
+    },
+    {
+      "id": "trader-online",
+      "name": "TRADER Online",
+      "url": "https://www.trader-online.de",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "games-island",
+      "name": "Games-Island",
+      "url": "https://www.games-island.eu",
+      "art": "fachhandel",
+      "status": "kandidat"
+    },
+    {
+      "id": "mediamarkt",
+      "name": "MediaMarkt",
+      "url": "https://www.mediamarkt.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "url": "https://www.saturn.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "mueller",
+      "name": "Müller",
+      "url": "https://www.mueller.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "thalia",
+      "name": "Thalia",
+      "url": "https://www.thalia.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "smyths",
+      "name": "Smyths Toys",
+      "url": "https://www.smythstoys.com/de/de-de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "galeria",
+      "name": "Galeria",
+      "url": "https://www.galeria.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "otto",
+      "name": "Otto",
+      "url": "https://www.otto.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "kaufland",
+      "name": "Kaufland",
+      "url": "https://www.kaufland.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "rossmann",
+      "name": "Rossmann",
+      "url": "https://www.rossmann.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "rombach",
+      "name": "Rombach",
+      "url": "https://www.rombach.de",
+      "art": "kette",
+      "status": "kandidat"
+    },
+    {
+      "id": "pokemoncenter",
+      "name": "Pokémon Center",
+      "url": "https://www.pokemoncenter.com",
+      "art": "offiziell",
+      "status": "kandidat"
+    }
   ]
 }

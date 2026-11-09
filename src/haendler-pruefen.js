@@ -22,7 +22,7 @@ export function botSchutz(status, html, headers) {
   if (/akamai|_abck/i.test(html) || /akamai/i.test(headers.get?.('server') || '')) h.push('Akamai');
   if (/datadome/i.test(html) || headers.get?.('x-datadome')) h.push('DataDome');
   if (/queue-it/i.test(html)) h.push('Queue-it');
-  if (/captcha/i.test(html) && !h.length) h.push('Captcha');
+  if (status !== 200 && /captcha/i.test(html) && !h.length) h.push('Captcha');
   return h;
 }
 

@@ -1,0 +1,7 @@
+{
+  "_hinweis": "Zentrale Einstellungen. maxSeiten: Seiten à 250 Produkte pro Shopify-Shop. pushNurUvp: true = keine Push-Meldung bei Preisen über UVP + Spielraum (stehen trotzdem im Feed).",
+  "maxSeiten": 8,
+  "maxPushProLauf": 8,
+  "pushNurUvp": true,
+  "feedTage": 14
+}
