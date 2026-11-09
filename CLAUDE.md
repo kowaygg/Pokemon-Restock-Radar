@@ -113,7 +113,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - `npm test` · `npm run abruf` · `npm run haendler-check`
 
 ### Offene Punkte
-- ✅ 09.11.2026: Secret NTFY_KANAL angelegt (Kanal nur in Secret + lokaler .env), Test-Push gesendet; Nutzer: Kanal in ntfy-App abonnieren
+- ✅ 09.11.2026: Secret NTFY_KANAL angelegt (Kanal nur in Secret + lokaler .env), Test-Push gesendet; Kanal in ntfy-App auf dem Handy abonniert, Test-Push angekommen ✅
 - ✅ 09.11.2026: Vault-Notizen unter Projekte/Pokemon-Restock-Radar/ angelegt
 - UVPs mit Sicherheit „niedrig“ bestätigen; Händler-Impressen von Hand + handelsregister.de prüfen
 - M2 Rest: Release-Kalender (pokemon.com/de), Frühwarnung (Sitemaps), weitere Händler (Alternate u. a. per HTML/Sitemap)
