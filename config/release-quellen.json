@@ -1,0 +1,11 @@
+{
+  "_hinweis": "Quellen für Release-Kalender und Newsfeed. stufe: A = offiziell, B = Fachseite, C = Community (nur mit Bestätigung).",
+  "quellen": [
+    { "id": "pokemon-de-news", "name": "Pokémon.com Neuigkeiten (DE)", "url": "https://www.pokemon.com/de/news", "stufe": "A", "notiz": "Monatliche Artikel 'Wirf einen Blick auf alle Pokémon-Sammelkartenspiel-Produkte …' = offizielle Release-Liste; RSS/Abfragbarkeit prüfen" },
+    { "id": "pokezentrum", "name": "Pokézentrum", "url": "https://pokezentrum.de", "stufe": "B", "notiz": "Release-Kalender + 'alle Boxen und Kollektionen kaufen'; RSS prüfen" },
+    { "id": "bisafans", "name": "BisaFans Sammelkarten", "url": "https://www.bisafans.de/sammelkarten/", "stufe": "B" },
+    { "id": "mydealz-pokemon", "name": "mydealz (Gruppe Pokémon)", "url": "https://www.mydealz.de", "stufe": "C", "notiz": "Community-Deals → nur mit Bestätigung auf Händlerseite; RSS prüfen" },
+    { "id": "monsterdealz", "name": "Monsterdealz Magazin", "url": "https://www.monsterdealz.de/magazin/", "stufe": "B" },
+    { "id": "dealdoktor", "name": "DealDoktor Magazin", "url": "https://www.dealdoktor.de/magazin/", "stufe": "B" }
+  ]
+}
