@@ -73,3 +73,9 @@ test('Versand: Pauschale, frei ab, unbekannt', async () => {
   assert.equal(versandFuer({ versand: { euro: null, freiAb: 150 } }, 179.99), 0);
   assert.equal(versandFuer({}, 10), null);
 });
+
+test('Zubehör „für Top Trainer Box“ ist kein Produkt', () => {
+  assert.equal(produktArt('Pokemon Deluxe Faltboxen fuer Top Trainer Box 10 Stück'), null);
+  assert.equal(produktArt('Aufbewahrungsbox für Elite Trainer Box'), null);
+  assert.equal(produktArt('Pokémon Delta-Herrschaft Top-Trainer-Box').art, 'top-trainer-box');
+});
