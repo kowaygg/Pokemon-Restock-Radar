@@ -3,6 +3,13 @@
 # Stürzt er immer wieder sofort ab (z. B. kaputtes Update), wartet die Schleife immer länger (bis 10 Min.) – schont den Akku.
 # Aufruf: npm run dauer   (Beenden: Lautstärke-runter + C zweimal)
 cd ~/Pokemon-Restock-Radar || exit 1
+# Nie zwei Wächter gleichzeitig: läuft schon einer (Autostart/Aufpasser), nicht noch einen starten
+pidfile=~/.restock-radar.pid
+if [ -f "$pidfile" ] && grep -q handy-dauerlauf "/proc/$(cat "$pidfile")/cmdline" 2>/dev/null; then
+  echo "Der Wächter läuft bereits im Hintergrund – alles gut, nichts zu tun."
+  exit 0
+fi
+echo $$ > "$pidfile"
 pause=5
 while true; do
   # Logdatei klein halten (nur die letzten 2.000 Zeilen)

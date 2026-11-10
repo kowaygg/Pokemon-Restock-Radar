@@ -87,3 +87,13 @@ Ohne sie schätzt der Wächter (im Zweifel sparsam).
 2. Für alle drei: Akku → **Uneingeschränkt**
 3. Energiesparmodus: **„Apps und Startbildschirm einschränken“ AUS** (der Rest darf an)
 4. Datensparen: Termux und ntfy als Ausnahme zulassen
+
+## 11. Aufpasser – startet den Wächter von selbst wieder (seit 2.3.0, einmalig einrichten)
+Falls Android Termux doch einmal beendet: Ein Android-Job prüft alle 15 Min., ob der Wächter läuft, und startet ihn sonst neu.
+1. In **F-Droid** die App **Termux:API** installieren (Play Protect ggf. „Trotzdem installieren“) und Akku → **Uneingeschränkt** + „Nie schlafende Apps“
+2. In Termux (Wächter vorher mit Lautstärke-runter + C zweimal stoppen):
+   ```
+   pkg install -y termux-api && cd ~/Pokemon-Restock-Radar && git pull && npm run aufpasser
+   ```
+3. Handy **einmal neu starten** – danach läuft alles automatisch (Autostart + Aufpasser, nie doppelt).
+Bonus: Mit Termux:API erkennt der Wächter WLAN und Akku genau (Sparmodus).

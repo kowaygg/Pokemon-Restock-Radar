@@ -71,4 +71,13 @@ jobs:
 
       - name: Auf GitHub Pages veröffentlichen
         id: veroeffentlichen
+        continue-on-error: true # kurze GitHub-Störungen („artifact metadata failed“) → zweiter Versuch unten
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      - name: Kurz warten (zweiter Versuch)
+        if: steps.veroeffentlichen.outcome == 'failure'
+        run: sleep 45
+
+      - name: Auf GitHub Pages veröffentlichen (zweiter Versuch)
+        if: steps.veroeffentlichen.outcome == 'failure'
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

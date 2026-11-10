@@ -276,6 +276,11 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   begrenzt; Puls-Alarm erst > 150 Min. (Android-Tiefschlaf) und Nachtruhe 22–7 Uhr; Selbstcheck-Hinweis wenn uvp.json > 120 Tage alt.
   Szenarien-Tabelle in docs/handy-waechter.md (Abschnitt 9). Empfehlung Samsung: Termux + Termux:Boot unter „Nie schlafende Apps“.
 
+- 10.11.2026 (2.3.0): Abruf-Fehler 15:18 = GitHub-Störung beim Pages-Deploy → deploy-pages jetzt mit continue-on-error + zweitem Versuch nach 45 s.
+  Aufpasser `scripts/waechter-check.sh` über termux-job-scheduler (Termux:API, alle 15 Min., persisted) startet Dauerlauf neu, wenn er fehlt;
+  Dauerlauf schreibt ~/.restock-radar.pid und startet nie doppelt (Prüfung /proc/<pid>/cmdline). Einrichtung: docs/handy-waechter.md §11.
+  Energiesparmodus an/aus beendet den Wächter nicht (Ausnahmen gesetzt) → kein Neustart nötig.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

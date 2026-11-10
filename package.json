@@ -1,6 +1,6 @@
 {
   "name": "pokemon-restock-radar",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "type": "module",
   "description": "Meldet Pokémon-TCG-Sealed-Produkte zum UVP bei seriösen Händlern",
@@ -15,6 +15,7 @@
     "lokal-links": "node scripts/lokal-links.js",
     "vorschau": "node scripts/vorschau.js",
     "handy": "node scripts/handy-waechter.js",
-    "dauer": "sh scripts/handy-dauerlauf.sh"
+    "dauer": "sh scripts/handy-dauerlauf.sh",
+    "aufpasser": "termux-job-scheduler --job-id 7 --period-ms 900000 --persisted true --script ~/Pokemon-Restock-Radar/scripts/waechter-check.sh"
   }
 }
