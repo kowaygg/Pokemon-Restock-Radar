@@ -272,6 +272,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 10.11.2026 15:32: Dauerlauf auf dem Handy läuft, Puls kommt an (15:27, 15:32). Boot-Skript kopiert; Termux:Boot-App aus F-Droid installiert + einmal geöffnet (15:37) → Autostart eingerichtet; Neustart-Test 15:48 erfolgreich (Puls 15:47:57).
   Shopify-Shops geben dem Handy weiter 429 – PC und Handy teilen die Heim-IP: KEINE vollständigen Testläufe (node src/run.js) mehr vom PC aus.
 
+- 10.11.2026 (2.2.0): Langzeitbetrieb: Dauerlauf mit wachsender Pause bei Absturz-Schleife (5 s → max. 10 Min.), Log ~/restock-radar.log auf 2.000 Zeilen
+  begrenzt; Puls-Alarm erst > 150 Min. (Android-Tiefschlaf) und Nachtruhe 22–7 Uhr; Selbstcheck-Hinweis wenn uvp.json > 120 Tage alt.
+  Szenarien-Tabelle in docs/handy-waechter.md (Abschnitt 9). Empfehlung Samsung: Termux + Termux:Boot unter „Nie schlafende Apps“.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

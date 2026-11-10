@@ -273,12 +273,16 @@ if (!handy && kanal) {
     zustand.handyPuls = letzter ? new Date(letzter).toISOString() : zustand.handyPuls || null;
     const stillMin = letzter ? Math.round((jetzt - letzter) / 60000) : null;
     const alarmFaellig = !zustand.pulsAlarm || jetzt - Date.parse(zustand.pulsAlarm) > 6 * 3600000;
-    if ((stillMin === null || stillMin > 90) && alarmFaellig) {
+    // 150 Min. Schwelle: Android-Tiefschlaf kann das stille Lebenszeichen verzögern → keine Fehlalarme.
+    // Nachtruhe 22–7 Uhr (deutsche Zeit): kein Alarm-Push, er kommt dann am Morgen.
+    const stunde = Number(new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', hourCycle: 'h23' }).format(jetzt));
+    const nachtruhe = stunde >= 22 || stunde < 7;
+    if ((stillMin === null || stillMin > 150) && alarmFaellig && !nachtruhe) {
       const seit = stillMin === null ? 'seit über 12 Stunden' : `seit ${stillMin >= 120 ? Math.round(stillMin / 60) + ' Stunden' : stillMin + ' Minuten'}`;
       await pushSenden({ title: '⚠️ Handy-Wächter läuft nicht', message: `Kein Lebenszeichen ${seit}.\nTermux öffnen und eingeben:\ncd ~/Pokemon-Restock-Radar && npm run dauer`, priority: 4, tags: ['warning'] }, { kanal });
       zustand.pulsAlarm = jetzt.toISOString();
     }
-    bericht.push(`| Handy-Wächter | ${stillMin === null ? '🔴 kein Lebenszeichen in 12 h' : stillMin > 90 ? `🔴 still seit ${stillMin} Min.` : `🟢 vor ${stillMin} Min.`} | – | – | – | – |`);
+    bericht.push(`| Handy-Wächter | ${stillMin === null ? '🔴 kein Lebenszeichen in 12 h' : stillMin > 150 ? `🔴 still seit ${stillMin} Min.` : `🟢 vor ${stillMin} Min.`} | – | – | – | – |`);
   } catch {}
 }
 

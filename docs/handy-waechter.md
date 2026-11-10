@@ -66,3 +66,18 @@ Ohne sie schätzt der Wächter (im Zweifel sparsam).
 - **Termux nicht wegwischen** und die Dauer-Meldung nicht „beenden“ – nur ausblenden (lange drücken → Benachrichtigungen aus)
 - **Akku:** Einstellungen → Apps → Termux → Akku → **Uneingeschränkt** (sonst beendet Android Termux)
 - **Autostart nach Neustart:** Abschnitt 6 (Termux:Boot)
+
+## 9. Was passiert wann? (Szenarien, Stand 2.2.0)
+| Situation | Was das Radar macht | Muss ich etwas tun? |
+|---|---|---|
+| Handy-Neustart / Akku leer und wieder an | Termux:Boot startet den Wächter nach dem ersten Entsperren | Nein |
+| Wächter stürzt ab | Neustart nach 5 s; bei wiederholtem Absturz längere Pausen (bis 10 Min., schont Akku) | Nein |
+| Neue Version | holt sie stündlich im WLAN und startet sich neu | Nein |
+| Android beendet Termux (Akku-Schutz, Wegwischen, Termux-Update) | GitHub prüft weiter; nach > 2,5 h ohne Lebenszeichen kommt ein Push (nicht 22–7 Uhr) | Termux öffnen: `cd ~/Pokemon-Restock-Radar && npm run dauer` |
+| Handy aus / Funkloch | GitHub prüft weiter (langsamer); Alarm wie oben | Nein |
+| Mobile Daten / Akku niedrig | Sparmodus (seltener, kleiner) | Nein |
+| GitHub stoppt nach 60 Tagen | wird täglich verhindert (Keep-alive) | Nein |
+| UVP-Liste wird alt (> 4 Monate) | Hinweis im Sonntags-Check | Claude Code bitten, UVPs zu aktualisieren |
+| Neues Handy | – | Einrichtung wie oben (Abschnitte 1–6) wiederholen |
+
+**Einmalig empfohlen (Samsung):** Einstellungen → Akku → Hintergrund-Nutzungsbeschränkungen → **„Nie schlafende Apps“** → Termux und Termux:Boot hinzufügen.

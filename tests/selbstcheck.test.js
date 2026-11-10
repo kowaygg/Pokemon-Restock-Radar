@@ -13,3 +13,8 @@ test('Selbstcheck: GitHub steht, Handy still, Händler kaputt (Müller nur Handy
   assert.match(r.probleme[0], /vor 14 h/);
   assert.ok(!r.probleme.join(' ').includes('Müller'));
 });
+test('Selbstcheck: veraltete UVP-Liste nur als Hinweis', () => {
+  const r = bewerten({ jetzt, letzterLauf: '2026-11-10T11:30:00Z', pulsAnzahl: 5, uvpStand: '2026-06-01' });
+  assert.equal(r.probleme.length, 0);
+  assert.match(r.hinweise[0], /163 Tage alt/);
+});

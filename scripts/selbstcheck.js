@@ -8,9 +8,12 @@ const APP_DATEN = 'https://kowaygg.github.io/Pokemon-Restock-Radar/data/oeffentl
 const NUR_HANDY = new Set(['mueller', 'vedes', 'mediamarkt', 'saturn']);
 
 // Reine Bewertung (testbar): fakten → { probleme: [...], ok: [...] }
-export function bewerten({ jetzt, letzterLauf, pulsAnzahl, haendler = [], newsFehler = {} }) {
+export function bewerten({ jetzt, letzterLauf, pulsAnzahl, haendler = [], newsFehler = {}, uvpStand = null }) {
   const probleme = [];
   const ok = [];
+  const hinweise = []; // kein Alarm – nur im Sonntags-Bericht
+  const uvpTage = uvpStand ? Math.round((jetzt - Date.parse(uvpStand)) / 86400000) : null;
+  if (uvpTage != null && uvpTage > 120) hinweise.push(`UVP-Liste ist ${uvpTage} Tage alt – neue Sets/Preise in Claude Code nachtragen lassen`);
   const stunden = letzterLauf ? (jetzt - Date.parse(letzterLauf)) / 3600000 : Infinity;
   if (stunden > 6) probleme.push(`GitHub-Wächter: letzter Lauf vor ${Number.isFinite(stunden) ? Math.round(stunden) + ' h' : 'unbekannt'}`);
   else ok.push(`GitHub-Wächter lief vor ${Math.round(stunden * 60)} Min.`);
@@ -21,7 +24,7 @@ export function bewerten({ jetzt, letzterLauf, pulsAnzahl, haendler = [], newsFe
   else ok.push(`${haendler.filter((h) => h.status === 'aktiv').length} Händler ohne Fehler`);
   const nf = Object.entries(newsFehler);
   if (nf.length) probleme.push(`News-Quellen mit Fehler: ${nf.map(([k, v]) => `${k} (${v})`).join(', ')}`);
-  return { probleme, ok };
+  return { probleme, ok, hinweise };
 }
 
 async function main() {
@@ -47,15 +50,15 @@ async function main() {
       pulsAnzahl = t.split(/\r?\n/).filter(Boolean).length;
     } catch {}
   }
-  const { probleme, ok } = bewerten({ jetzt, letzterLauf: daten.letzterLauf, pulsAnzahl, haendler: daten.haendler, newsFehler: daten.newsFehler });
-  const bericht = [`**Selbstcheck ${jetzt.toISOString().slice(0, 16)} UTC**`, '', ...probleme.map((p) => `- 🔴 ${p}`), ...ok.map((o) => `- 🟢 ${o}`), '', ...keepAlive.map((k) => `- ${k}`)].join('\n');
+  const { probleme, ok, hinweise } = bewerten({ jetzt, letzterLauf: daten.letzterLauf, pulsAnzahl, haendler: daten.haendler, newsFehler: daten.newsFehler, uvpStand: daten.uvp?.stand });
+  const bericht = [`**Selbstcheck ${jetzt.toISOString().slice(0, 16)} UTC**`, '', ...probleme.map((p) => `- 🔴 ${p}`), ...ok.map((o) => `- 🟢 ${o}`), ...hinweise.map((h) => `- 💡 ${h}`), '', ...keepAlive.map((k) => `- ${k}`)].join('\n');
   console.log(bericht);
   if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, bericht + '\n');
   const sonntag = jetzt.getUTCDay() === 0;
   if (kanal && (probleme.length || sonntag)) {
     await fetch('https://ntfy.sh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
       topic: kanal, title: probleme.length ? '⚠️ Restock-Radar: bitte prüfen' : '✅ Restock-Radar: Wochen-Check ok',
-      message: (probleme.length ? probleme : ok).join('\n').slice(0, 2000), priority: probleme.length ? 4 : 2, tags: [probleme.length ? 'warning' : 'white_check_mark'],
+      message: (probleme.length ? probleme : [...ok, ...hinweise]).join('\n').slice(0, 2000), priority: probleme.length ? 4 : 2, tags: [probleme.length ? 'warning' : 'white_check_mark'],
     }) }).catch(() => {});
   }
 }
