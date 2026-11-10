@@ -233,6 +233,23 @@ zustand.feed = zustand.feed.filter((f) => Date.parse(f.zeit) >= grenze).slice(0,
 zustand.letzterLauf = jetzt.toISOString();
 await mkdir('data', { recursive: true });
 await writeFile('data/zustand.json', JSON.stringify(zustand));
+// Push für JEDEN neuen Top-Eintrag – egal ob neu, wieder da, Preis auf UVP gefallen oder schon beim ersten Lauf da.
+// „Neu“ = Link war in den letzten 6 Stunden nicht in der Top-Liste (das Handy sieht pro Minute nur Ausschnitte → kein Dauer-Push).
+zustand.topBekannt ||= {};
+{
+  if (top.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
+  for (const t of top.sort((a, b) => a.prioritaet - b.prioritaet)) {
+    const vorher = zustand.topBekannt[t.link];
+    zustand.topBekannt[t.link] = jetzt.toISOString();
+    if (vorher && jetzt - Date.parse(vorher) < 6 * 3600000) continue;
+    if (gemeldet.has(t.link) || pushes >= einst.maxPushProLauf) continue;
+    const gesamt = Number.isFinite(t.versand) ? t.preis + t.versand : t.preis;
+    if (await pushSenden(pushNachricht({ ...t, typ: 'top', preis: gesamt, verfuegbar: true }), { kanal })) { pushes++; gemeldet.add(t.link); }
+  }
+  const alt = jetzt.getTime() - 3 * 86400000;
+  zustand.topBekannt = Object.fromEntries(Object.entries(zustand.topBekannt).filter(([, z]) => Date.parse(z) >= alt));
+}
+
 // Öffentlicher Auszug für die App (nur Produktdaten, nichts Persönliches)
 const oeffentlich = {
   letzterLauf: zustand.letzterLauf,

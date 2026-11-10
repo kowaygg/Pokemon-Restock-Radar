@@ -214,6 +214,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 09.11.2026 (1.2.1): FEHLER: „LEERE … Top Trainer Box … ohne Inhalt“ (Gate, 1,99 €) stand im TTB-Markt. Filter verschärft (leer/leere/leeren,
   ohne Inhalt/Karten/Booster/Promo, nur Box/Verpackung, ausgepackt, opened box …) + TTB-Markt blendet „unplausibel“ (< 70 % UVP) aus.
 
+- 10.11.2026 (1.3.0): Push für JEDEN neuen Top-Eintrag (zustand.topBekannt je Link; neu = 6 h nicht in Top) – auch Preissenkung auf UVP und
+  Treffer aus dem ersten Lauf; Titel „🚨 JETZT KAUFBAR zum UVP“, dringend, mit Warenkorb-Knopf; Doppel-Schutz über ntfy (12 h).
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
@@ -227,8 +230,6 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run handy` (Handy-Wächter)
 
 ### Offene Punkte
-- **ALLERERSTES nächste Sitzung:** Push für JEDEN neuen Eintrag in der Top-Liste (Vergleich mit vorheriger Top-Liste je ID), auch bei Preissenkung
-  auf UVP und bei Treffern aus dem ersten Lauf – bisher nur Push bei neu/wieder-da/vorbestellung. Danach mit echtem ntfy-Push prüfen.
 - NÄCHSTE RUNDE (Wunsch 09.11.2026 spät, Reihenfolge mit Nutzer klären): 1) Design wie KI-Finanz-Radar (ruhige Farben, weniger klarere
   Reiter: Kaufen · Bald · News · Vor Ort · Händler/UVP, Filter-Chips); 2) mehr Händler MIT Preis (Preis-Leser für Sitemap-Shops, weitere
   Shopify-Shops DE/AT/NL/BE); 3) Quellen Reddit-RSS, PokeBeach, PokeGuardian, Serebii, pokemon-card.com (JP); 4) Leak-Radar nur aus

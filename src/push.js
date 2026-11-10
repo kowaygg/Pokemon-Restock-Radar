@@ -1,11 +1,11 @@
 // Push über ntfy. Kanalname NUR aus Secret/Umgebung NTFY_KANAL – nie im Repo. Ohne Kanal: Probelauf (nur Anzeige).
-const TYP_TEXT = { neu: 'NEU lieferbar', 'wieder-da': 'WIEDER DA', vorbestellung: 'VORBESTELLUNG offen', angekuendigt: 'Angekündigt (noch nicht bestellbar)', 'ebay-sofort': 'eBay Sofortkauf', 'ebay-auktion': 'eBay Auktion endet bald', graded: 'Graded-Karte' };
+const TYP_TEXT = { neu: 'NEU lieferbar', 'wieder-da': 'WIEDER DA', vorbestellung: 'VORBESTELLUNG offen', angekuendigt: 'Angekündigt (noch nicht bestellbar)', top: 'JETZT KAUFBAR zum UVP', 'ebay-sofort': 'eBay Sofortkauf', 'ebay-auktion': 'eBay Auktion endet bald', graded: 'Graded-Karte' };
 
 export function pushNachricht(m) {
   const preis = Number.isFinite(m.preis) ? `${m.preis.toFixed(2).replace('.', ',')} €` : 'Preis ?';
   const bew = m.bewertung?.stufe === 'uvp' ? `✅ UVP-Preis (UVP ${m.bewertung.uvp.toFixed(2).replace('.', ',')} €)`
     : m.bewertung?.stufe === 'drueber' ? `⚠ ${m.bewertung.differenz.toFixed(2).replace('.', ',')} € über UVP` : 'UVP unbekannt';
-  const dringend = m.prioritaet === 1 && m.bewertung?.stufe === 'uvp' && m.typ !== 'angekuendigt';
+  const dringend = (m.prioritaet === 1 || m.typ === 'top') && m.bewertung?.stufe === 'uvp' && m.typ !== 'angekuendigt';
   return {
     title: `${dringend ? '🚨 ' : ''}${TYP_TEXT[m.typ]} · ${m.haendler}`.slice(0, 250),
     message: [m.titel, `${preis} · ${bew}`, m.sprache ? `Sprache: ${m.sprache}` : null].filter(Boolean).join('\n').slice(0, 2000),

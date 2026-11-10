@@ -84,3 +84,10 @@ test('Leere / geöffnete Boxen fliegen raus (Fall 09.11.2026)', () => {
   for (const t of ['Pokemon Karten LEERE Prismatische Entwicklungen Top Trainer Box Evoli ohne Inhalt', 'Top Trainer Box leer', 'Elite Trainer Box ohne Karten', 'ETB nur Box', 'Top-Trainer-Box Leerkarton', 'Elite Trainer Box opened box']) assert.equal(produktArt(t), null, t);
   assert.equal(produktArt('Pokémon Prismatische Entwicklungen Top-Trainer-Box').art, 'top-trainer-box');
 });
+
+test('Top-Push: „JETZT KAUFBAR zum UVP“, dringend, mit Warenkorb-Knopf', () => {
+  const n = pushNachricht({ typ: 'top', haendler: 'TCGViert', titel: 'Delta Herrschaft Display', prioritaet: 2, preis: 179.99, verfuegbar: true, link: 'https://s.de/p', warenkorb: 'https://s.de/cart/1:1', bewertung: { stufe: 'uvp', uvp: 179.64, differenz: 0.35 } });
+  assert.match(n.title, /🚨 JETZT KAUFBAR zum UVP · TCGViert/);
+  assert.equal(n.priority, 5);
+  assert.equal(n.actions[0].label, 'In den Warenkorb');
+});
