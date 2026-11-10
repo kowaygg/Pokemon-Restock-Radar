@@ -220,6 +220,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 10.11.2026 (1.3.1): Fehltreffer nach erstem Top-Push: „30th Celebration M6a Display“ (JP-Code ohne „JP“ im Titel) und „Mini Tin Display“.
   JP-Set-Codes mit Buchstaben-Zusatz (M6a, SV8a, S12a) = Japan; mini-tin vor display-36 prüfen.
 
+- 10.11.2026 (1.4.0): Händler-Entdecker (`src/entdecker.js`): Shops aus Deal-Feeds (mydealz pepper:merchant + Links in der Beschreibung),
+  Preisvergleiche/Plattformen ignoriert, Anzahl = verschiedene Deals, neue Domains auf Shopify-products.json geprüft (max. 2/Lauf, nur GitHub).
+  Anzeige im Reiter Händler „🆕 Neu entdeckt“. Nichts wird automatisch aktiviert (erst Impressum/Bewertungen prüfen). Erste Funde: expert.de, toys-for-fun.com.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

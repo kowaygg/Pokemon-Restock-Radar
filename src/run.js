@@ -9,6 +9,7 @@ import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
 import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
 import { mediamarktHolen } from './mediamarkt.js';
 import { neueSetCodes } from './setcodes.js';
+import { haendlerEntdecken, domainAus } from './entdecker.js';
 import { ebaySuche, ebayGraded, serioes } from './ebay.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
@@ -212,7 +213,12 @@ entdeckt bei ${s.haendler} – womöglich ein kommendes Set`, priority: 4, tags:
 zustand.news ||= [];
 const newsFaellig = !zustand.newsZeit || jetzt - Date.parse(zustand.newsZeit) >= einst.newsMinuten * 60000 - 30000;
 if (newsFaellig && newsFeeds.length) {
-  const { neu, stand, fehler } = await newsAbruf(newsFeeds, zustand.newsStand, { jetzt });
+  const { neu, stand, fehler, deals } = await newsAbruf(newsFeeds, zustand.newsStand, { jetzt });
+  // Händler-Entdecker: Shops aus Deal-Meldungen sammeln, neue auf Shopify prüfen (nur GitHub – schont Handy-Daten)
+  if (!handy && deals.length) {
+    const bekannt = new Set(haendler.map((h) => domainAus(h.url)).filter(Boolean));
+    zustand.entdeckt = await haendlerEntdecken(zustand.entdeckt, deals, bekannt, { jetzt });
+  }
   zustand.newsStand = stand;
   zustand.newsFehler = fehler;
   zustand.newsZeit = jetzt.toISOString();
@@ -266,6 +272,7 @@ const oeffentlich = {
   news: zustand.news.slice(0, 200),
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},
+  entdeckt: Object.values(zustand.entdeckt || {}).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),
 };
 await writeFile('data/oeffentlich.json', JSON.stringify(oeffentlich));
 

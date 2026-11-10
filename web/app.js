@@ -27,6 +27,15 @@ function bewertungHtml(b) {
   return `<span class="${b.stufe === 'uvp' ? 'ok' : 'drueber'}">${b.stufe === 'uvp' ? '✅' : '⚠'} ${text} (UVP ${euro(b.uvp)})</span>`;
 }
 
+// Neu entdeckte Shops aus Deal-Meldungen (noch nicht überwacht – erst Seriosität prüfen)
+function entdecktHtml() {
+  const l = daten.entdeckt || [];
+  if (!l.length) return '';
+  const zeile = (e) => `<tr><td><a href="https://${esc(e.domain)}" target="_blank" rel="noopener">${esc(e.name)}</a><br><span class="unbekannt">${esc(e.domain)}</span></td><td>${e.anzahl}</td><td>${e.shopify === true ? '✅ Shopify – leicht einbindbar' : e.shopify === false ? '–' : 'wird geprüft'}</td><td>${zeit(e.zuletzt)}</td></tr>`;
+  return `<h2>🆕 Neu entdeckt (aus Deal-Meldungen)</h2><p class="hinweis">Shops, die in Pokémon-Deals auftauchen, aber noch nicht überwacht werden. Eingebunden wird erst nach Prüfung von Impressum und Bewertungen.</p>
+    <div class="tabelle"><table><tr><th>Shop</th><th>Deals</th><th>Technik</th><th>Zuletzt</th></tr>${l.map(zeile).join('')}</table></div>`;
+}
+
 // Versand: bekannt → im Preis enthalten; 0 → versandkostenfrei; unbekannt → ehrlich „zzgl. Versand“
 const versandText = (p) => p.versand === 0 ? '(versandkostenfrei)' : Number.isFinite(p.versand) ? `(inkl. ${euro(p.versand)} Versand)` : '(zzgl. Versand)';
 
@@ -151,7 +160,8 @@ const ansichten = {
     const reihe = { aktiv: 0, geplant: 1, kandidat: 2, gesperrt: 3 };
     return `<p class="hinweis">Alle Händler mit Zustand. ⛔ = durch Bot-Schutz gesperrt (umgehen wir nie) – diese Shops decken News &amp; Leaks und der Reiter Vor Ort ab.</p>
       <div class="tabelle"><table><tr><th>Händler</th><th>Status</th><th>Art</th><th>Zuletzt</th></tr>
-      ${l.sort((a, b) => (reihe[a.status] ?? 9) - (reihe[b.status] ?? 9)).map((h) => `<tr><td><a href="${esc(sicherLink(h.url) || '#')}" target="_blank" rel="noopener">${esc(h.name)}</a></td><td>${status(h)}</td><td>${esc(ABFRAGE_TEXT[h.abfrage] || '')}</td><td>${zeit(h.stand)}</td></tr>`).join('')}</table></div>`;
+      ${l.sort((a, b) => (reihe[a.status] ?? 9) - (reihe[b.status] ?? 9)).map((h) => `<tr><td><a href="${esc(sicherLink(h.url) || '#')}" target="_blank" rel="noopener">${esc(h.name)}</a></td><td>${status(h)}</td><td>${esc(ABFRAGE_TEXT[h.abfrage] || '')}</td><td>${zeit(h.stand)}</td></tr>`).join('')}</table></div>`
+      + entdecktHtml();
   },
 };
 

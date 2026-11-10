@@ -19,7 +19,11 @@ export function feedEintraege(xml) {
     const atomLink = b.match(/<link[^>]*href="([^"]+)"/i);
     const link = feld(b, 'link') || (atomLink ? atomLink[1] : '');
     const zeit = feld(b, 'pubDate') || feld(b, 'published') || feld(b, 'updated') || feld(b, 'dc:date');
-    return { titel: feld(b, 'title'), link: link.replace(/&amp;/g, '&'), zeit: zeit && !Number.isNaN(Date.parse(zeit)) ? new Date(zeit).toISOString() : null, text: feld(b, 'description').slice(0, 300) };
+    // Händlerangabe (mydealz: <pepper:merchant name="…">) und Shop-Links aus der Beschreibung → Händler-Entdecker
+    const haendler = (b.match(/<pepper:merchant[^>]*name="([^"]+)"/) || [])[1] || null;
+    const rohText = (b.match(/<description[^>]*>([\s\S]*?)<\/description>/i) || [])[1] || '';
+    const links = [...rohText.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').matchAll(/href="(https?:\/\/[^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, '&'));
+    return { titel: feld(b, 'title'), link: link.replace(/&amp;/g, '&'), zeit: zeit && !Number.isNaN(Date.parse(zeit)) ? new Date(zeit).toISOString() : null, text: feld(b, 'description').slice(0, 300), haendler, links };
   }).filter((e) => e.titel && /^https?:\/\//.test(e.link));
 }
 
@@ -79,6 +83,7 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
   const neu = [];
   const fehler = {};
   const gruppeDran = new Set();
+  const deals = []; // alle Deal-Einträge (auch alte) für den Händler-Entdecker
   for (const q of quellen) {
     const vorher = alt[q.id];
     // Quellen mit eigenem Takt (z. B. Reddit, das schnell „429“ meldet) nur alle q.minuten abfragen
@@ -89,6 +94,7 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
     try {
       const roh = await textHolen(q.url, holen);
       const eintraege = q.typ === 'pokemon-news' ? pokemonNewsEintraege(roh) : feedEintraege(roh);
+      if (q.deal) deals.push(...eintraege.filter((e) => /pok[eé]mon/i.test(e.titel)));
       const gesehen = { ...(vorher?.gesehen || {}) };
       for (const [i, e] of eintraege.entries()) {
         if (gesehen[e.link]) continue;
@@ -107,7 +113,7 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
       if (vorher) stand[q.id] = vorher;
     }
   }
-  return { neu, stand, fehler };
+  return { neu, stand, fehler, deals };
 }
 
 // Push nur für das Wichtige: Vorbestellung/Release, Pokémon Center, Top-Trainer-Box-Deals
