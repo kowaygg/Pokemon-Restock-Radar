@@ -5,9 +5,10 @@ const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-
 // Reihenfolge wichtig: spezifisch vor allgemein
 export const ARTEN = [
   { art: 'top-trainer-box', prioritaet: 1, muster: [/top ?trainer ?box/, /elite ?trainer ?box/, /\bttb\b/, /\betb\b/] },
+  // „Mini Tin Display“ = Karton mit Mini-Tins, kein Booster-Display → vor display-36 prüfen
+  { art: 'mini-tin', prioritaet: 3, muster: [/mini ?tin/] },
   { art: 'display-36', prioritaet: 2, muster: [/\bdisplay\b/, /booster ?box/, /36 ?(booster|packs)/] },
   { art: 'booster-bundle', prioritaet: 2, muster: [/booster ?bundle/] },
-  { art: 'mini-tin', prioritaet: 3, muster: [/mini ?tin/] },
   { art: 'tin', prioritaet: 3, muster: [/\btins?\b/, /\btin ?box/] },
   { art: 'poster-kollektion', prioritaet: 3, muster: [/poster/] },
   { art: 'pin-kollektion', prioritaet: 3, muster: [/\bpin\b.*(kollektion|collection|box)/, /pin ?(kollektion|collection)/] },
@@ -33,7 +34,7 @@ export function sprache(titel) {
   const t = norm(titel);
   if (/\b(deutsch|\bde\b|german)/.test(t)) return 'DE';
   if (/\b(englisch|english|\ben\b)/.test(t)) return 'EN';
-  if (/\b(japanisch|japanese|\bjpn?\b|\bjap\b)/.test(t)) return 'JP';
+  if (/\b(japanisch|japanese|\bjpn?\b|\bjap\b)/.test(t) || /\b(m|sv|s)\d{1,2}[a-z]\b/.test(t)) return 'JP';
   if (/\b(koreanisch|korean|\bkor?\b)/.test(t)) return 'KR';
   if (/\b(chinesisch|chinese|\bchn\b|\bcn\b|simplified|traditional)/.test(t)) return 'CN';
   return null;

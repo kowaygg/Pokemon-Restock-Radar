@@ -3,7 +3,8 @@ const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-
 
 // Asiatische Ausgaben (JP/KR/CN …) haben andere Inhalte und Preise → nur mit Einträgen derselben Sprache vergleichen
 // (Feld "sprache" in config/uvp.json). Ohne passenden Eintrag: UVP unbekannt, also nie ein falscher Treffer.
-const ASIA = { JP: /\b(jp|jpn|jap|japanisch|japanese)\b/, KR: /\b(kor|korean|koreanisch)\b/, CN: /\b(chn|cn|chinese|chinesisch|simplified|traditional)\b/, ANDERE: /\b(thai|indonesisch|indonesian)\b/ };
+// Japanische Set-Codes haben einen Buchstaben-Zusatz (M6a, SV8a, S12a) – deutsche/englische nicht (ME06, SV10)
+const ASIA = { JP: /\b(jp|jpn|jap|japanisch|japanese|m\d{1,2}[a-z]|sv\d{1,2}[a-z]|s\d{1,2}[a-z])\b/, KR: /\b(kor|korean|koreanisch)\b/, CN: /\b(chn|cn|chinese|chinesisch|simplified|traditional)\b/, ANDERE: /\b(thai|indonesisch|indonesian)\b/ };
 const ausgabe = (t) => Object.keys(ASIA).find((k) => ASIA[k].test(t)) || null;
 // Wörter, die in jedem Produktnamen vorkommen können – alle übrigen Namenswörter müssen im Titel stehen
 const ALLGEMEIN = new Set(['kollektion', 'collection', 'booster', 'boosters', 'display', 'bundle', 'trainer', 'elite', 'mini', 'promo', 'promos', 'pokemon', 'pack', 'packs', 'korea', 'japan', 'china']);

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { uvpFinden, preisBewertung, pushWert } from '../src/uvp.js';
-import { produktArt } from '../src/produkt.js';
+import { produktArt, sprache } from '../src/produkt.js';
 import { pushNachricht } from '../src/push.js';
 
 const liste = JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url)));
@@ -90,4 +90,14 @@ test('Top-Push: „JETZT KAUFBAR zum UVP“, dringend, mit Warenkorb-Knopf', () 
   assert.match(n.title, /🚨 JETZT KAUFBAR zum UVP · TCGViert/);
   assert.equal(n.priority, 5);
   assert.equal(n.actions[0].label, 'In den Warenkorb');
+});
+
+test('Fehltreffer 10.11.2026: JP-Code M6a und Mini-Tin-Display', () => {
+  const liste = { ...JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url))), kurse: { JPY: 176.79 } };
+  const t = 'Pokemon 30th Celebration M6a Display';
+  assert.equal(sprache(t), 'JP');
+  const b = preisBewertung(154.99, uvpFinden(t, produktArt(t).art, liste), 5);
+  assert.notEqual(b.stufe, 'uvp');
+  assert.equal(produktArt('Pokemon Illumina City Mini Tin Display sealed deutsch').art, 'mini-tin');
+  assert.equal(uvpFinden('Pokemon ME06 Delta Herrschaft Display deutsch', 'display-36', liste).uvp, 179.64);
 });

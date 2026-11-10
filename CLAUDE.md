@@ -217,6 +217,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 10.11.2026 (1.3.0): Push für JEDEN neuen Top-Eintrag (zustand.topBekannt je Link; neu = 6 h nicht in Top) – auch Preissenkung auf UVP und
   Treffer aus dem ersten Lauf; Titel „🚨 JETZT KAUFBAR zum UVP“, dringend, mit Warenkorb-Knopf; Doppel-Schutz über ntfy (12 h).
 
+- 10.11.2026 (1.3.1): Fehltreffer nach erstem Top-Push: „30th Celebration M6a Display“ (JP-Code ohne „JP“ im Titel) und „Mini Tin Display“.
+  JP-Set-Codes mit Buchstaben-Zusatz (M6a, SV8a, S12a) = Japan; mini-tin vor display-36 prüfen.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
