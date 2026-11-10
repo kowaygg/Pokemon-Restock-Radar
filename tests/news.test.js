@@ -72,3 +72,15 @@ test('Amazon-Einladung und Pokémon Center aus Reddit lösen Push aus', () => {
   assert.equal(p.priority, 5);
   assert.equal(einordnen({ titel: 'Pokémon Display bei Amazon für 179 €', text: '' }, { stufe: 'C', deal: true }).amazonEinladung, false);
 });
+
+test('Regionsfilter: nur Freiburg/Südbaden/BW oder bundesweit', async () => {
+  const { fremdeRegion } = await import('../src/news.js');
+  assert.equal(fremdeRegion('Netto: Pokémon Illumina City Mini Tin ab 16.11. – Region Berlin-Brandenburg'), true);
+  assert.equal(fremdeRegion('Kaufland Prospekt Bayern: Pokémon Display ab Montag'), true);
+  assert.equal(fremdeRegion('Kaufland Baden-Württemberg und Bayern: Pokémon TTB'), false);
+  assert.equal(fremdeRegion('Aldi Süd bundesweit: Pokémon Top-Trainer-Box ab 16.11.'), false);
+  assert.equal(fremdeRegion('Müller Freiburg: Pokémon Restock'), false);
+  assert.equal(fremdeRegion('Lidl: Pokémon Kollektion ab Montag'), false);
+  const n = einordnen({ titel: '[Netto] Pokémon Mini Tin ab 16.11. (Region Berlin-Brandenburg)', text: '' }, { stufe: 'C', deal: true, nurPokemon: true });
+  assert.deepEqual([n.vorOrt, n.fremdeRegion, newsPushWert(n)], [false, true, false]);
+});

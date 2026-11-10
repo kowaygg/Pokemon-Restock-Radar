@@ -60,11 +60,21 @@ export function einordnen(e, quelle) {
   // „bei netto Online“ ist ein Online-Angebot – Ladenbezug nur ohne „online“ oder mit Filial-/Prospekt-Hinweis
   const vorOrt = VOR_ORT.test(t) && (!/\bonline\b/.test(t) || /filiale|prospekt|vor ort|im laden|in store|offline/.test(t));
   const abDatum = datumAus(e.titel);
-  return { art, pokemonCenter: pc, pcDrop, amazonEinladung, ttb, vorOrt, ...(abDatum ? { abDatum } : {}) };
+  const fremd = fremdeRegion(`${e.titel} ${e.text}`);
+  return { art, pokemonCenter: pc, pcDrop, amazonEinladung, ttb, vorOrt: vorOrt && !fremd, fremdeRegion: fremd, ...(abDatum ? { abDatum } : {}) };
 }
 
 // Stationäre Ketten / Filial-Hinweise (Prospekt-Aktionen)
 const VOR_ORT = /\b(aldi|lidl|netto|penny|kaufland|rossmann|muller|thalia|rombach|edeka|rewe|globus|smyths|toys ?r ?us|mediamarkt|saturn|woolworth|tedi)\b|filiale|in store|offline|prospekt|vor ort|im laden/;
+
+// Regionale Aktionen: Nutzer wohnt in Freiburg (79117) → nur Freiburg/Südbaden/Baden-Württemberg oder bundesweit interessant.
+// Nennt eine Meldung eine andere Region/Stadt (z. B. „Region Berlin-Brandenburg“) und nicht unsere, wird sie ausgeblendet.
+const EIGENE_REGION = /freiburg|breisgau|sudbaden|schwarzwald|baden.?wurttemberg|\bbw\b|bundesweit|deutschlandweit|ganz deutschland|alle (filialen|markte)/;
+const FREMDE_REGION = /berlin|brandenburg|hamburg|bremen|niedersachsen|nordrhein|\bnrw\b|westfalen|hessen|thuringen|sachsen|mecklenburg|vorpommern|schleswig|holstein|bayern|munchen|nurnberg|saarland|rheinland|pfalz|koln|dusseldorf|dortmund|essen|frankfurt|leipzig|dresden|hannover|stuttgart|karlsruhe|mannheim|\bregion (nord|ost|west|mitte)\b|osterreich|schweiz/;
+export function fremdeRegion(text) {
+  const t = norm(text);
+  return FREMDE_REGION.test(t) && !EIGENE_REGION.test(t);
+}
 
 // „ab 16.11.“, „ab Montag“, „ab dem 3.12.2026“ → lesbarer Starttermin (oder null)
 export function datumAus(text) {
@@ -122,6 +132,7 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
 
 // Push nur für das Wichtige: Vorbestellung/Release, Pokémon Center, Top-Trainer-Box-Deals
 export function newsPushWert(n) {
+  if (n.fremdeRegion) return false; // Aktionen anderer Regionen interessieren nicht
   return n.pokemonCenter || n.amazonEinladung || n.art === 'vorbestellung' || n.art === 'release' || (n.art === 'deal' && n.ttb) || (n.vorOrt && n.art === 'deal');
 }
 

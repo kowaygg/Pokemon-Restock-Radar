@@ -90,6 +90,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - ✅ (0.6.0) Reiter „Vor Ort Freiburg“ (Wunsch 09.11.2026): Prospekte/Aktionen/Restocks stationärer Händler (Rossmann, Müller, Thalia, Rombach,
   Aldi, Lidl …) im Raum 79117 Freiburg (Ebnet/Littenweiler) mit Datum, damit der Nutzer als Erster im Laden ist. Marktguru/kaufDA prüfen
   (nur offizielle/erlaubte Wege), sonst öffentliche Angebotsseiten der Ketten.
+- **Regel (10.11.2026): Regionale Laden-Aktionen nur Raum Freiburg (79117), Südbaden/BW oder bundesweit.**
 - **Regel (09.11.2026): In der App nur anzeigen, was direkt kaufbar ist** (Ausnahme: klar markierte Info-Reiter Frühwarnung/News).
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
   Von GitHub aus durch DataDome geblockt → nur über Handy-Wächter, Bot-Schutz nie umgehen.
@@ -239,6 +240,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Entdecker merkt auch Händlernamen ohne Shop-Link. Geprüft: VEDES aktiv (sitemap, 161 Sealed, 19 TTB, Preis nicht lesbar, vorOrt);
   Coolblue/duo-shop/libro (Bot-Schutz), Joybuy/Lucky Bricks/Spielemax/idee-shop (keine Sealed in Sitemap) → nicht eingebunden.
   Newsletter als Push über ntfy-E-Mail (docs/newsletter-push.md). Amazon/Pokémon-Center-Warteschlange: nicht beeinflussbar/umgehbar.
+
+- 10.11.2026 (1.7.1): Regionsfilter (Wunsch: nur Raum Freiburg): Meldungen mit fremder Region/Stadt (Berlin, Brandenburg, Bayern, NRW, …,
+  auch Stuttgart/Karlsruhe) ohne Freiburg/Südbaden/BW/bundesweit → kein Push, nicht Vor Ort, nicht veröffentlicht (fremdeRegion in news.js).
+  Auf GitHub: Müller + VEDES „Sitemap nicht lesbar“ (vermutlich Sperre für GitHub-Server) – Handy liest sie im WLAN.
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen

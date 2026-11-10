@@ -6,7 +6,7 @@ import { istPokemon, produktArt, sprache, istVorbestellung } from './produkt.js'
 import { uvpFinden, preisBewertung, pushWert, versandFuer } from './uvp.js';
 import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
-import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
+import { newsAbruf, newsPushWert, newsPushNachricht, fremdeRegion } from './news.js';
 import { mediamarktHolen } from './mediamarkt.js';
 import { neueSetCodes } from './setcodes.js';
 import { haendlerEntdecken, domainAus } from './entdecker.js';
@@ -275,7 +275,7 @@ const oeffentlich = {
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),
   haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, versand: h.versand || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
   uvp: { ...uvpListe, kurseStand: zustand.kurse?.stand || null },
-  news: zustand.news.slice(0, 200),
+  news: zustand.news.filter((x) => !fremdeRegion(`${x.titel} ${x.text || ''}`)).slice(0, 200),
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},
   muster: musterAuswerten(zustand.statistik, jetzt),
