@@ -215,7 +215,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   ohne Inhalt/Karten/Booster/Promo, nur Box/Verpackung, ausgepackt, opened box …) + TTB-Markt blendet „unplausibel“ (< 70 % UVP) aus.
 
 - 10.11.2026 (1.3.0): Push für JEDEN neuen Top-Eintrag (zustand.topBekannt je Link; neu = 6 h nicht in Top) – auch Preissenkung auf UVP und
-  Treffer aus dem ersten Lauf; Titel „🚨 JETZT KAUFBAR zum UVP“, dringend, mit Warenkorb-Knopf; Doppel-Schutz über ntfy (12 h).
+  Treffer aus dem ersten Lauf; Titel „🚨 JETZT KAUFBAR zum UVP“, dringend, mit Warenkorb-Knopf; Doppel-Schutz über ntfy (12 h). Nutzer bestätigt: Pushes kommen auf dem Handy an.
 
 - 10.11.2026 (1.3.1): Fehltreffer nach erstem Top-Push: „30th Celebration M6a Display“ (JP-Code ohne „JP“ im Titel) und „Mini Tin Display“.
   JP-Set-Codes mit Buchstaben-Zusatz (M6a, SV8a, S12a) = Japan; mini-tin vor display-36 prüfen.
