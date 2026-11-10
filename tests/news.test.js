@@ -62,3 +62,13 @@ test('Reddit-Gruppe: pro Durchlauf nur eine Quelle, eigener Takt', async () => {
   r = await newsAbruf(quellen, r.stand, { holen, jetzt: new Date(t0.getTime() + 120000) });
   assert.equal(geholt.length, 2); // beide im 20-Minuten-Takt noch nicht wieder dran
 });
+
+test('Amazon-Einladung und Pokémon Center aus Reddit lösen Push aus', () => {
+  const r = einordnen({ titel: 'Pokémon Delta Herrschaft ETB on Amazon – request invite now', text: '' }, { stufe: 'C', push: false });
+  assert.equal(r.amazonEinladung, true);
+  assert.equal(newsPushWert(r), true);
+  const p = newsPushNachricht({ ...r, titel: 'x', quelle: 'Reddit', bestaetigt: false });
+  assert.match(p.title, /Amazon-Einladung anfragen/);
+  assert.equal(p.priority, 5);
+  assert.equal(einordnen({ titel: 'Pokémon Display bei Amazon für 179 €', text: '' }, { stufe: 'C', deal: true }).amazonEinladung, false);
+});

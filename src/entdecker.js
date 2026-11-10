@@ -10,7 +10,7 @@ const passt = (name, dom) => { const n = String(name || '').toLowerCase().normal
 export const domainAus = (url) => { try { return new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch { return null; } };
 
 // deals: [{ titel, link, haendler, links: [...] }]; bekannt: Set bereits geführter Domains (haendler.json)
-export async function haendlerEntdecken(alt = {}, deals, bekannt, { jetzt = new Date(), holen = fetch, maxProben = 2 } = {}) {
+export async function haendlerEntdecken(alt = {}, deals, bekannt, { jetzt = new Date(), holen = fetch, maxProben = 2, bekanntNamen = new Set() } = {}) {
   const liste = { ...alt };
   for (const d of deals) {
     for (const link of d.links || []) {
@@ -21,6 +21,17 @@ export async function haendlerEntdecken(alt = {}, deals, bekannt, { jetzt = new 
       if (!e.titel.includes(d.titel)) e.titel = [d.titel, ...e.titel].slice(0, 20);
       Object.assign(e, { anzahl: e.titel.length, zuletzt: jetzt.toISOString(), beispiel: link, name: e.name === dom && passt(d.haendler, dom) ? d.haendler : e.name });
       liste[dom] = e;
+    }
+    // Händlername ohne passenden Shop-Link (z. B. Coolblue, Joybuy): trotzdem merken – Adresse später von Hand prüfen
+    const name = d.haendler;
+    const schluessel = 'name:' + String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const hatLink = (d.links || []).some((l) => { const dom = domainAus(l); return dom && passt(name, dom); });
+    if (name && !hatLink && !IGNORIEREN.test(name.toLowerCase().replace(/\s/g, '')) && !bekanntNamen.has(name.toLowerCase())
+      && !Object.values(liste).some((x) => x.domain && passt(name, x.domain))) {
+      const e = liste[schluessel] || { domain: null, name, titel: [], zuerst: jetzt.toISOString(), shopify: false };
+      if (!e.titel.includes(d.titel)) e.titel = [d.titel, ...e.titel].slice(0, 20);
+      Object.assign(e, { anzahl: e.titel.length, zuletzt: jetzt.toISOString(), beispiel: d.link });
+      liste[schluessel] = e;
     }
   }
   // Wenige neue Shops pro Lauf prüfen: öffentliche Shopify-Produktliste vorhanden?

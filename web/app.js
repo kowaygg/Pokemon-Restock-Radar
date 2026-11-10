@@ -31,7 +31,7 @@ function bewertungHtml(b) {
 function entdecktHtml() {
   const l = daten.entdeckt || [];
   if (!l.length) return '';
-  const zeile = (e) => `<tr><td><a href="https://${esc(e.domain)}" target="_blank" rel="noopener">${esc(e.name)}</a><br><span class="unbekannt">${esc(e.domain)}</span></td><td>${e.anzahl}</td><td>${e.shopify === true ? '✅ Shopify – leicht einbindbar' : e.shopify === false ? '–' : 'wird geprüft'}</td><td>${zeit(e.zuletzt)}</td></tr>`;
+  const zeile = (e) => `<tr><td>${e.domain ? `<a href="https://${esc(e.domain)}" target="_blank" rel="noopener">${esc(e.name)}</a><br><span class="unbekannt">${esc(e.domain)}</span>` : `${esc(e.name)}<br><span class="unbekannt">nur Name aus Deal</span>`}</td><td>${e.anzahl}</td><td>${e.shopify === true ? '✅ Shopify – leicht einbindbar' : e.shopify === false ? '–' : 'wird geprüft'}</td><td>${zeit(e.zuletzt)}</td></tr>`;
   return `<h2>🆕 Neu entdeckt (aus Deal-Meldungen)</h2><p class="hinweis">Shops, die in Pokémon-Deals auftauchen, aber noch nicht überwacht werden. Eingebunden wird erst nach Prüfung von Impressum und Bewertungen.</p>
     <div class="tabelle"><table><tr><th>Shop</th><th>Deals</th><th>Technik</th><th>Zuletzt</th></tr>${l.map(zeile).join('')}</table></div>`;
 }
@@ -63,7 +63,8 @@ const ansichten = {
   news() {
     const l = [...(daten.news || [])].sort((a, b) => b.zeit.localeCompare(a.zeit));
     const gruppen = [
-      ['🚨 Pokémon Center', l.filter((n) => n.pokemonCenter)],
+      ['📨 Amazon-Einladungen (sofort anfragen!)', l.filter((n) => n.amazonEinladung)],
+      ['🚨 Pokémon Center', l.filter((n) => n.pokemonCenter && !n.amazonEinladung)],
       ['📅 Releases & Vorbestellungen', l.filter((n) => !n.pokemonCenter && (n.art === 'release' || n.art === 'vorbestellung'))],
       ['🔮 Leaks & Ankündigungen', l.filter((n) => !n.pokemonCenter && n.art === 'leak')],
       ['💸 Deal-Hinweise (Community – Preis beim Händler prüfen)', l.filter((n) => !n.pokemonCenter && n.art === 'deal')],

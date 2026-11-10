@@ -234,6 +234,12 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   ausverkauft → ideal für Restock-Alarm) aktiv als sitemap-jsonld; expert (expert e-Commerce GmbH; 45 Sealed, kein Preis) als sitemap + vorOrt;
   Foot Locker gesperrt (keine Pokémon-Karten, Queue-it). Entdeckt-Liste blendet bekannte Händler aus.
 
+- 10.11.2026 (1.7.0): Amazon-Einladungs-Alarm (News/Deals/Reddit: „amazon“ + Einladung/invite → dringender Push „Amazon-Einladung anfragen“,
+  eigene Gruppe im Reiter News). Reddit (sonst nur Anzeige) pusht bei Pokémon-Center-DROPS (PC + restock/drop/live/queue …) und Amazon-Einladungen.
+  Entdecker merkt auch Händlernamen ohne Shop-Link. Geprüft: VEDES aktiv (sitemap, 161 Sealed, 19 TTB, Preis nicht lesbar, vorOrt);
+  Coolblue/duo-shop/libro (Bot-Schutz), Joybuy/Lucky Bricks/Spielemax/idee-shop (keine Sealed in Sitemap) → nicht eingebunden.
+  Newsletter als Push über ntfy-E-Mail (docs/newsletter-push.md). Amazon/Pokémon-Center-Warteschlange: nicht beeinflussbar/umgehbar.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

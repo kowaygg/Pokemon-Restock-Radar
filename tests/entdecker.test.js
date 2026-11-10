@@ -31,3 +31,9 @@ test('Preisvergleiche ignorieren, Name nur wenn passend', async () => {
   assert.equal(l['footlocker.de'].name, 'Foot Locker');
   assert.equal(l['expert.de'].name, 'expert.de');
 });
+
+test('Händlername ohne Shop-Link wird gemerkt, bekannte Namen nicht', async () => {
+  const deals = [{ titel: 'Display bei Coolblue', haendler: 'Coolblue', link: 'https://www.mydealz.de/d/1', links: [] }, { titel: 'TTB Amazon', haendler: 'Amazon', links: [] }, { titel: 'X', haendler: 'TCGViert', links: [] }];
+  const l = await haendlerEntdecken({}, deals, new Set(), { maxProben: 0, bekanntNamen: new Set(['amazon', 'tcgviert']) });
+  assert.deepEqual(Object.values(l).map((e) => e.name), ['Coolblue']);
+});

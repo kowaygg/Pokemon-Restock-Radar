@@ -220,7 +220,9 @@ if (newsFaellig && newsFeeds.length) {
   // Händler-Entdecker: Shops aus Deal-Meldungen sammeln, neue auf Shopify prüfen (nur GitHub – schont Handy-Daten)
   if (!handy && deals.length) {
     const bekannt = new Set(haendler.map((h) => domainAus(h.url)).filter(Boolean));
-    zustand.entdeckt = await haendlerEntdecken(zustand.entdeckt, deals, bekannt, { jetzt });
+    // bekannte Namen (Händlerliste + Marktplätze/Hersteller, die wir bewusst nicht überwachen)
+    const bekanntNamen = new Set([...haendler.map((h) => h.name.toLowerCase()), 'amazon', 'aliexpress', 'pokémon', 'pokemon', 'ebay', 'kaufland', 'otto', 'temu', 'shein', 'joom', 'wish']);
+    zustand.entdeckt = await haendlerEntdecken(zustand.entdeckt, deals, bekannt, { jetzt, bekanntNamen });
   }
   zustand.newsStand = stand;
   zustand.newsFehler = fehler;
@@ -230,7 +232,8 @@ if (newsFaellig && newsFeeds.length) {
   for (const n of neu) {
     const { still, push, ...eintrag } = n;
     zustand.news.unshift(eintrag);
-    if (!n.still && n.push !== false && newsPushWert(n) && newsPushes < einst.maxNewsPushProLauf && !gemeldet.has(n.link)) {
+    // Reddit & Co. (push: false) melden nur die wichtigsten Fälle: Pokémon Center und Amazon-Einladungen
+    if (!n.still && (n.push !== false || n.pcDrop || n.amazonEinladung) && newsPushWert(n) && newsPushes < einst.maxNewsPushProLauf && !gemeldet.has(n.link)) {
       if (await pushSenden(newsPushNachricht(n), { kanal })) { newsPushes++; pushes++; gemeldet.add(n.link); }
     }
   }
@@ -277,7 +280,7 @@ const oeffentlich = {
   newsFehler: zustand.newsFehler || {},
   muster: musterAuswerten(zustand.statistik, jetzt),
   // nur Shops, die noch nicht in der Händlerliste stehen
-  entdeckt: Object.values(zustand.entdeckt || {}).filter((e) => !haendler.some((h) => domainAus(h.url) === e.domain)).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),
+  entdeckt: Object.values(zustand.entdeckt || {}).filter((e) => !haendler.some((h) => domainAus(h.url) === e.domain || h.name.toLowerCase() === String(e.name).toLowerCase())).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),
 };
 await writeFile('data/oeffentlich.json', JSON.stringify(oeffentlich));
 

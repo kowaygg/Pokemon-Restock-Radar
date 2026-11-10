@@ -288,6 +288,16 @@
       "status": "gesperrt",
       "grund": "Keine Pokémon-Karten im Sortiment (Sitemap), Warteschlangen-Schutz (Queue-it).",
       "entdeckt": "2026-11-10 (Deal-Meldung)"
+    },
+    {
+      "id": "vedes",
+      "name": "VEDES",
+      "url": "https://www.vedes.com",
+      "art": "spielwaren",
+      "status": "aktiv",
+      "abfrage": "sitemap",
+      "vorOrt": true,
+      "entdeckt": "2026-11-10 (Prüfung bekannter Ketten)"
     }
   ]
 }

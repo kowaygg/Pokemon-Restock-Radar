@@ -47,6 +47,10 @@ export function einordnen(e, quelle) {
   if (!TCG.test(t)) return null;
   if (/pokemon go\b|legenden z.?a|pokopia|champions|unite|karmesin|purpur.*spiel|nintendo switch/.test(titel) && !/sammelkart|tcg|karten/.test(titel)) return null;
   const pc = /pokemon.?center/.test(t);
+  // Amazon „auf Einladung“: so früh wie möglich selbst anfragen – Zuteilung entscheidet Amazon
+  const amazonEinladung = /amazon/.test(t) && /einladung|invite|invitation|request invite/.test(t);
+  // Pokémon-Center-Drop (nicht nur Erwähnung): für Community-Quellen ohne eigene Push-Freigabe
+  const pcDrop = pc && /restock|drop|\blive\b|in stock|available|queue|warteschlange|verfugbar|wieder da|jetzt/.test(t);
   let art = 'news';
   if (/vorbestell|pre.?order|vorverkauf|preorder/.test(t)) art = 'vorbestellung';
   else if (/jetzt erhaltlich|ist jetzt|ab heute|erscheint|veroffentlicht|release|verfugbar|wieder da|restock|lieferbar/.test(t)) art = 'release';
@@ -56,7 +60,7 @@ export function einordnen(e, quelle) {
   // „bei netto Online“ ist ein Online-Angebot – Ladenbezug nur ohne „online“ oder mit Filial-/Prospekt-Hinweis
   const vorOrt = VOR_ORT.test(t) && (!/\bonline\b/.test(t) || /filiale|prospekt|vor ort|im laden|in store|offline/.test(t));
   const abDatum = datumAus(e.titel);
-  return { art, pokemonCenter: pc, ttb, vorOrt, ...(abDatum ? { abDatum } : {}) };
+  return { art, pokemonCenter: pc, pcDrop, amazonEinladung, ttb, vorOrt, ...(abDatum ? { abDatum } : {}) };
 }
 
 // Stationäre Ketten / Filial-Hinweise (Prospekt-Aktionen)
@@ -118,15 +122,15 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
 
 // Push nur für das Wichtige: Vorbestellung/Release, Pokémon Center, Top-Trainer-Box-Deals
 export function newsPushWert(n) {
-  return n.pokemonCenter || n.art === 'vorbestellung' || n.art === 'release' || (n.art === 'deal' && n.ttb) || (n.vorOrt && n.art === 'deal');
+  return n.pokemonCenter || n.amazonEinladung || n.art === 'vorbestellung' || n.art === 'release' || (n.art === 'deal' && n.ttb) || (n.vorOrt && n.art === 'deal');
 }
 
 export function newsPushNachricht(n) {
   const art = { vorbestellung: 'VORBESTELLUNG', release: 'RELEASE', leak: 'Leak/Ankündigung', deal: 'Deal-Hinweis', news: 'News' }[n.art];
-  const dringend = n.pokemonCenter || (n.ttb && n.art !== 'leak');
+  const dringend = n.pokemonCenter || n.amazonEinladung || (n.ttb && n.art !== 'leak');
   return {
-    title: `${dringend ? '🚨 ' : n.vorOrt ? '📍 ' : '📰 '}${n.pokemonCenter ? 'Pokémon Center · ' : n.vorOrt ? 'Vor Ort · ' : ''}${art} · ${n.quelle}`.slice(0, 250),
-    message: [n.titel, n.abDatum ? `Start: ${n.abDatum}` : null, n.bestaetigt ? null : '(Community-Hinweis – Preis beim Händler prüfen)'].filter(Boolean).join('\n').slice(0, 2000),
+    title: `${dringend ? '🚨 ' : n.vorOrt ? '📍 ' : '📰 '}${n.amazonEinladung ? 'Amazon-Einladung anfragen · ' : n.pokemonCenter ? 'Pokémon Center · ' : n.vorOrt ? 'Vor Ort · ' : ''}${art} · ${n.quelle}`.slice(0, 250),
+    message: [n.titel, n.amazonEinladung ? '👉 Jetzt auf Amazon „Einladung anfordern“ klicken – je früher, desto besser' : null, n.abDatum ? `Start: ${n.abDatum}` : null, n.bestaetigt ? null : '(Community-Hinweis – Preis beim Händler prüfen)'].filter(Boolean).join('\n').slice(0, 2000),
     priority: dringend ? 5 : 4,
     tags: [dringend ? 'rotating_light' : 'newspaper'],
     click: n.link,
