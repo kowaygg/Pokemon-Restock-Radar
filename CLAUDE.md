@@ -272,6 +272,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - `npm test` · `npm run abruf` · `npm run haendler-check` · `npm run vorschau` · `npm run handy` (Handy-Wächter)
 
 ### Offene Punkte
+- Stand 10.11.2026 nachmittags: 0 Fehlläufe in den letzten 30 Läufen (19 geplante, Cron läuft inzwischen regelmäßig). Bekannt: Müller + VEDES
+  „Sitemap nicht lesbar“ auf GitHub (Handy liest sie). EMPFEHLUNGEN (Nutzer entscheidet): 1) Selbstcheck + Keep-alive (GitHub stoppt
+  geplante Läufe nach 60 Tagen ohne Commit; Push wenn Wächter/GitHub stockt), 2) Termux:Boot-Autostart nach Handy-Neustart,
+  3) Nutzer: Newsletter-Weiterleitung an ntfy einrichten, 4) Handy-Treffer (MediaMarkt/Saturn) auch in der App zeigen.
 - NÄCHSTE RUNDE (Wunsch 09.11.2026 spät, Reihenfolge mit Nutzer klären): 1) Design wie KI-Finanz-Radar (ruhige Farben, weniger klarere
   Reiter: Kaufen · Bald · News · Vor Ort · Händler/UVP, Filter-Chips); 2) mehr Händler MIT Preis (Preis-Leser für Sitemap-Shops, weitere
   Shopify-Shops DE/AT/NL/BE); 3) Quellen Reddit-RSS, PokeBeach, PokeGuardian, Serebii, pokemon-card.com (JP); 4) Leak-Radar nur aus
