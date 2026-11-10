@@ -230,6 +230,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 
 - 10.11.2026 (1.5.1): Fehltreffer „Display 18 Booster“ (Gate, 159,90 €) – Anzahl-Erkennung auch „18 Booster/Packs“, nicht nur „18er“.
 
+- 10.11.2026 (1.6.0): Entdeckte Shops geprüft: Toys for Fun (GmbH, HRB 20363 HL; 126 Sealed, Preis/Bestand per JSON-LD, TTBs 44–60 € meist
+  ausverkauft → ideal für Restock-Alarm) aktiv als sitemap-jsonld; expert (expert e-Commerce GmbH; 45 Sealed, kein Preis) als sitemap + vorOrt;
+  Foot Locker gesperrt (keine Pokémon-Karten, Queue-it). Entdeckt-Liste blendet bekannte Händler aus.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

@@ -258,6 +258,36 @@
       "status": "aktiv",
       "abfrage": "sitemap",
       "vorOrt": true
+    },
+    {
+      "id": "toys-for-fun",
+      "name": "Toys for Fun",
+      "url": "https://www.toys-for-fun.com",
+      "art": "spielwaren",
+      "status": "aktiv",
+      "abfrage": "sitemap-jsonld",
+      "impressum": "Toys for Fun GmbH, Bargteheide, HRB 20363 HL",
+      "entdeckt": "2026-11-10 (Deal-Meldung)"
+    },
+    {
+      "id": "expert",
+      "name": "expert",
+      "url": "https://www.expert.de",
+      "art": "kette",
+      "status": "aktiv",
+      "abfrage": "sitemap",
+      "vorOrt": true,
+      "impressum": "expert e-Commerce GmbH",
+      "entdeckt": "2026-11-10 (Deal-Meldung)"
+    },
+    {
+      "id": "footlocker",
+      "name": "Foot Locker",
+      "url": "https://www.footlocker.de",
+      "art": "kette",
+      "status": "gesperrt",
+      "grund": "Keine Pokémon-Karten im Sortiment (Sitemap), Warteschlangen-Schutz (Queue-it).",
+      "entdeckt": "2026-11-10 (Deal-Meldung)"
     }
   ]
 }

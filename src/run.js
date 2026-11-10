@@ -276,7 +276,8 @@ const oeffentlich = {
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},
   muster: musterAuswerten(zustand.statistik, jetzt),
-  entdeckt: Object.values(zustand.entdeckt || {}).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),
+  // nur Shops, die noch nicht in der Händlerliste stehen
+  entdeckt: Object.values(zustand.entdeckt || {}).filter((e) => !haendler.some((h) => domainAus(h.url) === e.domain)).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),
 };
 await writeFile('data/oeffentlich.json', JSON.stringify(oeffentlich));
 
