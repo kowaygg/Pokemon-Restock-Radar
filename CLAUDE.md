@@ -269,6 +269,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Puls-Alarm in JEDEM GitHub-Lauf (ntfy <kanal>-puls, > 90 Min. still → Push, max. alle 6 h, Zustand pulsAlarm/handyPuls).
   Außerdem: JP-Codes ohne Zusatz (M2 = Japan, „Inferno X M2 Display“ war Fehltreffer), KR/CN-Angabe vor JP-Code; SW-Cache-Aufräumen repariert.
 
+- 10.11.2026 15:32: Dauerlauf auf dem Handy läuft, Puls kommt an (15:27, 15:32). Boot-Skript kopiert; Termux:Boot-App nur über F-Droid (nicht im Play Store).
+  Shopify-Shops geben dem Handy weiter 429 – PC und Handy teilen die Heim-IP: KEINE vollständigen Testläufe (node src/run.js) mehr vom PC aus.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
