@@ -134,3 +134,12 @@ test('Packzahl: „Vol. 2“ ist keine Packzahl (Fall 10.11.2026)', () => {
   assert.equal(u.uvp, 47.8);
   assert.equal(uvpFinden('Pokémon Gem Pack Vol. 4 10 Booster Display CHN', 'display-36', l).uvp, 15.93);
 });
+
+test('Fehltreffer 10.11.2026: „Inferno X M2 Display“ ist Japan; „M6a … KOR“ bleibt Korea', () => {
+  const l = { ...JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url))), kurse: { JPY: 176.79, KRW: 1507.46 } };
+  assert.equal(sprache('Pokemon Inferno X M2 Display'), 'JP');
+  assert.notEqual(preisBewertung(134.99, uvpFinden('Pokemon Inferno X M2 Display', 'display-36', l), 5).stufe, 'uvp');
+  assert.equal(sprache('Pokémon - 30th Celebration M6a Booster Display - KOR'), 'KR');
+  assert.equal(sprache('Pokemon ME02 Mega Entwicklung Display deutsch'), 'DE');
+  assert.equal(uvpFinden('Pokemon ME06 Delta Herrschaft Display', 'display-36', l).uvp, 179.64);
+});

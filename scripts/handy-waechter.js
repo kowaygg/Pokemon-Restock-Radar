@@ -46,7 +46,15 @@ for (;;) {
   }
   if (!stufe.pause) {
     if (start - letztesUpdate > 3600000 && geraet.wlan) {
-      try { await ausfuehren('git', ['pull', '-q', '--ff-only'], { timeout: 60000 }); } catch (e) { console.log(`${uhr()} Update übersprungen: ${e.message.split('\n')[0]}`); }
+      try {
+        const vorher = (await ausfuehren('git', ['rev-parse', 'HEAD'])).stdout.trim();
+        await ausfuehren('git', ['pull', '-q', '--ff-only'], { timeout: 60000 });
+        // Im Dauerlauf: bei neuer Version beenden → das Dauerlauf-Skript startet sofort mit dem neuen Code neu
+        if (process.env.DAUERLAUF && (await ausfuehren('git', ['rev-parse', 'HEAD'])).stdout.trim() !== vorher) {
+          console.log(`${uhr()} Neue Version geladen – Neustart …`);
+          process.exit(0);
+        }
+      } catch (e) { console.log(`${uhr()} Update übersprungen: ${e.message.split('\n')[0]}`); }
       letztesUpdate = start;
     }
     try {

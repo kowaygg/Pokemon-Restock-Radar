@@ -34,9 +34,11 @@ export function sprache(titel) {
   const t = norm(titel);
   if (/\b(deutsch|\bde\b|german)/.test(t)) return 'DE';
   if (/\b(englisch|english|\ben\b)/.test(t)) return 'EN';
-  if (/\b(japanisch|japanese|\bjpn?\b|\bjap\b)/.test(t) || /\b(m|sv|s)\d{1,2}[a-z]\b/.test(t)) return 'JP';
+  if (/\b(japanisch|japanese|\bjpn?\b|\bjap\b)/.test(t)) return 'JP';
   if (/\b(koreanisch|korean|\bkor?\b)/.test(t)) return 'KR';
   if (/\b(chinesisch|chinese|\bchn\b|\bcn\b|simplified|traditional)/.test(t)) return 'CN';
+  // ohne Angabe: japanische Set-Codes (Mega „M2“, „M6a“; SV8a, S12a) – DE/EN heißen ME02 bzw. SV10
+  if (/\b(m\d{1,2}[a-z]?|sv\d{1,2}[a-z]|s\d{1,2}[a-z])\b/.test(t)) return 'JP';
   return null;
 }
 

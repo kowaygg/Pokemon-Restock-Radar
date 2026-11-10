@@ -264,6 +264,11 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Check: 0 Lebenszeichen in 12 h = Alarm), Händler-/News-Fehler (Müller/VEDES/MM/Saturn = nur Handy, kein Alarm). Push nur bei Problemen,
   sonntags „Wochen-Check ok“. Termux:Boot-Autostart: `scripts/termux-boot.sh` → ~/.termux/boot/start-radar (Anleitung docs/handy-waechter.md).
 
+- 10.11.2026 (2.1.0): Handy-Wächter lief unbemerkt nicht (Termux neu gestartet). Fixes: `scripts/handy-dauerlauf.sh` (npm run dauer) = Neustart-Schleife,
+  Wächter beendet sich bei neuer Git-Version selbst (DAUERLAUF=1) → lädt Updates ohne Handarbeit; Termux:Boot startet den Dauerlauf;
+  Puls-Alarm in JEDEM GitHub-Lauf (ntfy <kanal>-puls, > 90 Min. still → Push, max. alle 6 h, Zustand pulsAlarm/handyPuls).
+  Außerdem: JP-Codes ohne Zusatz (M2 = Japan, „Inferno X M2 Display“ war Fehltreffer), KR/CN-Angabe vor JP-Code; SW-Cache-Aufräumen repariert.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

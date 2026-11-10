@@ -264,6 +264,24 @@ zustand.topBekannt ||= {};
   zustand.topBekannt = Object.fromEntries(Object.entries(zustand.topBekannt).filter(([, z]) => Date.parse(z) >= alt));
 }
 
+// Handy-Puls-Wächter (nur GitHub): Hat sich der Handy-Wächter in den letzten 90 Min. gemeldet? Sonst Push – höchstens alle 6 h.
+if (!handy && kanal) {
+  try {
+    const t = await (await fetch(`https://ntfy.sh/${kanal}-puls/json?poll=1&since=12h`, { signal: AbortSignal.timeout(15000) })).text();
+    const zeiten = t.split(/\r?\n/).filter(Boolean).map((z) => { try { return JSON.parse(z).time * 1000; } catch { return 0; } }).filter(Boolean);
+    const letzter = zeiten.length ? Math.max(...zeiten) : null;
+    zustand.handyPuls = letzter ? new Date(letzter).toISOString() : zustand.handyPuls || null;
+    const stillMin = letzter ? Math.round((jetzt - letzter) / 60000) : null;
+    const alarmFaellig = !zustand.pulsAlarm || jetzt - Date.parse(zustand.pulsAlarm) > 6 * 3600000;
+    if ((stillMin === null || stillMin > 90) && alarmFaellig) {
+      const seit = stillMin === null ? 'seit über 12 Stunden' : `seit ${stillMin >= 120 ? Math.round(stillMin / 60) + ' Stunden' : stillMin + ' Minuten'}`;
+      await pushSenden({ title: '⚠️ Handy-Wächter läuft nicht', message: `Kein Lebenszeichen ${seit}.\nTermux öffnen und eingeben:\ncd ~/Pokemon-Restock-Radar && npm run dauer`, priority: 4, tags: ['warning'] }, { kanal });
+      zustand.pulsAlarm = jetzt.toISOString();
+    }
+    bericht.push(`| Handy-Wächter | ${stillMin === null ? '🔴 kein Lebenszeichen in 12 h' : stillMin > 90 ? `🔴 still seit ${stillMin} Min.` : `🟢 vor ${stillMin} Min.`} | – | – | – | – |`);
+  } catch {}
+}
+
 // Öffentlicher Auszug für die App (nur Produktdaten, nichts Persönliches)
 const oeffentlich = {
   letzterLauf: zustand.letzterLauf,

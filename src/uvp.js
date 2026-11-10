@@ -3,9 +3,11 @@ const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-
 
 // Asiatische Ausgaben (JP/KR/CN …) haben andere Inhalte und Preise → nur mit Einträgen derselben Sprache vergleichen
 // (Feld "sprache" in config/uvp.json). Ohne passenden Eintrag: UVP unbekannt, also nie ein falscher Treffer.
-// Japanische Set-Codes haben einen Buchstaben-Zusatz (M6a, SV8a, S12a) – deutsche/englische nicht (ME06, SV10)
-const ASIA = { JP: /\b(jp|jpn|jap|japanisch|japanese|m\d{1,2}[a-z]|sv\d{1,2}[a-z]|s\d{1,2}[a-z])\b/, KR: /\b(kor|korean|koreanisch)\b/, CN: /\b(chn|cn|chinese|chinesisch|simplified|traditional)\b/, ANDERE: /\b(thai|indonesisch|indonesian)\b/ };
-const ausgabe = (t) => Object.keys(ASIA).find((k) => ASIA[k].test(t)) || null;
+// Ausdrückliche Sprachangabe zuerst (KR/CN-Ausgaben tragen dieselben Set-Codes wie JP, z. B. „M6a … KOR“).
+// Ohne Angabe: japanische Set-Codes = Japan – Mega-Serie „M2“, „M6a“ (DE/EN heißen ME02), SV8a, S12a (DE/EN: SV10 ohne Zusatz)
+const ASIA = { KR: /\b(kor|korean|koreanisch)\b/, CN: /\b(chn|cn|chinese|chinesisch|simplified|traditional)\b/, JP: /\b(jp|jpn|jap|japanisch|japanese)\b/, ANDERE: /\b(thai|indonesisch|indonesian)\b/ };
+const JP_CODE = /\b(m\d{1,2}[a-z]?|sv\d{1,2}[a-z]|s\d{1,2}[a-z])\b/;
+const ausgabe = (t) => Object.keys(ASIA).find((k) => ASIA[k].test(t)) || (JP_CODE.test(t) ? 'JP' : null);
 // Wörter, die in jedem Produktnamen vorkommen können – alle übrigen Namenswörter müssen im Titel stehen
 const ALLGEMEIN = new Set(['kollektion', 'collection', 'booster', 'boosters', 'display', 'bundle', 'trainer', 'elite', 'mini', 'promo', 'promos', 'pokemon', 'pack', 'packs', 'korea', 'japan', 'china']);
 const namePasst = (p, t) => norm(p.name).split(/\s+/).filter((w) => w.length > 3 && !/^\d+$/.test(w) && !ALLGEMEIN.has(w) && !norm(p.set).includes(w)).every((w) => t.includes(w));

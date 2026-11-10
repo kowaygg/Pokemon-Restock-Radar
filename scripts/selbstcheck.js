@@ -14,7 +14,7 @@ export function bewerten({ jetzt, letzterLauf, pulsAnzahl, haendler = [], newsFe
   const stunden = letzterLauf ? (jetzt - Date.parse(letzterLauf)) / 3600000 : Infinity;
   if (stunden > 6) probleme.push(`GitHub-Wächter: letzter Lauf vor ${Number.isFinite(stunden) ? Math.round(stunden) + ' h' : 'unbekannt'}`);
   else ok.push(`GitHub-Wächter lief vor ${Math.round(stunden * 60)} Min.`);
-  if (pulsAnzahl === 0) probleme.push('Handy-Wächter meldet sich seit 12 h nicht – Termux öffnen und `npm run handy` starten');
+  if (pulsAnzahl === 0) probleme.push('Handy-Wächter: kein Lebenszeichen in den letzten 12 h – Termux öffnen: cd ~/Pokemon-Restock-Radar && npm run dauer');
   else if (pulsAnzahl > 0) ok.push(`Handy-Wächter aktiv (${pulsAnzahl} Lebenszeichen in 12 h)`);
   const kaputt = haendler.filter((h) => h.status === 'aktiv' && h.fehler && !NUR_HANDY.has(h.id));
   if (kaputt.length) probleme.push(`Händler mit Fehler: ${kaputt.map((h) => `${h.name} (${h.fehler})`).join(', ')}`);

@@ -21,12 +21,13 @@ npm run haendler-check
 ```
 Fragt `pkg` nach einer Auswahl (Spiegelserver / Konfigurationsdatei): einfach Enter drücken.
 
-## 4. Starten
+## 4. Starten (mit Selbstheilung)
 ```
-npm run handy
+cd ~/Pokemon-Restock-Radar && npm run dauer
 ```
+- `npm run dauer` startet den Wächter und startet ihn nach Absturz/Update von selbst neu. Ganz beenden: Lautstärke-runter + C **zweimal** (zweites Mal während „Neustart in 5 Sekunden“).
 - Termux offen lassen (darf im Hintergrund sein). Beenden: Lautstärke-runter + C.
-- Nach einem Neustart des Handys: Termux öffnen → `cd Pokemon-Restock-Radar` → `npm run handy`
+- Nach einem Neustart des Handys: Termux öffnen → `cd ~/Pokemon-Restock-Radar && npm run dauer` (oder Autostart, Abschnitt 6)
 
 ## 5. Sparmodus (automatisch)
 | Lage | Takt | Umfang |
@@ -58,3 +59,10 @@ Ohne sie schätzt der Wächter (im Zweifel sparsam).
 ## 7. Selbstcheck
 - Täglich prüft GitHub, ob der Handy-Wächter sich gemeldet hat (stilles Lebenszeichen alle 30 Min.) und ob der GitHub-Wächter läuft.
 - Push nur bei Problemen, sonntags ein kurzer „Wochen-Check ok“.
+
+## 8. Damit der Wächter nicht unbemerkt stoppt (seit 2.1.0)
+- **Selbstheilung:** `npm run dauer` startet nach Absturz oder Update automatisch neu
+- **Schneller Alarm:** Jeder GitHub-Lauf prüft das stille Lebenszeichen – fehlt es > 90 Min., kommt ein Push „⚠️ Handy-Wächter läuft nicht“ (höchstens alle 6 h)
+- **Termux nicht wegwischen** und die Dauer-Meldung nicht „beenden“ – nur ausblenden (lange drücken → Benachrichtigungen aus)
+- **Akku:** Einstellungen → Apps → Termux → Akku → **Uneingeschränkt** (sonst beendet Android Termux)
+- **Autostart nach Neustart:** Abschnitt 6 (Termux:Boot)
