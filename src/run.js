@@ -269,7 +269,9 @@ const oeffentlich = {
   feed: zustand.feed.slice(0, 300).map((f) => {
     const hz = zustand.haendler[f.haendlerId] || {};
     const z = hz.produkte?.[f.id] || hz.sitemap?.urls?.[f.id];
-    return { ...f, jetzt: f.typ === 'angekuendigt' ? false : z ? z.v === true : null };
+    // UVP mit aktueller Liste neu bewerten (ältere Meldungen bekommen so auch Spannen/Packpreise)
+    const neuBew = f.quelle !== 'ebay' && f.art && Number.isFinite(f.preis) ? bewerteGesamt(f.titel, f.art, f.preis, f.haendlerId).bewertung : f.bewertung;
+    return { ...f, bewertung: neuBew, jetzt: f.typ === 'angekuendigt' ? false : z ? z.v === true : null };
   }),
   top: top.sort((a, b) => a.prioritaet - b.prioritaet || a.bewertung.differenz - b.bewertung.differenz).slice(0, 100),
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),

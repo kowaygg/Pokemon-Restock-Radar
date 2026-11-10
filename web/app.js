@@ -4,7 +4,10 @@ const ART_TEXT = {
   tin: 'Tin', 'poster-kollektion': 'Poster-Kollektion', 'pin-kollektion': 'Pin-Kollektion', kollektion: 'Kollektion',
 };
 const TYP_TEXT = { neu: 'Neu lieferbar', 'wieder-da': 'Wieder da', vorbestellung: 'Vorbestellung offen', angekuendigt: 'Angekündigt' };
-const SPRACHEN = [['DE', '🇩🇪 Deutsch'], ['EN', '🇬🇧 Englisch'], ['JP', '🇯🇵 Japanisch'], ['KR', '🇰🇷 Koreanisch'], ['CN', '🇨🇳 Chinesisch'], [null, 'Sprache nicht angegeben']];
+// Reihenfolge = Wichtigkeit (Wunsch des Nutzers): Englisch, Deutsch, Japanisch, Koreanisch, Chinesisch
+const SPRACHEN = [['EN', '🇬🇧 Englisch'], ['DE', '🇩🇪 Deutsch'], ['JP', '🇯🇵 Japanisch'], ['KR', '🇰🇷 Koreanisch'], ['CN', '🇨🇳 Chinesisch'], [null, 'Sprache nicht angegeben']];
+const nachSprache = (liste, karteFn) => SPRACHEN.map(([k, name]) => [name, liste.filter((p) => (p.sprache || null) === k)]).filter(([, g]) => g.length)
+  .map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.map(karteFn).join('')}`).join('');
 const ABFRAGE_TEXT = { shopify: 'Shop-Feed', 'sitemap-jsonld': 'Sitemap + Preis', sitemap: 'nur Frühwarnung', mediamarkt: 'Suche – nur Handy im WLAN' };
 
 let daten = null;
@@ -19,12 +22,23 @@ const euro = (n) => (Number.isFinite(n) ? n.toFixed(2).replace('.', ',') + ' €
 const zeit = (iso) => (iso ? new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '–');
 const sicherLink = (u) => (/^https:\/\//.test(u || '') ? u : null);
 
-function bewertungHtml(b) {
-  if (!b || b.stufe === 'unbekannt') return '<span class="unbekannt">UVP unbekannt</span>';
-  if (b.stufe === 'unplausibel') return '<span class="unbekannt">weit unter UVP – vermutlich anderes Produkt</span>';
+// UVP immer zeigen: einzelner Wert, Spanne oder – wenn die Packzahl fehlt – der offizielle Preis pro Pack der Sprache
+function bewertungHtml(b, p = {}) {
+  const uvpText = (x) => (Number.isFinite(x.uvpVon) ? `${euro(x.uvpVon)}–${euro(x.uvp)}` : euro(x.uvp));
+  if (!b || b.stufe === 'unbekannt') {
+    const pp = daten?.uvp?.packPreise?.[p.sprache];
+    const k = daten?.uvp?.kurse?.[pp?.waehrung];
+    if (pp && (k || pp.waehrung === 'EUR')) {
+      const proPack = pp.waehrung === 'EUR' ? pp.betrag : (pp.betrag / k) * 1.19;
+      return `<span class="unbekannt">UVP ca. ${euro(proPack)} je Pack (${pp.betrag} ${esc(pp.waehrung)}) – Packzahl im Titel prüfen</span>`;
+    }
+    return '<span class="unbekannt">UVP: keine verlässliche Quelle gefunden</span>';
+  }
+  if (b.stufe === 'unplausibel') return `<span class="unbekannt">weit unter UVP ${uvpText(b)}${b.richtwert ? ' (Richtwert)' : ''} – vermutlich kleineres/anderes Produkt</span>`;
+  if (b.stufe === 'spanne') return `<span class="unbekannt">≈ im UVP-Bereich (UVP ${uvpText(b)}${b.richtwert ? ', Richtwert' : ''})</span>`;
   const d = b.differenz;
   const text = d <= 0 ? `${euro(-d)} unter UVP` : `${euro(d)} über UVP`;
-  return `<span class="${b.stufe === 'uvp' ? 'ok' : 'drueber'}">${b.stufe === 'uvp' ? '✅' : '⚠'} ${text} (UVP ${euro(b.uvp)})</span>`;
+  return `<span class="${b.stufe === 'uvp' ? 'ok' : 'drueber'}">${b.stufe === 'uvp' ? '✅' : '⚠'} ${text} (UVP ${uvpText(b)})</span>`;
 }
 
 // Neu entdeckte Shops aus Deal-Meldungen (noch nicht überwacht – erst Seriosität prüfen)
@@ -46,7 +60,7 @@ function karte(p, { typ } = {}) {
     <div class="kopf"><span>${esc(p.haendler)}</span><span>${typ ? esc(TYP_TEXT[typ] || typ) + ' · ' : ''}${p.zeit ? zeit(p.zeit) : ''}</span></div>
     <div class="titel">${esc(p.titel)}</div>
     <div><span class="marke${p.prioritaet === 1 ? ' gelb' : ''}">${esc(ART_TEXT[p.art] || p.art || '?')}</span>${p.sprache ? `<span class="marke">${esc(p.sprache)}</span>` : ''}${p.vorbestellung ? '<span class="marke">Vorbestellung</span>' : ''}</div>
-    <div><span class="preis">${euro(Number.isFinite(p.versand) ? p.preis + p.versand : p.preis)}</span> <span class="unbekannt">${versandText(p)}</span> · ${bewertungHtml(p.bewertung)}</div>
+    <div><span class="preis">${euro(Number.isFinite(p.versand) ? p.preis + p.versand : p.preis)}</span> <span class="unbekannt">${versandText(p)}</span> · ${bewertungHtml(p.bewertung, p)}</div>
     <div class="knoepfe">${korb ? `<a class="knopf kauf" href="${esc(korb)}" target="_blank" rel="noopener">🛒 In den Warenkorb</a>` : ''}${link ? `<a class="knopf" href="${esc(link)}" target="_blank" rel="noopener">Zum Shop</a>` : ''}</div>
   </div>`;
 }
@@ -120,7 +134,7 @@ const ansichten = {
     const l = alle.filter((f) => f.jetzt === true);
     const weg = alle.length - l.length;
     return '<p class="hinweis">Neu lieferbar, wieder da oder Vorbestellung offen (letzte 14 Tage) – nur was laut letzter Prüfung <b>jetzt noch kaufbar</b> ist.</p>'
-      + (l.length ? l.map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Gerade nichts davon kaufbar.</div>')
+      + (l.length ? nachSprache(l, (f) => karte(f, { typ: f.typ })) : '<div class="leer">Gerade nichts davon kaufbar.</div>')
       + (weg ? `<p class="hinweis">${weg} ältere Meldung(en) ausgeblendet – inzwischen ausverkauft oder nicht mehr prüfbar.</p>` : '');
   },
   fruehwarnung() {
@@ -151,10 +165,11 @@ const ansichten = {
     const u = daten.uvp || { produkte: [], standardUvp: [] };
     // Asien-Ware: Yen/Won zum EZB-Kurs + Einfuhr-USt
     const inEuro = (p) => Number.isFinite(p.uvp) ? p.uvp : (u.kurse?.[p.waehrung] ? Math.round(p.betrag / u.kurse[p.waehrung] * (1 + (u.einfuhrUst ?? 0.19)) * 100) / 100 : NaN);
-    const zeile = (p) => `<tr><td>${esc(p.name || ART_TEXT[p.art])}${p.sprache ? ` (${esc(p.sprache)})` : ''}</td><td>${euro(inEuro(p))}${p.betrag ? `<br><span class="unbekannt">${esc(p.betrag.toLocaleString('de-DE'))} ${esc(p.waehrung)}</span>` : ''}</td><td>${esc(p.sicherheit)}</td><td>${esc(p.erscheint || '')}</td></tr>`;
+    const zeile = (p) => `<tr><td>${esc(p.name || ART_TEXT[p.art])}${p.sprache ? ` (${esc(p.sprache)})` : ''}</td><td>${Number.isFinite(p.uvpVon) ? euro(p.uvpVon) + '–' : ''}${euro(inEuro(p))}${p.richtwert ? ' <span class="unbekannt">(Richtwert)</span>' : ''}${p.betrag ? `<br><span class="unbekannt">${esc(p.betrag.toLocaleString('de-DE'))} ${esc(p.waehrung)}</span>` : ''}</td><td>${esc(p.sicherheit)}</td><td>${esc(p.erscheint || '')}</td></tr>`;
     return `<p class="hinweis">Treffer, wenn Preis + Versand ≤ UVP + ${euro(u.spielraumEuro)}. Stand ${esc(u.stand)}. Sicherheit „niedrig“ = noch nicht bestätigt. Asien-Ware: Preis in Yen/Won zum EZB-Kurs${u.kurseStand ? ` vom ${esc(u.kurseStand)}` : ''} + 19 % Einfuhr-USt.</p>
       <div class="tabelle"><table><tr><th>Produkt</th><th>UVP</th><th>Sicherheit</th><th>Erscheint</th></tr>
-      ${u.produkte.map(zeile).join('')}${u.standardUvp.map((s) => zeile({ ...s, name: 'Standard: ' + (ART_TEXT[s.art] || s.art) })).join('')}</table></div>`;
+      ${u.produkte.map(zeile).join('')}${u.standardUvp.map((s) => zeile({ ...s, name: 'Standard: ' + (ART_TEXT[s.art] || s.art) })).join('')}</table></div>`
+      + `<h2>Preis pro Booster-Pack (für Displays ohne eigenen Eintrag)</h2><div class="tabelle"><table><tr><th>Sprache</th><th>je Pack</th><th>Hinweis</th></tr>${Object.entries(u.packPreise || {}).map(([k, pp]) => `<tr><td>${esc(k)}</td><td>${pp.betragVon ? esc(pp.betragVon) + '–' : ''}${esc(pp.betrag)} ${esc(pp.waehrung)}${pp.waehrung !== 'EUR' && u.kurse?.[pp.waehrung] ? `<br><span class="unbekannt">≈ ${euro(pp.betrag / u.kurse[pp.waehrung] * 1.19)}</span>` : ''}</td><td>${esc(pp.notiz || '')}${pp.richtwert ? ' (Richtwert)' : ''}</td></tr>`).join('')}</table></div>`;
   },
   haendler() {
     const l = daten.haendler || [];

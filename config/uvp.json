@@ -1,7 +1,7 @@
 {
-  "_hinweis": "UVP-Liste (deutsche Ware). Treffer, wenn Preis + Versand <= uvp + spielraumEuro. sicherheit: hoch = offizielle/mehrere übereinstimmende Quellen, mittel = mehrere Händler/Portale, niedrig = einzelne oder widersprüchliche Angaben (vor Nutzung bestätigen). Stand und Quellen bei jeder Änderung pflegen. Asien-Ware: Einträge mit sprache (JP/KR/CN) und betrag + waehrung (JPY/KRW) werden zum EZB-Tageskurs umgerechnet, plus einfuhrUst (19 %).",
+  "_hinweis": "UVP-Liste (deutsche Ware). Treffer, wenn Preis + Versand <= uvp + spielraumEuro. sicherheit: hoch = offizielle/mehrere übereinstimmende Quellen, mittel = mehrere Händler/Portale, niedrig = einzelne oder widersprüchliche Angaben (vor Nutzung bestätigen). Stand und Quellen bei jeder Änderung pflegen. Asien-Ware: Einträge mit sprache (JP/KR/CN) und betrag + waehrung (JPY/KRW) werden zum EZB-Tageskurs umgerechnet, plus einfuhrUst (19 %). uvpVon = untere Grenze einer UVP-Spanne; richtwert = nur Orientierung (kein Treffer/Push). packPreise = offizieller Preis je Booster-Pack und Sprache → UVP = Packzahl × Packpreis. angenommeneBox = typische Packzahl, wenn sie nicht im Titel steht (nur Richtwert, kein Push).",
   "spielraumEuro": 5,
-  "stand": "2026-11-09",
+  "stand": "2026-11-10",
   "standardUvp": [
     {
       "art": "top-trainer-box",
@@ -32,6 +32,59 @@
         "https://gamebiz.jp/news/420166",
         "https://news.denfaminicogamer.jp/news/260130y"
       ]
+    },
+    {
+      "art": "mini-tin",
+      "uvpVon": 10.99,
+      "uvp": 13.99,
+      "sicherheit": "mittel",
+      "notiz": "Mini-Tin 10,99 €, Sonderreihe (30 Jahre) 13,99 €",
+      "quellen": [
+        "https://www.monsterdealz.de/magazin/pokemon-30-jahre"
+      ]
+    },
+    {
+      "art": "tin",
+      "uvpVon": 16.99,
+      "uvp": 24.99,
+      "sicherheit": "mittel",
+      "notiz": "Pokéball-Tin 16,99 €, Tin-Box 24,99 €",
+      "quellen": [
+        "https://www.mydealz.de/magazin/?p=75315"
+      ]
+    },
+    {
+      "art": "booster-bundle",
+      "uvpVon": 27.99,
+      "uvp": 29.99,
+      "sicherheit": "mittel",
+      "quellen": [
+        "https://www.monsterdealz.de/magazin/pokemon-30-jahre"
+      ]
+    },
+    {
+      "art": "poster-kollektion",
+      "uvp": 23.99,
+      "sicherheit": "mittel",
+      "quellen": [
+        "https://www.mydealz.de/magazin/?p=75315"
+      ]
+    },
+    {
+      "art": "pin-kollektion",
+      "uvpVon": 14.99,
+      "uvp": 29.99,
+      "richtwert": true,
+      "sicherheit": "niedrig",
+      "notiz": "Spanne, je nach Kollektion"
+    },
+    {
+      "art": "kollektion",
+      "uvpVon": 14.99,
+      "uvp": 59.99,
+      "richtwert": true,
+      "sicherheit": "niedrig",
+      "notiz": "Spanne – Kollektionen unterscheiden sich stark (Blister bis Premium)"
     }
   ],
   "produkte": [
@@ -169,5 +222,50 @@
       ]
     }
   ],
-  "einfuhrUst": 0.19
+  "einfuhrUst": 0.19,
+  "packPreise": {
+    "DE": {
+      "betrag": 4.99,
+      "waehrung": "EUR",
+      "standardBox": 36,
+      "sicherheit": "mittel",
+      "quellen": [
+        "36 × 4,99 € = Display-UVP 179,64 € (monsterdealz)"
+      ]
+    },
+    "JP": {
+      "betragVon": 180,
+      "betrag": 200,
+      "waehrung": "JPY",
+      "standardBox": 30,
+      "sicherheit": "hoch",
+      "quellen": [
+        "https://gamebiz.jp/news/420166",
+        "https://thecardshopfinder.com/blog/pokemon-pack-prices-rising-japan-creatures-inc-200-yen-boosters-20260522/"
+      ]
+    },
+    "CN": {
+      "betrag": 10,
+      "waehrung": "CNY",
+      "standardBox": null,
+      "sicherheit": "mittel",
+      "notiz": "Vereinfachtes Chinesisch, 5-Karten-Pack (20-Karten-Pack: 50 Yuan)",
+      "quellen": [
+        "https://c.m.163.com/news/a/L0MACDBJ05568W0A.html"
+      ],
+      "angenommeneBox": 30
+    },
+    "KR": {
+      "betrag": 3500,
+      "waehrung": "KRW",
+      "standardBox": null,
+      "sicherheit": "niedrig",
+      "richtwert": true,
+      "notiz": "Nur Sonder-Set 30th Celebration (70.000 Won / 20 Packs) – normale Packs vermutlich günstiger",
+      "quellen": [
+        "https://foxcg.com/pokemon-card-30th-celebration/"
+      ],
+      "angenommeneBox": 30
+    }
+  }
 }

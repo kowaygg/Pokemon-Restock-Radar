@@ -11,10 +11,10 @@ const bew = (titel, preis) => { const a = produktArt(titel); return preisBewertu
 test('Top: nur echte UVP-Treffer', () => {
   assert.equal(bew('Pokémon TCG Delta Herrschaft Top Trainer Box (DE)', 54.99).stufe, 'uvp');
   assert.equal(bew('Pokémon Delta Herrschaft 36er Display (DE)', 179.99).stufe, 'uvp');
-  assert.equal(bew('Pokémon - Shiny Treasure EX 10er Display - JPN', 139.9).stufe, 'unbekannt');
-  assert.equal(bew('Pokémon - Ewige Rivalen 18er Booster Display - DE', 139.9).stufe, 'unbekannt');
+  assert.equal(bew('Pokémon - Shiny Treasure EX 10er Display - JPN', 139.9).stufe, 'unbekannt'); // ohne EZB-Kurs in diesem Test kein JP-Umrechnungswert
+  assert.equal(bew('Pokémon - Ewige Rivalen 18er Booster Display - DE', 139.9).stufe, 'drueber'); // 18 × 4,99 € = 89,82 €
   assert.equal(bew('Pokémon - Collect 151 Glumanda Display Set - CHN', 19.99).stufe, 'unbekannt');
-  assert.equal(bew('Pokémon 30 Jahre Tech-Sticker-Kollektion (deutsch)', 29.99).stufe, 'unbekannt');
+  assert.equal(bew('Pokémon 30 Jahre Tech-Sticker-Kollektion (deutsch)', 29.99).stufe, 'spanne'); // Kollektion: nur Spanne, kein Treffer
   assert.equal(bew('Pokémon 30 Jahre Figuren-Kollektion Mew', 36.99).stufe, 'uvp');
   assert.equal(bew('Pokémon Top Trainer Box Delta Herrschaft', 25).stufe, 'unplausibel');
 });
@@ -103,6 +103,26 @@ test('Fehltreffer 10.11.2026: JP-Code M6a und Mini-Tin-Display', () => {
 });
 
 test('Fehltreffer 10.11.2026: „Display 18 Booster“ ist kein 36er-Display', () => {
-  assert.equal(uvpFinden('Pokemon Karten Karmesin Purpur Display 18 Booster deutsch', 'display-36', liste), null);
+  assert.equal(uvpFinden('Pokemon Karten Karmesin Purpur Display 18 Booster deutsch', 'display-36', liste).uvp, 89.82);
   assert.equal(uvpFinden('Pokemon Delta Herrschaft Display 36 Booster deutsch', 'display-36', liste).uvp, 179.64);
+});
+
+test('UVP immer anzeigen: Packpreis-Rechnung und Spannen', () => {
+  const l = { ...JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url))), kurse: { JPY: 176.79, CNY: 7.4689, KRW: 1507.46 } };
+  const jp = uvpFinden('Pokemon Shiny Treasure EX 10er Display JPN', 'display-36', l);
+  assert.deepEqual([jp.uvpVon, jp.uvp], [12.12, 13.46]); // 10 × 180–200 Yen + 19 %
+  assert.equal(uvpFinden('Pokemon Gem Pack 10 Booster Display CHN', 'display-36', l).uvp, 15.93); // 10 × 10 Yuan + 19 %
+  const kr = preisBewertung(60, uvpFinden('Pokemon Mega Dream 20 Packs Display Korean', 'display-36', l), 5);
+  assert.equal(kr.stufe, 'spanne'); // Korea nur Richtwert → kein Treffer
+  const tin = preisBewertung(24.99, uvpFinden('Pokemon Tin Box Glurak', 'tin', l), 5);
+  assert.deepEqual([tin.stufe, tin.uvpVon, tin.uvp], ['spanne', 16.99, 24.99]);
+  assert.equal(preisBewertung(29.99, uvpFinden('Pokemon Booster Bundle Dunkelnacht', 'booster-bundle', l), 5).stufe, 'uvp');
+});
+
+test('CN/KR-Display ohne Packzahl: Richtwert mit 30 Packs, kein Treffer', () => {
+  const l = { ...JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url))), kurse: { CNY: 7.4689, KRW: 1507.46 } };
+  const cn = uvpFinden('Pokémon - True Mystery CSV6C Booster Display - CHN', 'display-36', l);
+  assert.equal(cn.richtwert, true);
+  assert.equal(cn.uvp, 47.8); // 30 × 10 Yuan + 19 %
+  assert.equal(preisBewertung(45, cn, 5).stufe, 'spanne');
 });

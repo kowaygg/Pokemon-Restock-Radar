@@ -90,6 +90,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - ✅ (0.6.0) Reiter „Vor Ort Freiburg“ (Wunsch 09.11.2026): Prospekte/Aktionen/Restocks stationärer Händler (Rossmann, Müller, Thalia, Rombach,
   Aldi, Lidl …) im Raum 79117 Freiburg (Ebnet/Littenweiler) mit Datum, damit der Nutzer als Erster im Laden ist. Marktguru/kaufDA prüfen
   (nur offizielle/erlaubte Wege), sonst öffentliche Angebotsseiten der Ketten.
+- **Regel (10.11.2026): Immer einen UVP anzeigen (notfalls Spanne/Richtwert mit Quelle); Sprachen-Wichtigkeit EN, DE, JP, KR, CN.**
 - **Regel (10.11.2026): Regionale Laden-Aktionen nur Raum Freiburg (79117), Südbaden/BW oder bundesweit.**
 - **Regel (09.11.2026): In der App nur anzeigen, was direkt kaufbar ist** (Ausnahme: klar markierte Info-Reiter Frühwarnung/News).
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
@@ -244,6 +245,11 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 10.11.2026 (1.7.1): Regionsfilter (Wunsch: nur Raum Freiburg): Meldungen mit fremder Region/Stadt (Berlin, Brandenburg, Bayern, NRW, …,
   auch Stuttgart/Karlsruhe) ohne Freiburg/Südbaden/BW/bundesweit → kein Push, nicht Vor Ort, nicht veröffentlicht (fremdeRegion in news.js).
   Auf GitHub: Müller + VEDES „Sitemap nicht lesbar“ (vermutlich Sperre für GitHub-Server) – Handy liest sie im WLAN.
+
+- 10.11.2026 (1.8.0): UVP IMMER anzeigen (Wunsch): Spannen (uvpVon–uvp) für Mini-Tin 10,99–13,99, Tin 16,99–24,99, Bundle 27,99–29,99,
+  Poster 23,99, Pin/Kollektion 14,99–59,99 (Richtwert); Packpreise je Sprache (DE 4,99 €, JP 180–200 Yen, CN 10 Yuan, KR 3.500 Won Richtwert) →
+  UVP = Packzahl × Packpreis (Titel; sonst Standard-Box JP 30; CN/KR angenommen 30 = Richtwert). Stufe „spanne“ = angezeigt, aber kein Treffer/Push.
+  Feed-Bewertungen beim Export neu berechnet. Sprach-Reihenfolge EN → DE → JP → KR → CN (Kaufen + Meldungen gruppiert).
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
