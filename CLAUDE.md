@@ -280,6 +280,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Aufpasser `scripts/waechter-check.sh` über termux-job-scheduler (Termux:API, alle 15 Min., persisted) startet Dauerlauf neu, wenn er fehlt;
   Dauerlauf schreibt ~/.restock-radar.pid und startet nie doppelt (Prüfung /proc/<pid>/cmdline). Einrichtung: docs/handy-waechter.md §11.
   Energiesparmodus an/aus beendet den Wächter nicht (Ausnahmen gesetzt) → kein Neustart nötig.
+  16:20: Termux:API + Aufpasser (Job 7) eingerichtet, Neustart-Test ok, Akku/WLAN jetzt exakt. S10: „Nie schlafende Apps“ zeigt Termux nicht → je App Akku „Nicht eingeschränkt“ + „Apps, die immer Daten nutzen“.
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
