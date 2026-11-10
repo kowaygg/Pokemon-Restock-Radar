@@ -282,6 +282,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Energiesparmodus an/aus beendet den Wächter nicht (Ausnahmen gesetzt) → kein Neustart nötig.
   16:20: Termux:API + Aufpasser (Job 7) eingerichtet, Neustart-Test ok, Akku/WLAN jetzt exakt. S10: „Nie schlafende Apps“ zeigt Termux nicht → je App Akku „Nicht eingeschränkt“ + „Apps, die immer Daten nutzen“.
 
+- 10.11.2026 (2.3.1): Puls alle 10 Min. statt 30 + sofort bei Moduswechsel (Kabel, WLAN, Akku) → Tests/Diagnose schneller. Aktiv auf dem Handy
+  automatisch nach dem nächsten stündlichen git pull (Dauerlauf startet mit neuer Version neu).
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

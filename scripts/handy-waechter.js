@@ -29,15 +29,16 @@ for (;;) {
   if (stufe.name !== letzteStufe) {
     console.log(`${uhr()} Modus: ${stufe.name} → ${stufe.pause ? 'Pause' : `alle ${stufe.minuten} Min.`}${geraet.genau ? '' : ' (ohne Termux:API geschätzt)'}`);
     letzteStufe = stufe.name;
+    letzterPuls = 0; // Moduswechsel (Kabel ab, WLAN weg, Akku niedrig) sofort als Lebenszeichen melden
   }
   if (wach !== stufe.wachHalten) {
     try { await ausfuehren(stufe.wachHalten ? 'termux-wake-lock' : 'termux-wake-unlock', [], { timeout: 10000 }); } catch {}
     wach = stufe.wachHalten;
   }
   const start = Date.now();
-  // Puls: alle 30 Min. still an einen eigenen ntfy-Kanal (<kanal>-puls, niemand abonniert ihn) → der tägliche
-  // Selbstcheck auf GitHub merkt so, ob der Handy-Wächter noch läuft (auch in der Akku-Pause, damit es keinen Fehlalarm gibt)
-  if (process.env.NTFY_KANAL && start - letzterPuls > 30 * 60000) {
+  // Puls: alle 10 Min. (und bei Moduswechsel) still an einen eigenen ntfy-Kanal (<kanal>-puls, niemand abonniert ihn) →
+  // GitHub merkt so, ob der Handy-Wächter noch läuft (auch in der Akku-Pause, damit es keinen Fehlalarm gibt). Wenige Byte.
+  if (process.env.NTFY_KANAL && start - letzterPuls > 10 * 60000) {
     try {
       await fetch('https://ntfy.sh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15000),
         body: JSON.stringify({ topic: `${process.env.NTFY_KANAL}-puls`, message: `${stufe.name}${geraet.akku != null ? ` · Akku ${geraet.akku} %` : ''}`, priority: 1 }) });
