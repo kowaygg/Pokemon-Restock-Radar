@@ -252,6 +252,9 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   UVP = Packzahl × Packpreis (Titel; sonst Standard-Box JP 30; CN/KR angenommen 30 = Richtwert). Stufe „spanne“ = angezeigt, aber kein Treffer/Push.
   Feed-Bewertungen beim Export neu berechnet. Sprach-Reihenfolge EN → DE → JP → KR → CN (Kaufen + Meldungen gruppiert).
 
+- 10.11.2026 (1.8.1): Reiter Meldungen chronologisch (neueste oben) statt nach Sprache gruppiert; Sprache als farbiges Kennzeichen
+  (EN blau, DE gold, JP rosa, KR grün, CN orange), Uhrzeit hervorgehoben. Reiter Kaufen bleibt nach Sprache gruppiert.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

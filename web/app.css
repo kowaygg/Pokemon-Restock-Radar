@@ -46,3 +46,12 @@ th { color: var(--leise); font-weight: 500; }
 a { color: var(--blau); }
 :focus-visible { outline: 2px solid var(--gelb); outline-offset: 2px; }
 footer { color: var(--leise); font-size: .78rem; text-align: center; padding: 16px; }
+
+/* Sprache als dezentes Farbkennzeichen, Uhrzeit gut lesbar */
+.marke.spr { font-weight: 700; }
+.spr-EN { background: #1d2f4a; border-color: #35537f; color: #cfe1ff; }
+.spr-DE { background: #3a3014; border-color: #6b5622; color: #ffe3a3; }
+.spr-JP { background: #43202a; border-color: #7a3a4b; color: #ffd0da; }
+.spr-KR { background: #173828; border-color: #2f6a4c; color: #c6f2d9; }
+.spr-CN { background: #45280f; border-color: #7d4a1d; color: #ffd8b5; }
+.uhrzeit { color: var(--text); font-weight: 650; font-variant-numeric: tabular-nums; }

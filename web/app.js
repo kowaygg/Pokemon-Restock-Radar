@@ -6,6 +6,7 @@ const ART_TEXT = {
 const TYP_TEXT = { neu: 'Neu lieferbar', 'wieder-da': 'Wieder da', vorbestellung: 'Vorbestellung offen', angekuendigt: 'Angekündigt' };
 // Reihenfolge = Wichtigkeit (Wunsch des Nutzers): Englisch, Deutsch, Japanisch, Koreanisch, Chinesisch
 const SPRACHEN = [['EN', '🇬🇧 Englisch'], ['DE', '🇩🇪 Deutsch'], ['JP', '🇯🇵 Japanisch'], ['KR', '🇰🇷 Koreanisch'], ['CN', '🇨🇳 Chinesisch'], [null, 'Sprache nicht angegeben']];
+const SPRACH_NAME = { EN: '🇬🇧 EN', DE: '🇩🇪 DE', JP: '🇯🇵 JP', KR: '🇰🇷 KR', CN: '🇨🇳 CN' };
 const nachSprache = (liste, karteFn) => SPRACHEN.map(([k, name]) => [name, liste.filter((p) => (p.sprache || null) === k)]).filter(([, g]) => g.length)
   .map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.map(karteFn).join('')}`).join('');
 const ABFRAGE_TEXT = { shopify: 'Shop-Feed', 'sitemap-jsonld': 'Sitemap + Preis', sitemap: 'nur Frühwarnung', mediamarkt: 'Suche – nur Handy im WLAN' };
@@ -57,9 +58,9 @@ function karte(p, { typ } = {}) {
   const link = sicherLink(p.link);
   const korb = sicherLink(p.warenkorb);
   return `<div class="karte${p.prioritaet === 1 ? ' ttb' : ''}">
-    <div class="kopf"><span>${esc(p.haendler)}</span><span>${typ ? esc(TYP_TEXT[typ] || typ) + ' · ' : ''}${p.zeit ? zeit(p.zeit) : ''}</span></div>
+    <div class="kopf"><span>${esc(p.haendler)}</span><span>${typ ? esc(TYP_TEXT[typ] || typ) + ' · ' : ''}${p.zeit ? `<span class="uhrzeit">🕒 ${zeit(p.zeit)}</span>` : ''}</span></div>
     <div class="titel">${esc(p.titel)}</div>
-    <div><span class="marke${p.prioritaet === 1 ? ' gelb' : ''}">${esc(ART_TEXT[p.art] || p.art || '?')}</span>${p.sprache ? `<span class="marke">${esc(p.sprache)}</span>` : ''}${p.vorbestellung ? '<span class="marke">Vorbestellung</span>' : ''}</div>
+    <div><span class="marke${p.prioritaet === 1 ? ' gelb' : ''}">${esc(ART_TEXT[p.art] || p.art || '?')}</span>${p.sprache ? `<span class="marke spr spr-${esc(p.sprache)}">${esc(SPRACH_NAME[p.sprache] || p.sprache)}</span>` : ''}${p.vorbestellung ? '<span class="marke">Vorbestellung</span>' : ''}</div>
     <div><span class="preis">${euro(Number.isFinite(p.versand) ? p.preis + p.versand : p.preis)}</span> <span class="unbekannt">${versandText(p)}</span> · ${bewertungHtml(p.bewertung, p)}</div>
     <div class="knoepfe">${korb ? `<a class="knopf kauf" href="${esc(korb)}" target="_blank" rel="noopener">🛒 In den Warenkorb</a>` : ''}${link ? `<a class="knopf" href="${esc(link)}" target="_blank" rel="noopener">Zum Shop</a>` : ''}</div>
   </div>`;
@@ -134,7 +135,7 @@ const ansichten = {
     const l = alle.filter((f) => f.jetzt === true);
     const weg = alle.length - l.length;
     return '<p class="hinweis">Neu lieferbar, wieder da oder Vorbestellung offen (letzte 14 Tage) – nur was laut letzter Prüfung <b>jetzt noch kaufbar</b> ist.</p>'
-      + (l.length ? nachSprache(l, (f) => karte(f, { typ: f.typ })) : '<div class="leer">Gerade nichts davon kaufbar.</div>')
+      + (l.length ? [...l].sort((x, y) => String(y.zeit).localeCompare(String(x.zeit))).map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Gerade nichts davon kaufbar.</div>')
       + (weg ? `<p class="hinweis">${weg} ältere Meldung(en) ausgeblendet – inzwischen ausverkauft oder nicht mehr prüfbar.</p>` : '');
   },
   fruehwarnung() {

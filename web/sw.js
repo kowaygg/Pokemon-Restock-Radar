@@ -1,5 +1,5 @@
 // Offline-Modus: zuerst aus dem Netz, ohne Verbindung die zuletzt geladene Fassung.
-const SPEICHER = 'pkmn-radar-1.8.0';
+const SPEICHER = 'pkmn-radar-1.8.1';
 const GRUNDGERUEST = ['./', 'index.html', 'app.css', 'app.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -8,7 +8,7 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((namen) => Promise.all(namen.filter((n) => n.startsWith('pkmn-radar-1.8.0') && n !== SPEICHER).map((n) => caches.delete(n)))));
+  e.waitUntil(caches.keys().then((namen) => Promise.all(namen.filter((n) => n.startsWith('pkmn-radar-1.8.1') && n !== SPEICHER).map((n) => caches.delete(n)))));
   self.clients.claim();
 });
 
