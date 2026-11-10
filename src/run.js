@@ -10,6 +10,7 @@ import { newsAbruf, newsPushWert, newsPushNachricht } from './news.js';
 import { mediamarktHolen } from './mediamarkt.js';
 import { neueSetCodes } from './setcodes.js';
 import { haendlerEntdecken, domainAus } from './entdecker.js';
+import { musterZaehlen, musterAuswerten } from './muster.js';
 import { ebaySuche, ebayGraded, serioes } from './ebay.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
@@ -38,6 +39,8 @@ async function melden(meldungen) {
     if (m.quelle !== 'ebay') Object.assign(m, (({ bewertung, versand }) => ({ bewertung, versand }))(bewerteGesamt(m.titel, m.art, m.preis, m.haendlerId)));
     else m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
     m.zeit = jetzt.toISOString();
+    // Restock-Muster nur aus vollständigen GitHub-Läufen (Handy-Statistik wird nicht veröffentlicht)
+    if (!handy && m.quelle !== 'ebay') zustand.statistik = musterZaehlen(zustand.statistik, m, jetzt);
     zustand.feed.unshift({ id: m.id, haendlerId: m.haendlerId, zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, versand: m.versand ?? null, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop', vorOrt: !!m.vorOrt });
     if (pushes < einst.maxPushProLauf && (!einst.pushNurUvp || pushWert(m))) {
       if (gemeldet.has(m.link)) continue;
@@ -272,6 +275,7 @@ const oeffentlich = {
   news: zustand.news.slice(0, 200),
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},
+  muster: musterAuswerten(zustand.statistik, jetzt),
   entdeckt: Object.values(zustand.entdeckt || {}).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),
 };
 await writeFile('data/oeffentlich.json', JSON.stringify(oeffentlich));

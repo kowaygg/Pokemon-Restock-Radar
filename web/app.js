@@ -133,7 +133,12 @@ const ansichten = {
     const kalender = [...termine.sort((x, y) => x.datum.localeCompare(y.datum)), ...newsTermine];
     const zeile = (t) => `<tr><td style="white-space:nowrap"><b>${esc(t.datum)}</b></td><td>${t.link && sicherLink(t.link) ? `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.text)}</a>` : esc(t.text)}<br><span class="unbekannt">${esc(t.quelle)}</span></td></tr>`;
     const kal = '<h2>📅 Release- & Drop-Kalender</h2>' + (kalender.length ? `<div class="tabelle"><table>${kalender.map(zeile).join('')}</table></div>` : '<div class="leer">Noch keine kommenden Termine bekannt.</div>');
-    return kal + '<h2>🔭 Frühwarnung aus Shop-Seiten</h2><p class="hinweis">ℹ️ <b>Nur Info – noch nicht kaufbar.</b> Neue Produktseiten, oft Tage vor dem Verkaufsstart (aus öffentlichen Sitemaps). Sobald etwas kaufbar wird, kommt ein Push und es steht unter ⭐ Top.</p>'
+    // Restock-Muster je Händler
+    const mu = daten.muster || [];
+    const muZeile = (x) => `<tr><td>${esc(x.name)}</td><td>${x.anzahl}</td><td>${esc(x.tag)} (${x.anteilTag} %)<br><span class="unbekannt">gegen ${x.stunde} Uhr</span></td><td>${x.sicher ? `<b>${esc(x.naechster)}</b>` : `<span class="unbekannt">${esc(x.naechster)} – noch wenig Daten</span>`}</td></tr>`;
+    const muster = '<h2>📈 Restock-Muster</h2><p class="hinweis">Wann die Händler bisher Ware neu oder wieder eingestellt haben (deutsche Zeit). Aussagekräftig ab ca. 5 Meldungen – die Liste wird mit jedem Tag genauer.</p>'
+      + (mu.length ? `<div class="tabelle"><table><tr><th>Händler</th><th>Drops</th><th>Meist am</th><th>Nächster wahrscheinlich</th></tr>${mu.map(muZeile).join('')}</table></div>` : '<div class="leer">Noch keine Restocks gezählt – die Statistik startet jetzt.</div>');
+    return kal + muster + '<h2>🔭 Frühwarnung aus Shop-Seiten</h2><p class="hinweis">ℹ️ <b>Nur Info – noch nicht kaufbar.</b> Neue Produktseiten, oft Tage vor dem Verkaufsstart (aus öffentlichen Sitemaps). Sobald etwas kaufbar wird, kommt ein Push und es steht unter ⭐ Top.</p>'
       + (l.length ? l.map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Noch nichts Neues angekündigt.</div>');
   },
   markt() {

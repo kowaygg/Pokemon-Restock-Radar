@@ -224,6 +224,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Preisvergleiche/Plattformen ignoriert, Anzahl = verschiedene Deals, neue Domains auf Shopify-products.json geprüft (max. 2/Lauf, nur GitHub).
   Anzeige im Reiter Händler „🆕 Neu entdeckt“. Nichts wird automatisch aktiviert (erst Impressum/Bewertungen prüfen). Erste Funde: expert.de, toys-for-fun.com.
 
+- 10.11.2026 (1.5.0): Restock-Muster (`src/muster.js`): zählt neu/wieder-da/vorbestellung je Händler nach Wochentag + Stunde (Europe/Berlin),
+  nur GitHub-Läufe (Handy-Daten werden nicht veröffentlicht → Zeitpunkt = Erkennung, nicht exakter Drop). Anzeige im Reiter Bald mit
+  häufigstem Tag/Uhrzeit und „nächster wahrscheinlich“ (sicher ab 5 Meldungen). Offen: entdeckte Shops prüfen/einbinden.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
