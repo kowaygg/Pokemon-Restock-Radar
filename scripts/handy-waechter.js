@@ -20,6 +20,7 @@ if (!process.env.NTFY_KANAL) console.log('⚠ Keine .env mit NTFY_KANAL gefunden
 let letztesUpdate = 0;
 let wach = null;
 let letzteStufe = '';
+let letzterPuls = 0;
 console.log(`${uhr()} Handy-Wächter gestartet. Beenden: Lautstärke-runter + C.`);
 for (;;) {
   const einst = JSON.parse(await lies('config/einstellungen.json', '{}'));
@@ -34,6 +35,15 @@ for (;;) {
     wach = stufe.wachHalten;
   }
   const start = Date.now();
+  // Puls: alle 30 Min. still an einen eigenen ntfy-Kanal (<kanal>-puls, niemand abonniert ihn) → der tägliche
+  // Selbstcheck auf GitHub merkt so, ob der Handy-Wächter noch läuft (auch in der Akku-Pause, damit es keinen Fehlalarm gibt)
+  if (process.env.NTFY_KANAL && start - letzterPuls > 30 * 60000) {
+    try {
+      await fetch('https://ntfy.sh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15000),
+        body: JSON.stringify({ topic: `${process.env.NTFY_KANAL}-puls`, message: `${stufe.name}${geraet.akku != null ? ` · Akku ${geraet.akku} %` : ''}`, priority: 1 }) });
+      letzterPuls = start;
+    } catch {}
+  }
   if (!stufe.pause) {
     if (start - letztesUpdate > 3600000 && geraet.wlan) {
       try { await ausfuehren('git', ['pull', '-q', '--ff-only'], { timeout: 60000 }); } catch (e) { console.log(`${uhr()} Update übersprungen: ${e.message.split('\n')[0]}`); }

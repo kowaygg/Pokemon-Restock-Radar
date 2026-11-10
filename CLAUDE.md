@@ -259,6 +259,11 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   = 300 CNY ≈ 47,80 € inkl. 19 % EUSt“) + Marktspanne DE/EU aus echten Angeboten aller überwachten Shops (`src/markt.js`, 10.–90. Perzentil,
   je Sprache + Art, ab 3 Angeboten, nur GitHub-Läufe). Packzahl ignoriert Bandnummern („Vol. 2“), Display ≥ 6 Packs.
 
+- 10.11.2026 (2.0.0): Selbstcheck (`scripts/selbstcheck.js`, Workflow `selbstcheck.yml` täglich 06:17 UTC): Keep-alive per API (enable abruf.yml +
+  selbstcheck.yml gegen 60-Tage-Abschaltung), GitHub-Wächter > 6 h alt?, Handy-Puls (Wächter sendet alle 30 Min. still an <kanal>-puls,
+  Check: 0 Lebenszeichen in 12 h = Alarm), Händler-/News-Fehler (Müller/VEDES/MM/Saturn = nur Handy, kein Alarm). Push nur bei Problemen,
+  sonntags „Wochen-Check ok“. Termux:Boot-Autostart: `scripts/termux-boot.sh` → ~/.termux/boot/start-radar (Anleitung docs/handy-waechter.md).
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

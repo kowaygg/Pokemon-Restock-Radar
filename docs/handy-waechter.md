@@ -46,3 +46,15 @@ Ohne sie schätzt der Wächter (im Zweifel sparsam).
 - News & Leaks (offizielle News, Fachseiten, mydealz) alle 5 Min. (unterwegs 15 Min.)
 - Holt sich stündlich selbst Updates (`git pull`, nur im WLAN)
 - Meldet nichts doppelt (prüft den ntfy-Kanal der letzten 12 Stunden)
+
+## 6. Autostart nach Handy-Neustart (Termux:Boot)
+1. In **F-Droid** die App **Termux:Boot** installieren (Play Protect ggf. wie bei Termux bestätigen) und **einmal öffnen**
+2. In Termux eingeben:
+   ```
+   mkdir -p ~/.termux/boot && cp ~/Pokemon-Restock-Radar/scripts/termux-boot.sh ~/.termux/boot/start-radar && chmod +x ~/.termux/boot/start-radar
+   ```
+3. Fertig: Nach jedem Neustart startet der Wächter nach ca. 30 Sekunden von selbst (Protokoll: `~/restock-radar.log`).
+
+## 7. Selbstcheck
+- Täglich prüft GitHub, ob der Handy-Wächter sich gemeldet hat (stilles Lebenszeichen alle 30 Min.) und ob der GitHub-Wächter läuft.
+- Push nur bei Problemen, sonntags ein kurzer „Wochen-Check ok“.
