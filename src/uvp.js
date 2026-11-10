@@ -27,7 +27,7 @@ export function uvpFinden(titel, art, liste) {
   const asia = ausgabe(t);
   const gleicheAusgabe = (p) => (p.sprache && ['JP', 'KR', 'CN', 'ANDERE'].includes(p.sprache) ? p.sprache : null) === asia;
   // Display-UVP (DE/EN) gilt für 36 Booster; 10er/18er/30er-Displays sind andere Produkte
-  const anzahl = t.match(/\b(\d{1,2}) ?er\b/);
+  const anzahl = t.match(/\b(\d{1,2}) ?(er|booster|packs?|boosterpacks)\b/);
   if (!asia && art === 'display-36' && anzahl && anzahl[1] !== '36') return null;
   const passend = liste.produkte.filter((p) => p.art === art && gleicheAusgabe(p) && namePasst(p, t) && norm(p.set).split(/\s+/).filter((w) => w.length > 3 && !['mega', 'entwicklung'].includes(w)).every((w) => t.includes(w)))
     .map((p) => inEuro(p, liste)).filter(Boolean);

@@ -101,3 +101,8 @@ test('Fehltreffer 10.11.2026: JP-Code M6a und Mini-Tin-Display', () => {
   assert.equal(produktArt('Pokemon Illumina City Mini Tin Display sealed deutsch').art, 'mini-tin');
   assert.equal(uvpFinden('Pokemon ME06 Delta Herrschaft Display deutsch', 'display-36', liste).uvp, 179.64);
 });
+
+test('Fehltreffer 10.11.2026: „Display 18 Booster“ ist kein 36er-Display', () => {
+  assert.equal(uvpFinden('Pokemon Karten Karmesin Purpur Display 18 Booster deutsch', 'display-36', liste), null);
+  assert.equal(uvpFinden('Pokemon Delta Herrschaft Display 36 Booster deutsch', 'display-36', liste).uvp, 179.64);
+});
