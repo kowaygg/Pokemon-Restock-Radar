@@ -81,3 +81,9 @@ Ohne sie schätzt der Wächter (im Zweifel sparsam).
 | Neues Handy | – | Einrichtung wie oben (Abschnitte 1–6) wiederholen |
 
 **Einmalig empfohlen (Samsung):** Einstellungen → Akku → Hintergrund-Nutzungsbeschränkungen → **„Nie schlafende Apps“** → Termux und Termux:Boot hinzufügen.
+
+## 10. Energiesparmodus (Samsung) ohne das Radar zu stoppen
+1. Einstellungen → Akku → Hintergrund-Nutzungsbeschränkungen → **Nie schlafende Apps** → Termux, Termux:Boot, ntfy
+2. Für alle drei: Akku → **Uneingeschränkt**
+3. Energiesparmodus: **„Apps und Startbildschirm einschränken“ AUS** (der Rest darf an)
+4. Datensparen: Termux und ntfy als Ausnahme zulassen
