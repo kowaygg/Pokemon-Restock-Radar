@@ -90,6 +90,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - ✅ (0.6.0) Reiter „Vor Ort Freiburg“ (Wunsch 09.11.2026): Prospekte/Aktionen/Restocks stationärer Händler (Rossmann, Müller, Thalia, Rombach,
   Aldi, Lidl …) im Raum 79117 Freiburg (Ebnet/Littenweiler) mit Datum, damit der Nutzer als Erster im Laden ist. Marktguru/kaufDA prüfen
   (nur offizielle/erlaubte Wege), sonst öffentliche Angebotsseiten der Ketten.
+- **Regel (10.11.2026): Push für ALLE Produktarten in „Kaufen“ (auch Mini-Tins) – Nutzer-Entscheidung. „spanne“/Richtwert weiterhin ohne Push.**
 - **Regel (10.11.2026): Immer einen UVP anzeigen (notfalls Spanne/Richtwert mit Quelle); Sprachen-Wichtigkeit EN, DE, JP, KR, CN.**
 - **Regel (10.11.2026): Regionale Laden-Aktionen nur Raum Freiburg (79117), Südbaden/BW oder bundesweit.**
 - **Regel (09.11.2026): In der App nur anzeigen, was direkt kaufbar ist** (Ausnahme: klar markierte Info-Reiter Frühwarnung/News).
