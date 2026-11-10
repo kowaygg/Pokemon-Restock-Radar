@@ -11,6 +11,7 @@ import { mediamarktHolen } from './mediamarkt.js';
 import { neueSetCodes } from './setcodes.js';
 import { haendlerEntdecken, domainAus } from './entdecker.js';
 import { musterZaehlen, musterAuswerten } from './muster.js';
+import { marktSpannen } from './markt.js';
 import { ebaySuche, ebayGraded, serioes } from './ebay.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
@@ -67,6 +68,7 @@ function bewerteGesamt(titel, art, preis, haendlerId) {
 }
 const top = []; // jetzt bestellbar, sealed, ≤ UVP + Spielraum
 const setQuellen = []; // Produktnamen/-links für das Set-Code-Radar
+const marktAngebote = []; // alle Sealed-Angebote mit Preis → Marktspanne je Art + Sprache
 for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'shopify')) {
   // Nach „zu viele Anfragen“ (HTTP 429) den Händler eine Weile in Ruhe lassen
   const pause = zustand.haendler[h.id]?.pauseBis;
@@ -77,7 +79,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     const roh = await shopifyHolen(h, voll ? { maxSeiten: einst.maxSeiten } : { maxSeiten: 1, limit: einst.handyLimit });
     const sealed = roh.filter(istPokemon).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), vorbestellung: istVorbestellung(p), haendler: h.name, haendlerId: h.id }));
-    for (const p of sealed) setQuellen.push({ titel: p.titel, link: p.link, haendler: h.name });
+    for (const p of sealed) { setQuellen.push({ titel: p.titel, link: p.link, haendler: h.name }); marktAngebote.push({ art: p.art, sprache: p.sprache, preis: p.preis }); }
     for (const p of sealed.filter((x) => x.verfuegbar)) {
       const { bewertung: b, versand } = bewerteGesamt(p.titel, p.art, p.preis, h.id);
       if (b.stufe === 'uvp') top.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: p.warenkorb });
@@ -280,6 +282,7 @@ const oeffentlich = {
   news: zustand.news.filter((x) => !fremdeRegion(`${x.titel} ${x.text || ''}`)).slice(0, 200),
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},
+  markt: (zustand.markt = !handy && marktAngebote.length > 50 ? marktSpannen(marktAngebote) : zustand.markt || {}),
   muster: musterAuswerten(zustand.statistik, jetzt),
   // nur Shops, die noch nicht in der Händlerliste stehen
   entdeckt: Object.values(zustand.entdeckt || {}).filter((e) => !haendler.some((h) => domainAus(h.url) === e.domain || h.name.toLowerCase() === String(e.name).toLowerCase())).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),

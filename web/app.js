@@ -35,12 +35,17 @@ function bewertungHtml(b, p = {}) {
     }
     return '<span class="unbekannt">UVP: keine verlässliche Quelle gefunden</span>';
   }
-  if (b.stufe === 'unplausibel') return `<span class="unbekannt">weit unter UVP ${uvpText(b)}${b.richtwert ? ' (Richtwert)' : ''} – vermutlich kleineres/anderes Produkt</span>`;
-  if (b.stufe === 'spanne') return `<span class="unbekannt">≈ im UVP-Bereich (UVP ${uvpText(b)}${b.richtwert ? ', Richtwert' : ''})</span>`;
+  // UVP im Ursprungsmarkt (z. B. China: 30 Packs × 10 CNY) + was Händler in DE/EU gerade wirklich verlangen
+  const herkunft = b.waehrung && b.waehrung !== 'EUR' ? `${LAND[p.sprache] || 'Ursprungsmarkt'}: ${b.basis ? esc(b.basis) + ' = ' : ''}${Number(b.betrag).toLocaleString('de-DE')} ${esc(b.waehrung)} ≈ ${uvpText(b)} (inkl. 19 % EUSt)` : `UVP ${uvpText(b)}`;
+  const m = daten?.markt?.[`${p.sprache || 'DE'}|${p.art}`];
+  const markt = m ? `<br><span class="unbekannt">In DE/EU derzeit üblich: ${euro(m.von)}–${euro(m.bis)} (Mitte ${euro(m.mitte)}, ${m.n} Angebote)</span>` : '';
+  if (b.stufe === 'unplausibel') return `<span class="unbekannt">Deutlich günstiger als ${herkunft}${b.richtwert ? ' (Richtwert)' : ''} – Packzahl/Inhalt im Titel prüfen</span>${markt}`;
+  if (b.stufe === 'spanne') return `<span class="unbekannt">≈ im UVP-Bereich: ${herkunft}${b.richtwert ? ' (Richtwert)' : ''}</span>${markt}`;
   const d = b.differenz;
   const text = d <= 0 ? `${euro(-d)} unter UVP` : `${euro(d)} über UVP`;
-  return `<span class="${b.stufe === 'uvp' ? 'ok' : 'drueber'}">${b.stufe === 'uvp' ? '✅' : '⚠'} ${text} (UVP ${uvpText(b)})</span>`;
+  return `<span class="${b.stufe === 'uvp' ? 'ok' : 'drueber'}">${b.stufe === 'uvp' ? '✅' : '⚠'} ${text} (${herkunft})</span>${b.stufe === 'drueber' ? markt : ''}`;
 }
+const LAND = { JP: 'UVP Japan', KR: 'UVP Korea', CN: 'UVP China', DE: 'UVP', EN: 'UVP' };
 
 // Neu entdeckte Shops aus Deal-Meldungen (noch nicht überwacht – erst Seriosität prüfen)
 function entdecktHtml() {

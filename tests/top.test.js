@@ -126,3 +126,11 @@ test('CN/KR-Display ohne Packzahl: Richtwert mit 30 Packs, kein Treffer', () => 
   assert.equal(cn.uvp, 47.8); // 30 × 10 Yuan + 19 %
   assert.equal(preisBewertung(45, cn, 5).stufe, 'spanne');
 });
+
+test('Packzahl: „Vol. 2“ ist keine Packzahl (Fall 10.11.2026)', () => {
+  const l = { ...JSON.parse(readFileSync(new URL('../config/uvp.json', import.meta.url))), kurse: { CNY: 7.4689 } };
+  const u = uvpFinden('Pokémon - Gem Pack Vol. 2 Booster Box - CHN', 'display-36', l);
+  assert.equal(u.richtwert, true); // keine Packzahl erkannt → 30 angenommen, Richtwert
+  assert.equal(u.uvp, 47.8);
+  assert.equal(uvpFinden('Pokémon Gem Pack Vol. 4 10 Booster Display CHN', 'display-36', l).uvp, 15.93);
+});

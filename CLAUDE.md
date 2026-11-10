@@ -255,6 +255,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 10.11.2026 (1.8.1): Reiter Meldungen chronologisch (neueste oben) statt nach Sprache gruppiert; Sprache als farbiges Kennzeichen
   (EN blau, DE gold, JP rosa, KR grün, CN orange), Uhrzeit hervorgehoben. Reiter Kaufen bleibt nach Sprache gruppiert.
 
+- 10.11.2026 (1.9.0): Statt „weit unter UVP – vermutlich anderes Produkt“: UVP im Ursprungsmarkt mit Rechenweg (z. B. „UVP China: 30 Packs × 10 CNY
+  = 300 CNY ≈ 47,80 € inkl. 19 % EUSt“) + Marktspanne DE/EU aus echten Angeboten aller überwachten Shops (`src/markt.js`, 10.–90. Perzentil,
+  je Sprache + Art, ab 3 Angeboten, nur GitHub-Läufe). Packzahl ignoriert Bandnummern („Vol. 2“), Display ≥ 6 Packs.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)
