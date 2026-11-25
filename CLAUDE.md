@@ -93,6 +93,7 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - **Regel (10.11.2026): Push für ALLE Produktarten in „Kaufen“ (auch Mini-Tins) – Nutzer-Entscheidung. „spanne“/Richtwert weiterhin ohne Push.**
 - **Regel (10.11.2026): Immer einen UVP anzeigen (notfalls Spanne/Richtwert mit Quelle); Sprachen-Wichtigkeit EN, DE, JP, KR, CN.**
 - **Regel (10.11.2026): Regionale Laden-Aktionen nur Raum Freiburg (79117), Südbaden/BW oder bundesweit.**
+- **Regel (25.11.2026): Jeder Artikel wird NUR EINMAL gepusht – nie wiederholen** (auch nicht bei Restock/Preisänderung).
 - **Regel (09.11.2026, VERSCHÄRFT 25.11.2026): In App UND Push nur, was JETZT direkt kaufbar und verfügbar ist.** KEINE Vorbestellungen/
   Pre-Orders, keine Ankündigungen („ab Montag“, „erscheint am“), keine Newsletter-/Release-/Leak-News, keine Amazon-Einladungen.
   Info-Reiter „Bald“ entfernt, „News“ → „💸 Deals“ (nur aktuelle Deals + Pokémon-Center-Drops live). Nutzer war genervt, weil
@@ -309,6 +310,13 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   News: `zukunft`-Flag, `newsPushWert` nur PC-Drop live / TTB-Deal / Laden-Deal; Export nur `jetztKaufbarNews`. `regionPasst()`:
   eigene Region oder bundesweite Kette ohne Lokal-Hinweis (filtert „[EDEKA Potsdam]“, „[LOKAL Paderborn]“, „sb Lüning“, „Edeka Gebauer“).
   App: Reiter Bald entfernt, News → Deals.
+
+- 25.11.2026 (2.6.0) – Nutzer: „dieselben Pushes kommen immer wieder (z. B. täglich ~13 Uhr) – nur Pushes zu Sachen, die ich NOCH NIE
+  per Push bekommen habe“. Bisher: Doppel-Schutz nur über ntfy-Verlauf (12 h) → danach Wiederholung (v. a. „wieder da“ bei Shops,
+  die oft kurz ausverkauft sind, z. B. Cardcosmos). Jetzt `pushGedaechtnis` (src/push.js): JEDER Link nur EINMAL, 180 Tage, Schlüssel
+  Domain+Pfad; gilt für Shop-, Top-, News- und Set-Code-Pushes. GitHub liest jeden Lauf den ntfy-Verlauf (merkt sich so Handy-Pushes)
+  und veröffentlicht `gepusht` in top-links.json; das Handy übernimmt sie am Laufanfang. Einführung: Links aus Feed/Top/News der
+  letzten 14 Tage gelten als bekannt (kein Push-Schwall).
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen

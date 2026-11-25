@@ -161,3 +161,17 @@ test('Set-Namen: JP-Sets ohne Sprachangabe sind kein Fehltreffer (2.4.0)', async
   assert.equal(topTauglich({ art: 'display-36', sprache: 'DE' }), true);
   assert.equal(topTauglich({ art: 'mini-tin', sprache: null }), true);
 });
+
+test('Push-Gedächtnis: jeder Artikel nur einmal – auch Tage später, mit www/variant-Unterschied (2.6.0)', async () => {
+  const { pushGedaechtnis, linkSchluessel } = await import('../src/push.js');
+  const t0 = new Date('2026-11-25T12:00:00Z');
+  const g = pushGedaechtnis({}, { jetzt: t0 });
+  g.add('https://www.shop.de/products/delta-display?variant=123');
+  assert.equal(linkSchluessel('https://www.Shop.de/products/delta-display/'), 'shop.de/products/delta-display');
+  // ein Tag später (früher: nach 12 h wieder Push) – gespeicherter Stand wird geladen
+  const g2 = pushGedaechtnis(JSON.parse(JSON.stringify(g.daten)), { jetzt: new Date('2026-11-26T13:00:00Z') });
+  assert.equal(g2.has('https://shop.de/products/delta-display'), true);
+  assert.equal(g2.has('https://shop.de/products/anderes'), false);
+  // nach 180 Tagen vergessen
+  assert.equal(pushGedaechtnis(g.daten, { jetzt: new Date('2027-06-30T00:00:00Z') }).has('https://shop.de/products/delta-display'), false);
+});

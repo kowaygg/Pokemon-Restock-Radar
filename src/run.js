@@ -13,7 +13,7 @@ import { haendlerEntdecken, domainAus } from './entdecker.js';
 import { musterZaehlen, musterAuswerten } from './muster.js';
 import { marktSpannen } from './markt.js';
 import { ebaySuche, ebayGraded, serioes } from './ebay.js';
-import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
+import { pushNachricht, pushSenden, bereitsGemeldet, pushGedaechtnis } from './push.js';
 
 // bekannte Top-Links des GitHub-Wächters (für das Handy, damit es nichts doppelt meldet)
 const TOP_LINKS_URL = 'https://kowaygg.github.io/Pokemon-Restock-Radar/data/top-links.json';
@@ -35,9 +35,37 @@ const jetzt = new Date();
 const bericht = [];
 const lieferbarTop = [];
 let pushes = 0;
-let gemeldet = null;
+// Push-Gedächtnis: alles, was je gepusht wurde (eigene Pushes + ntfy-Verlauf der letzten 12 h, also auch Handy-Pushes)
+const erstesGedaechtnis = !zustand.gepusht;
+const gemeldet = pushGedaechtnis(zustand.gepusht, { jetzt });
+zustand.gepusht = gemeldet.daten;
+let ntfyGeladen = false;
+async function gemeldetLaden() {
+  if (ntfyGeladen) return;
+  ntfyGeladen = true;
+  for (const link of await bereitsGemeldet(kanal)) gemeldet.add(link);
+}
+// Einführung (2.6.0): alles, was in den letzten 14 Tagen schon gemeldet/gepusht sein konnte, gilt als bekannt → kein Push-Schwall
+if (erstesGedaechtnis) {
+  for (const f of zustand.feed || []) if (['neu', 'wieder-da', 'vorbestellung', 'angekuendigt'].includes(f.typ)) gemeldet.add(f.link);
+  for (const link of Object.keys(zustand.topBekannt || {})) gemeldet.add(link);
+  for (const n of zustand.news || []) gemeldet.add(n.link);
+}
+// Erster Lauf mit Top-Gedächtnis (nach Update 2.4.0): aktuelle Top-Einträge nur merken – sie wurden bereits gemeldet
+const topErstlauf = !zustand.topBekannt;
+zustand.topBekannt ||= {};
+// Handy: stündlich (WLAN, kein Sparmodus) übernehmen, was GitHub schon kennt/gepusht hat → nie doppelt. Gleich am Anfang,
+// damit es schon für die Shop-Meldungen dieses Laufs gilt.
+if (handy && !spar && (!zustand.topFremdZeit || jetzt - Date.parse(zustand.topFremdZeit) > 3600000)) {
+  try {
+    const fremd = await (await fetch(TOP_LINKS_URL, { signal: AbortSignal.timeout(15000) })).json();
+    for (const link of fremd.links || []) zustand.topBekannt[link] ||= jetzt.toISOString();
+    for (const k of fremd.gepusht || []) gemeldet.addSchluessel(k);
+    zustand.topFremdZeit = jetzt.toISOString();
+  } catch {}
+}
 async function melden(meldungen) {
-  if (meldungen.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
+  if (meldungen.length) await gemeldetLaden();
   for (const m of meldungen) {
     if (m.quelle !== 'ebay') Object.assign(m, (({ bewertung, versand }) => ({ bewertung, versand }))(bewerteGesamt(m.titel, m.art, m.preis, m.haendlerId)));
     else m.bewertung = preisBewertung(m.preis, uvpFinden(m.titel, m.art, uvpListe), uvpListe.spielraumEuro);
@@ -209,7 +237,7 @@ if (setQuellen.length && !handy) { // nur vollständige Durchläufe (GitHub), so
   const { bekannt, neu } = neueSetCodes(zustand.setCodes, setQuellen, { jetzt });
   zustand.setCodes = { bekannt };
   zustand.news ||= [];
-  if (neu.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
+  if (neu.length) await gemeldetLaden();
   for (const s of neu.slice(0, 5)) {
     const n = { titel: `Neuer Set-Code entdeckt: ${s.code} – „${s.titel}“ bei ${s.haendler}`, link: s.link, zeit: jetzt.toISOString(), art: 'leak', quelle: 'Set-Code-Radar', quelleId: 'setcodes', stufe: 'B', bestaetigt: false, pokemonCenter: false, ttb: false, vorOrt: false };
     zustand.news.unshift(n);
@@ -235,7 +263,7 @@ if (newsFaellig && newsFeeds.length) {
   zustand.newsFehler = fehler;
   zustand.newsZeit = jetzt.toISOString();
   let newsPushes = 0;
-  if (neu.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
+  if (neu.length) await gemeldetLaden();
   for (const n of neu) {
     const { still, push, ...eintrag } = n;
     zustand.news.unshift(eintrag);
@@ -260,17 +288,9 @@ for (let i = top.length - 1; i >= 0; i--) if (!topTauglich(top[i])) top.splice(i
 // Restocks ausverkaufter Ware meldet weiterhin die normale „wieder verfügbar“-Meldung.
 // Handy und GitHub teilen ihr Wissen: GitHub veröffentlicht seine bekannten Top-Links (top-links.json), das Handy lädt sie stündlich.
 // Erster Lauf mit Gedächtnis (nach Update 2.4.0): aktuelle Top-Einträge nur merken – sie wurden bereits gemeldet
-const topErstlauf = !zustand.topBekannt;
 zustand.topBekannt ||= {};
-if (handy && !spar && (!zustand.topFremdZeit || jetzt - Date.parse(zustand.topFremdZeit) > 3600000)) {
-  try {
-    const fremd = await (await fetch(TOP_LINKS_URL, { signal: AbortSignal.timeout(15000) })).json();
-    for (const link of fremd.links || []) zustand.topBekannt[link] ||= jetzt.toISOString();
-    zustand.topFremdZeit = jetzt.toISOString();
-  } catch {}
-}
 {
-  if (top.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
+  if (top.length || !handy) await gemeldetLaden(); // GitHub liest den Verlauf immer → merkt sich auch Handy-Pushes
   for (const t of top.sort((a, b) => a.prioritaet - b.prioritaet)) {
     const merken = () => { zustand.topBekannt[t.link] = jetzt.toISOString(); };
     // schon gemeldet bzw. in den letzten 7 Tagen in Top gesehen (Zeit wird aufgefrischt, solange es in Top bleibt)
@@ -283,7 +303,7 @@ if (handy && !spar && (!zustand.topFremdZeit || jetzt - Date.parse(zustand.topFr
   }
   const alt = jetzt.getTime() - 7 * 86400000;
   zustand.topBekannt = Object.fromEntries(Object.entries(zustand.topBekannt).filter(([, z]) => Date.parse(z) >= alt));
-  if (!handy) await writeFile('data/top-links.json', JSON.stringify({ zeit: jetzt.toISOString(), links: Object.keys(zustand.topBekannt) }));
+  if (!handy) await writeFile('data/top-links.json', JSON.stringify({ zeit: jetzt.toISOString(), links: Object.keys(zustand.topBekannt), gepusht: Object.keys(gemeldet.daten) }));
 }
 // WICHTIG (Fehler bis 2.3.1): zustand.json wurde VOR Top-Gedächtnis und Puls-Alarm gespeichert → beides ging jedes Mal verloren
 // (Folge: dieselben Top-Pushes immer wieder). Jetzt nach jedem Block speichern.

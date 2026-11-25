@@ -16,8 +16,24 @@ export function pushNachricht(m) {
   };
 }
 
+// Dauerhaftes Push-Gedächtnis (Nutzer-Regel 25.11.2026): jeder Artikel/Link wird NUR EINMAL gepusht – nie wieder,
+// auch nicht nach Restock oder Preisänderung. Schlüssel = Domain + Pfad (ohne www, ?variant= usw.). Hält 180 Tage.
+export const linkSchluessel = (l) => {
+  try { const u = new URL(l); return (u.host.replace(/^www\./, '') + u.pathname.replace(/\/+$/, '')).toLowerCase(); } catch { return String(l || '').trim().toLowerCase(); }
+};
+export function pushGedaechtnis(gespeichert = {}, { jetzt = new Date(), tage = 180 } = {}) {
+  const grenze = jetzt.getTime() - tage * 86400000;
+  const m = Object.fromEntries(Object.entries(gespeichert || {}).filter(([, z]) => Date.parse(z) >= grenze));
+  return {
+    has: (link) => !!link && !!m[linkSchluessel(link)],
+    add: (link) => { if (link) m[linkSchluessel(link)] ||= jetzt.toISOString(); },
+    addSchluessel: (k) => { if (k) m[k] ||= jetzt.toISOString(); },
+    daten: m,
+  };
+}
+
 // Links, die in den letzten 12 h schon auf dem Kanal gemeldet wurden (ntfy hält Nachrichten 12 h vor).
-// Verhindert doppelte Pushes, wenn Handy-Wächter und GitHub-Wächter dasselbe finden.
+// Fließt ins Push-Gedächtnis ein → so kennt GitHub auch die Pushes des Handys.
 export async function bereitsGemeldet(kanal, { server = 'https://ntfy.sh', holen = fetch } = {}) {
   if (!kanal) return new Set();
   try {
