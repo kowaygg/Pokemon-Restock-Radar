@@ -162,7 +162,7 @@ test('Set-Namen: JP-Sets ohne Sprachangabe sind kein Fehltreffer (2.4.0)', async
   assert.equal(topTauglich({ art: 'mini-tin', sprache: null }), true);
 });
 
-test('Push-Gedächtnis: jeder Artikel nur einmal – auch Tage später, mit www/variant-Unterschied (2.6.0)', async () => {
+test('Push-Gedächtnis: jeder Artikel nur einmal – für immer, mit www/variant-Unterschied (2.6.0)', async () => {
   const { pushGedaechtnis, linkSchluessel } = await import('../src/push.js');
   const t0 = new Date('2026-11-25T12:00:00Z');
   const g = pushGedaechtnis({}, { jetzt: t0 });
@@ -172,6 +172,6 @@ test('Push-Gedächtnis: jeder Artikel nur einmal – auch Tage später, mit www/
   const g2 = pushGedaechtnis(JSON.parse(JSON.stringify(g.daten)), { jetzt: new Date('2026-11-26T13:00:00Z') });
   assert.equal(g2.has('https://shop.de/products/delta-display'), true);
   assert.equal(g2.has('https://shop.de/products/anderes'), false);
-  // nach 180 Tagen vergessen
-  assert.equal(pushGedaechtnis(g.daten, { jetzt: new Date('2027-06-30T00:00:00Z') }).has('https://shop.de/products/delta-display'), false);
+  // für immer: auch 10 Jahre später noch bekannt
+  assert.equal(pushGedaechtnis(g.daten, { jetzt: new Date('2036-11-25T00:00:00Z') }).has('https://shop.de/products/delta-display'), true);
 });

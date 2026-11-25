@@ -65,6 +65,8 @@ jobs:
           cp data/oeffentlich.json _site/data/
           # bekannte Top-Links → das Handy meldet nichts doppelt
           if [ -f data/top-links.json ]; then cp data/top-links.json _site/data/; fi
+          # Sicherung des Push-Gedächtnisses (jeder Artikel nur einmal – für immer)
+          if [ -f data/gepusht.json ]; then cp data/gepusht.json _site/data/; fi
 
       - name: App-Dateien bündeln
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0

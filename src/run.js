@@ -17,6 +17,8 @@ import { pushNachricht, pushSenden, bereitsGemeldet, pushGedaechtnis } from './p
 
 // bekannte Top-Links des GitHub-Wächters (für das Handy, damit es nichts doppelt meldet)
 const TOP_LINKS_URL = 'https://kowaygg.github.io/Pokemon-Restock-Radar/data/top-links.json';
+// Sicherungskopie des Push-Gedächtnisses (öffentlich, nur Produkt-Links) – stellt es wieder her, falls der GitHub-Speicher verloren geht
+const GEPUSHT_URL = 'https://kowaygg.github.io/Pokemon-Restock-Radar/data/gepusht.json';
 const lies = async (pfad, ersatz) => { try { return JSON.parse(await readFile(pfad, 'utf8')); } catch { return ersatz; } };
 const { haendler } = await lies('config/haendler.json');
 const uvpListe = await lies('config/uvp.json');
@@ -44,6 +46,13 @@ async function gemeldetLaden() {
   if (ntfyGeladen) return;
   ntfyGeladen = true;
   for (const link of await bereitsGemeldet(kanal)) gemeldet.add(link);
+}
+// Speicher verloren (GitHub-Cache gelöscht/abgelaufen)? → aus der veröffentlichten Sicherung wiederherstellen
+if (erstesGedaechtnis && !handy) {
+  try {
+    const sicherung = await (await fetch(GEPUSHT_URL, { signal: AbortSignal.timeout(20000) })).json();
+    for (const [k, z] of Object.entries(sicherung.gepusht || {})) gemeldet.daten[k] ||= z;
+  } catch {}
 }
 // Einführung (2.6.0): alles, was in den letzten 14 Tagen schon gemeldet/gepusht sein konnte, gilt als bekannt → kein Push-Schwall
 if (erstesGedaechtnis) {
@@ -303,7 +312,10 @@ zustand.topBekannt ||= {};
   }
   const alt = jetzt.getTime() - 7 * 86400000;
   zustand.topBekannt = Object.fromEntries(Object.entries(zustand.topBekannt).filter(([, z]) => Date.parse(z) >= alt));
-  if (!handy) await writeFile('data/top-links.json', JSON.stringify({ zeit: jetzt.toISOString(), links: Object.keys(zustand.topBekannt), gepusht: Object.keys(gemeldet.daten) }));
+  if (!handy) await writeFile('data/top-links.json', JSON.stringify({ zeit: jetzt.toISOString(), links: Object.keys(zustand.topBekannt),
+    // Handy braucht nur die letzten 30 Tage (es hat sein eigenes Dauer-Gedächtnis) → kleiner Download
+    gepusht: Object.entries(gemeldet.daten).filter(([, z]) => jetzt - Date.parse(z) < 30 * 86400000).map(([k]) => k) }));
+  if (!handy) await writeFile('data/gepusht.json', JSON.stringify({ zeit: jetzt.toISOString(), gepusht: gemeldet.daten }));
 }
 // WICHTIG (Fehler bis 2.3.1): zustand.json wurde VOR Top-Gedächtnis und Puls-Alarm gespeichert → beides ging jedes Mal verloren
 // (Folge: dieselben Top-Pushes immer wieder). Jetzt nach jedem Block speichern.

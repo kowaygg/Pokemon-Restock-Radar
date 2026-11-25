@@ -17,13 +17,13 @@ export function pushNachricht(m) {
 }
 
 // Dauerhaftes Push-Gedächtnis (Nutzer-Regel 25.11.2026): jeder Artikel/Link wird NUR EINMAL gepusht – nie wieder,
-// auch nicht nach Restock oder Preisänderung. Schlüssel = Domain + Pfad (ohne www, ?variant= usw.). Hält 180 Tage.
+// auch nicht nach Restock oder Preisänderung. Schlüssel = Domain + Pfad (ohne www, ?variant= usw.).
+// FÜR IMMER, ohne Ablaufdatum (Nutzer-Wunsch). Platz ist kein Problem: ~60 Byte je Artikel → selbst nach Jahren nur wenige MB.
 export const linkSchluessel = (l) => {
   try { const u = new URL(l); return (u.host.replace(/^www\./, '') + u.pathname.replace(/\/+$/, '')).toLowerCase(); } catch { return String(l || '').trim().toLowerCase(); }
 };
-export function pushGedaechtnis(gespeichert = {}, { jetzt = new Date(), tage = 180 } = {}) {
-  const grenze = jetzt.getTime() - tage * 86400000;
-  const m = Object.fromEntries(Object.entries(gespeichert || {}).filter(([, z]) => Date.parse(z) >= grenze));
+export function pushGedaechtnis(gespeichert = {}, { jetzt = new Date() } = {}) {
+  const m = { ...(gespeichert || {}) };
   return {
     has: (link) => !!link && !!m[linkSchluessel(link)],
     add: (link) => { if (link) m[linkSchluessel(link)] ||= jetzt.toISOString(); },

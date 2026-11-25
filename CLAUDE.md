@@ -93,7 +93,8 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - **Regel (10.11.2026): Push für ALLE Produktarten in „Kaufen“ (auch Mini-Tins) – Nutzer-Entscheidung. „spanne“/Richtwert weiterhin ohne Push.**
 - **Regel (10.11.2026): Immer einen UVP anzeigen (notfalls Spanne/Richtwert mit Quelle); Sprachen-Wichtigkeit EN, DE, JP, KR, CN.**
 - **Regel (10.11.2026): Regionale Laden-Aktionen nur Raum Freiburg (79117), Südbaden/BW oder bundesweit.**
-- **Regel (25.11.2026): Jeder Artikel wird NUR EINMAL gepusht – nie wiederholen** (auch nicht bei Restock/Preisänderung).
+- **Regel (25.11.2026): Jeder Artikel wird NUR EINMAL gepusht – nie wiederholen, FÜR IMMER ohne Ablauf** (auch nicht bei Restock/Preisänderung).
+- **Regel: Alles muss dauerhaft ohne Nacharbeit laufen** – keine Ablaufdaten/Fristen einbauen, die später wieder Fehler erzeugen.
 - **Regel (09.11.2026, VERSCHÄRFT 25.11.2026): In App UND Push nur, was JETZT direkt kaufbar und verfügbar ist.** KEINE Vorbestellungen/
   Pre-Orders, keine Ankündigungen („ab Montag“, „erscheint am“), keine Newsletter-/Release-/Leak-News, keine Amazon-Einladungen.
   Info-Reiter „Bald“ entfernt, „News“ → „💸 Deals“ (nur aktuelle Deals + Pokémon-Center-Drops live). Nutzer war genervt, weil
@@ -317,6 +318,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   Domain+Pfad; gilt für Shop-, Top-, News- und Set-Code-Pushes. GitHub liest jeden Lauf den ntfy-Verlauf (merkt sich so Handy-Pushes)
   und veröffentlicht `gepusht` in top-links.json; das Handy übernimmt sie am Laufanfang. Einführung: Links aus Feed/Top/News der
   letzten 14 Tage gelten als bekannt (kein Push-Schwall).
+
+- 25.11.2026 (2.6.1) – Nutzer: „180 Tage reicht nicht – für immer, ohne Ablauf“. Push-Gedächtnis jetzt OHNE Ablauf (~60 Byte/Artikel).
+  Sicherung: GitHub veröffentlicht `data/gepusht.json` (nur Produkt-Links) und stellt das Gedächtnis daraus wieder her, falls der
+  Actions-Cache verloren geht. Handy bekommt in top-links.json nur die letzten 30 Tage (kleiner Download; eigenes Dauer-Gedächtnis).
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
