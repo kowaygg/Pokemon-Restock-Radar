@@ -93,7 +93,10 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - **Regel (10.11.2026): Push für ALLE Produktarten in „Kaufen“ (auch Mini-Tins) – Nutzer-Entscheidung. „spanne“/Richtwert weiterhin ohne Push.**
 - **Regel (10.11.2026): Immer einen UVP anzeigen (notfalls Spanne/Richtwert mit Quelle); Sprachen-Wichtigkeit EN, DE, JP, KR, CN.**
 - **Regel (10.11.2026): Regionale Laden-Aktionen nur Raum Freiburg (79117), Südbaden/BW oder bundesweit.**
-- **Regel (09.11.2026): In der App nur anzeigen, was direkt kaufbar ist** (Ausnahme: klar markierte Info-Reiter Frühwarnung/News).
+- **Regel (09.11.2026, VERSCHÄRFT 25.11.2026): In App UND Push nur, was JETZT direkt kaufbar und verfügbar ist.** KEINE Vorbestellungen/
+  Pre-Orders, keine Ankündigungen („ab Montag“, „erscheint am“), keine Newsletter-/Release-/Leak-News, keine Amazon-Einladungen.
+  Info-Reiter „Bald“ entfernt, „News“ → „💸 Deals“ (nur aktuelle Deals + Pokémon-Center-Drops live). Nutzer war genervt, weil
+  Links oft nicht kaufbar waren. Vor Ort NUR Raum Freiburg/Südbaden/BW oder bundesweite Kette ohne „lokal“/fremde Stadt.
 - **Pokémon Center ganz wichtig** (z. B. Dunkelnacht- und Delta-Herrschaft-Displays DE, Stand 09.11.2026 noch verfügbar) – ständig prüfen.
   Von GitHub aus durch DataDome geblockt → nur über Handy-Wächter, Bot-Schutz nie umgehen.
 - **Daueraufgabe:** Immer prüfen, ob verfügbare Schnittstellen, APIs, MCP-Server/Konnektoren oder Downloads das Projekt verbessern,
@@ -299,6 +302,13 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
   4) Selbstcheck: Händler-Fehler erst nach 24 h am Stück Alarm (`fehlerSeit`), News-Fehler nur Hinweis (Alarm ab 3 Quellen).
   5) Pages-Deploy: 3 Versuche (45 s / 120 s Pause), Lauf scheitert nie an kurzer GitHub-Störung; Timeout 15 Min.
   Offen: Versand Card-Corner/Geeks Heaven u. a. Sitemap-Shops nicht öffentlich → App zeigt „Versand unbekannt“.
+
+- 25.11.2026 (2.5.0) – Nutzer: „nur was direkt kaufbar und verfügbar ist, keine Pre-Order/Newsletter/Zukunft, Vor Ort nur Freiburg“.
+  Sitemap-Stand: v = kaufbar OHNE Vorbestellung (vb extra), z = Prüfzeit; gerade kaufbare Seiten werden jeden Lauf zuerst nachgeprüft;
+  Top/TTB-Markt/Meldungen nur bei Prüfung ≤ 12 h. Push nur Typ neu/wieder-da ohne Vorbestellung (vorher: auch „angekündigt“ ohne Preis!).
+  News: `zukunft`-Flag, `newsPushWert` nur PC-Drop live / TTB-Deal / Laden-Deal; Export nur `jetztKaufbarNews`. `regionPasst()`:
+  eigene Region oder bundesweite Kette ohne Lokal-Hinweis (filtert „[EDEKA Potsdam]“, „[LOKAL Paderborn]“, „sb Lüning“, „Edeka Gebauer“).
+  App: Reiter Bald entfernt, News → Deals.
 
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen

@@ -17,6 +17,7 @@ const FILTER = [['alle', 'Alle'], ['ttb', 'Top-Trainer-Boxen'], ['display', 'Dis
 const passtFilter = (p) => filterArt === 'alle' || (filterArt === 'ttb' ? p.art === 'top-trainer-box' : filterArt === 'display' ? p.art === 'display-36' : !['top-trainer-box', 'display-36'].includes(p.art));
 let reiter = 'top';
 try { reiter = localStorage.getItem('reiter') || 'top'; } catch {}
+if (reiter === 'fruehwarnung') reiter = 'top'; // Reiter „Bald“ entfernt (25.11.2026: nur jetzt Kaufbares zeigen)
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const euro = (n) => (Number.isFinite(n) ? n.toFixed(2).replace('.', ',') + ' €' : '–');
@@ -73,7 +74,7 @@ function karte(p, { typ } = {}) {
 
 const ansichten = {
   top() {
-    const l = (daten.top || []).filter(passtFilter);
+    const l = (daten.top || []).filter((p) => !p.vorbestellung).filter(passtFilter);
     const filter = `<div class="filter">${FILTER.map(([k, t]) => `<button data-filter="${k}" class="${filterArt === k ? 'aktiv' : ''}">${t}</button>`).join('')}</div>`;
     const gruppen = SPRACHEN.map(([k, name]) => [name, l.filter((p) => (p.sprache || null) === k)]).filter(([, g]) => g.length);
     return `<p class="hinweis">Jetzt bestellbar, sealed, höchstens ${euro(daten.uvp?.spielraumEuro ?? 5)} über UVP – nach Sprache sortiert, Top-Trainer-Boxen zuerst. Preise inkl. Versand, wo der Händler ihn angibt.</p>${filter}`
@@ -82,13 +83,12 @@ const ansichten = {
   },
   news() {
     const l = [...(daten.news || [])].sort((a, b) => b.zeit.localeCompare(a.zeit));
+    // nur jetzt Kaufbares (Daten sind schon gefiltert – hier zur Sicherheit noch einmal)
+    const kaufbar = l.filter((n) => !n.zukunft && !n.fremdeRegion && (n.pcDrop || n.art === 'deal'));
     const gruppen = [
-      ['📨 Amazon-Einladungen (sofort anfragen!)', l.filter((n) => n.amazonEinladung)],
-      ['🚨 Pokémon Center', l.filter((n) => n.pokemonCenter && !n.amazonEinladung)],
-      ['📅 Releases & Vorbestellungen', l.filter((n) => !n.pokemonCenter && (n.art === 'release' || n.art === 'vorbestellung'))],
-      ['🔮 Leaks & Ankündigungen', l.filter((n) => !n.pokemonCenter && n.art === 'leak')],
-      ['💸 Deal-Hinweise (Community – Preis beim Händler prüfen)', l.filter((n) => !n.pokemonCenter && n.art === 'deal')],
-      ['📰 Weitere News', l.filter((n) => !n.pokemonCenter && n.art === 'news')],
+      ['🚨 Pokémon Center – jetzt live', kaufbar.filter((n) => n.pcDrop)],
+      ['📦 Top-Trainer-Box-Deals', kaufbar.filter((n) => !n.pcDrop && n.ttb)],
+      ['💸 Weitere Deals (Community – Preis beim Händler prüfen)', kaufbar.filter((n) => !n.pcDrop && !n.ttb)],
     ].filter(([, g]) => g.length);
     const STUFE = { A: 'offiziell', B: 'Fachseite', C: 'Community' };
     const eintrag = (n) => `<div class="karte${n.pokemonCenter || n.ttb ? ' ttb' : ''}">
@@ -104,15 +104,16 @@ const ansichten = {
       ['mydealz Pokémon', 'https://www.mydealz.de/gruppe/pokemon'],
       ['Whatnot: Pokémon PSA', 'https://www.whatnot.com/search?query=pokemon%20psa'],
     ];
-    return `<p class="hinweis">Offizielle News, Fachseiten und Community-Deals – neueste zuerst. Push kommt bei Vorbestellung/Release, Pokémon Center und Top-Trainer-Box-Deals. Leaks aus Shop-Quelltexten stehen im Reiter 🔭 Frühwarnung.</p>
+    return `<p class="hinweis">Nur Deals, die <b>jetzt</b> kaufbar sind – neueste zuerst. Keine Vorbestellungen, Ankündigungen oder Aktionen „ab …“. Push kommt bei Pokémon-Center-Drops, Top-Trainer-Box-Deals und Laden-Deals im Raum Freiburg.</p>
       <div class="karte"><div class="titel">💡 Tipp: eBay, Whatnot &amp; eBay Live</div><div class="hinweis" style="margin:4px 0 0">Diese Plattformen darf das Radar nicht automatisch lesen. In der <b>eBay-App</b> eine Suche (z. B. „Pokémon Top Trainer Box“, Höchstpreis 60 €, Neu) speichern und Benachrichtigungen einschalten – dann meldet eBay neue Angebote selbst. In <b>Whatnot</b> und <b>eBay Live</b> Graded-Verkäufern folgen.</div></div>
       <div class="knoepfe" style="margin-bottom:12px">${links.map(([t, u]) => `<a class="knopf" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}</div>`
       + (gruppen.length ? gruppen.map(([name, g]) => `<h2>${esc(name)} (${g.length})</h2>${g.slice(0, 40).map(eintrag).join('')}`).join('')
-        : '<div class="leer">Noch keine News gesammelt.</div>');
+        : '<div class="leer">Gerade kein Deal, der jetzt kaufbar ist.</div>');
   },
   vorort() {
-    const news = [...(daten.news || [])].filter((n) => n.vorOrt).sort((a, b) => b.zeit.localeCompare(a.zeit));
-    const neu = (daten.feed || []).filter((f) => f.vorOrt);
+    // nur Raum Freiburg bzw. bundesweite Ketten, nur jetzt (nichts „ab Montag“)
+    const news = [...(daten.news || [])].filter((n) => n.vorOrt && !n.zukunft && !n.fremdeRegion).sort((a, b) => b.zeit.localeCompare(a.zeit));
+    const neu = (daten.feed || []).filter((f) => f.vorOrt && f.jetzt === true);
     const nachricht = (n) => `<div class="karte${n.ttb ? ' ttb' : ''}">
       <div class="kopf"><span>${esc(n.quelle)}</span><span>${zeit(n.zeit)}</span></div>
       <div class="titel">${esc(n.titel)}</div>
@@ -136,10 +137,10 @@ const ansichten = {
       <h2>🆕 Neu bei den Ketten (${neu.length})</h2>${neu.length ? neu.slice(0, 40).map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Noch keine neuen Pokémon-Produkte bei Lidl, Aldi, Rossmann oder Müller entdeckt.</div>'}`;
   },
   meldungen() {
-    const alle = (daten.feed || []).filter((f) => f.typ !== 'angekuendigt');
+    const alle = (daten.feed || []).filter((f) => f.typ === 'neu' || f.typ === 'wieder-da');
     const l = alle.filter((f) => f.jetzt === true);
     const weg = alle.length - l.length;
-    return '<p class="hinweis">Neu lieferbar, wieder da oder Vorbestellung offen (letzte 14 Tage) – nur was laut letzter Prüfung <b>jetzt noch kaufbar</b> ist.</p>'
+    return '<p class="hinweis">Neu lieferbar oder wieder da (letzte 14 Tage) – nur was laut letzter Prüfung <b>jetzt kaufbar</b> ist. Keine Vorbestellungen.</p>'
       + (l.length ? [...l].sort((x, y) => String(y.zeit).localeCompare(String(x.zeit))).map((f) => karte(f, { typ: f.typ })).join('') : '<div class="leer">Gerade nichts davon kaufbar.</div>')
       + (weg ? `<p class="hinweis">${weg} ältere Meldung(en) ausgeblendet – inzwischen ausverkauft oder nicht mehr prüfbar.</p>` : '');
   },

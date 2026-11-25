@@ -79,9 +79,15 @@ export async function sitemapWaechter(h, alt, { jetzt = new Date(), holen = fetc
   const bekannt = Object.keys(stand.urls).map((url) => ({ url, titel: titelAusUrl(url), ...(produktArt(titelAusUrl(url)) || { prioritaet: 9 }) }))
     .sort((a, b) => a.prioritaet - b.prioritaet || a.url.localeCompare(b.url));
   const neuSet = new Set(neueUrls.map((k) => k.url));
-  const rest = Math.max(0, seitenProLauf - neueUrls.length);
-  const rotation = bekannt.filter((k) => !neuSet.has(k.url));
-  const auswahl = [...neueUrls];
+  // Gerade kaufbare Seiten zuerst nachprüfen (bis zur Hälfte der Seiten, älteste Prüfung zuerst) → ausverkaufte Ware
+  // verschwindet schnell aus der App (Nutzer-Regel: nur anzeigen, was wirklich kaufbar ist)
+  const offen = bekannt.filter((k) => !neuSet.has(k.url) && stand.urls[k.url]?.v === true)
+    .sort((a, b) => String(stand.urls[a.url].z || '').localeCompare(String(stand.urls[b.url].z || '')))
+    .slice(0, Math.max(0, Math.min(Math.ceil(seitenProLauf / 2), seitenProLauf - neueUrls.length)));
+  const offenSet = new Set(offen.map((k) => k.url));
+  const rotation = bekannt.filter((k) => !neuSet.has(k.url) && !offenSet.has(k.url));
+  const auswahl = [...neueUrls, ...offen];
+  const rest = Math.max(0, seitenProLauf - auswahl.length);
   for (let i = 0; i < Math.min(rest, rotation.length); i++) auswahl.push(rotation[(stand.zeiger + i) % rotation.length]);
   stand.zeiger = rotation.length ? (stand.zeiger + rest) % rotation.length : 0;
 
@@ -93,9 +99,11 @@ export async function sitemapWaechter(h, alt, { jetzt = new Date(), holen = fetc
     if (p) {
       p.vorbestellung = p.vorbestellung || istVorbestellung({ titel: p.name });
       const war = vorher.v;
-      stand.urls[k.url] = { ...vorher, v: p.verfuegbar || p.vorbestellung, p: p.preis };
+      // v = JETZT kaufbar (Vorbestellung zählt nicht), vb = Vorbestellung, z = Zeit der Prüfung
+      const kaufbar = !!p.verfuegbar && !p.vorbestellung;
+      stand.urls[k.url] = { ...vorher, v: kaufbar, vb: !!p.vorbestellung, p: p.preis, z: jetzt.toISOString() };
       if (neuSet.has(k.url)) meldungen.push(meldung(k, p.vorbestellung ? 'vorbestellung' : p.verfuegbar ? 'neu' : 'angekuendigt', p));
-      else if (war === false && (p.verfuegbar || p.vorbestellung)) meldungen.push(meldung(k, p.vorbestellung ? 'vorbestellung' : 'wieder-da', p));
+      else if ((war === false || vorher.vb === true) && kaufbar) meldungen.push(meldung(k, 'wieder-da', p));
     } else if (neuSet.has(k.url)) meldungen.push(meldung(k, 'angekuendigt', null));
     if (pause) await new Promise((res) => setTimeout(res, pause));
   }

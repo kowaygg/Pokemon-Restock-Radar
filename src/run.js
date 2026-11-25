@@ -6,7 +6,7 @@ import { istPokemon, produktArt, sprache, istVorbestellung, topTauglich } from '
 import { uvpFinden, preisBewertung, pushWert, versandFuer } from './uvp.js';
 import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
-import { newsAbruf, newsPushWert, newsPushNachricht, fremdeRegion } from './news.js';
+import { newsAbruf, newsPushWert, newsPushNachricht, fremdeRegion, nachbewerten, jetztKaufbarNews } from './news.js';
 import { mediamarktHolen } from './mediamarkt.js';
 import { neueSetCodes } from './setcodes.js';
 import { haendlerEntdecken, domainAus } from './entdecker.js';
@@ -45,7 +45,9 @@ async function melden(meldungen) {
     // Restock-Muster nur aus vollständigen GitHub-Läufen (Handy-Statistik wird nicht veröffentlicht)
     if (!handy && m.quelle !== 'ebay') zustand.statistik = musterZaehlen(zustand.statistik, m, jetzt);
     zustand.feed.unshift({ id: m.id, haendlerId: m.haendlerId, zeit: m.zeit, typ: m.typ, haendler: m.haendler, titel: m.titel, art: m.art, prioritaet: m.prioritaet, preis: m.preis, versand: m.versand ?? null, bewertung: m.bewertung, sprache: m.sprache, link: m.link, warenkorb: m.warenkorb || null, quelle: m.quelle || 'shop', vorOrt: !!m.vorOrt });
-    if (pushes < einst.maxPushProLauf && (!einst.pushNurUvp || pushWert(m))) {
+    // Nutzer-Regel: Push nur für JETZT Kaufbares – keine Vorbestellung, keine Ankündigung (Seite da, aber nicht bestellbar)
+    const kaufbarJetzt = m.quelle === 'ebay' || (['neu', 'wieder-da'].includes(m.typ) && !m.vorbestellung);
+    if (kaufbarJetzt && pushes < einst.maxPushProLauf && (!einst.pushNurUvp || pushWert(m))) {
       if (gemeldet.has(m.link)) continue;
       if (await pushSenden(pushNachricht(m), { kanal })) { pushes++; gemeldet.add(m.link); }
     }
@@ -82,7 +84,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     const sealed = roh.filter(istPokemon).map((p) => ({ ...p, ...produktArt(p.titel) })).filter((p) => p.art)
       .map((p) => ({ ...p, sprache: sprache(p.titel), vorbestellung: istVorbestellung(p), haendler: h.name, haendlerId: h.id }));
     for (const p of sealed) { setQuellen.push({ titel: p.titel, link: p.link, haendler: h.name }); marktAngebote.push({ art: p.art, sprache: p.sprache, preis: p.preis }); }
-    for (const p of sealed.filter((x) => x.verfuegbar)) {
+    for (const p of sealed.filter((x) => x.verfuegbar && !x.vorbestellung)) { // Vorbestellungen sind nicht „jetzt kaufbar“
       const { bewertung: b, versand } = bewerteGesamt(p.titel, p.art, p.preis, h.id);
       if (b.stufe === 'uvp') top.push({ haendler: p.haendler, titel: p.titel, art: p.art, prioritaet: p.prioritaet, preis: p.preis, versand, bewertung: b, sprache: p.sprache, vorbestellung: p.vorbestellung, link: p.link, warenkorb: p.warenkorb });
       if (p.prioritaet !== 1 || b.stufe === 'unplausibel') continue; // leere/kaputte Boxen o. Ä. nie anzeigen
@@ -115,7 +117,8 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x
     for (const url of Object.keys(stand.urls)) setQuellen.push({ titel: titelAusUrl(url), link: url, haendler: h.name });
     for (const [url, z] of Object.entries(stand.urls)) {
       const a = produktArt(titelAusUrl(url));
-      if (!z.v || !a) continue;
+      // nur jetzt kaufbar UND in den letzten 12 h geprüft (sonst evtl. längst ausverkauft)
+      if (!z.v || !a || !z.z || jetzt - Date.parse(z.z) > 12 * 3600000) continue;
       const { bewertung: b, versand } = bewerteGesamt(titelAusUrl(url), a.art, z.p, h.id);
       if (b.stufe === 'uvp') top.push({ haendler: h.name, titel: titelAusUrl(url), art: a.art, prioritaet: a.prioritaet, preis: z.p, versand, bewertung: b, sprache: sprache(titelAusUrl(url)), link: url, warenkorb: null });
       if (a.prioritaet !== 1 || b.stufe === 'unplausibel') continue;
@@ -317,13 +320,17 @@ const oeffentlich = {
     const z = hz.produkte?.[f.id] || hz.sitemap?.urls?.[f.id];
     // UVP mit aktueller Liste neu bewerten (ältere Meldungen bekommen so auch Spannen/Packpreise)
     const neuBew = f.quelle !== 'ebay' && f.art && Number.isFinite(f.preis) ? bewerteGesamt(f.titel, f.art, f.preis, f.haendlerId).bewertung : f.bewertung;
-    return { ...f, bewertung: neuBew, jetzt: f.typ === 'angekuendigt' ? false : z ? z.v === true : null };
+    // jetzt kaufbar = laut letzter Prüfung lieferbar, keine Vorbestellung/Ankündigung; Sitemap-Stand höchstens 12 h alt
+    const frisch = !hz.sitemap || (z?.z && jetzt - Date.parse(z.z) <= 12 * 3600000);
+    const kaufbar = ['neu', 'wieder-da'].includes(f.typ) && z?.v === true && !z?.vb && frisch;
+    return { ...f, bewertung: neuBew, jetzt: !!kaufbar };
   }),
   top: top.sort((a, b) => a.prioritaet - b.prioritaet || a.bewertung.differenz - b.bewertung.differenz).slice(0, 100),
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),
   haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, versand: h.versand || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null, fehlerSeit: zustand.haendler[h.id]?.fehler ? zustand.haendler[h.id]?.fehlerSeit || null : null })),
   uvp: { ...uvpListe, kurseStand: zustand.kurse?.stand || null },
-  news: zustand.news.filter((x) => !fremdeRegion(`${x.titel} ${x.text || ''}`)).slice(0, 200),
+  // App zeigt nur, was JETZT kaufbar ist: aktuelle Deals + Pokémon-Center-Drops; keine Vorbestellungen/Ankündigungen/fremde Regionen
+  news: zustand.news.filter((x) => !fremdeRegion(`${x.titel} ${x.text || ''}`)).map(nachbewerten).filter(jetztKaufbarNews).slice(0, 200),
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
   newsFehler: zustand.newsFehler || {},
   markt: (zustand.markt = !handy && marktAngebote.length > 50 ? marktSpannen(marktAngebote) : zustand.markt || {}),

@@ -44,7 +44,10 @@ test('Vor Ort: Ketten erkennen, Startdatum lesen, Push', async () => {
   const n = einordnen({ titel: '[Aldi Süd] Pokémon Top-Trainer-Box ab 16.11. für 39,99€', text: '' }, { stufe: 'C', deal: true, nurPokemon: true });
   assert.equal(n.vorOrt, true);
   assert.equal(n.abDatum, '16.11.');
-  assert.equal(newsPushWert({ ...n, art: 'deal' }), true);
+  // „ab 16.11.“ = Zukunft → kein Push (Nutzer-Regel 25.11.2026: nur jetzt Kaufbares)
+  assert.equal(n.zukunft, true);
+  assert.equal(newsPushWert({ ...n, art: 'deal' }), false);
+  assert.equal(newsPushWert(einordnen({ titel: '[Aldi Süd] Pokémon Top-Trainer-Box für 39,99€', text: '' }, { stufe: 'C', deal: true, nurPokemon: true })), true);
   assert.match(newsPushNachricht({ ...n, titel: 'x', quelle: 'mydealz', bestaetigt: false }).message, /Start: 16\.11\./);
   assert.equal(datumAus('Lidl: Pokémon Kollektion ab Montag'), 'ab Montag');
   assert.equal(einordnen({ titel: 'Pokémon Display online bei TCGViert', text: '' }, { stufe: 'B' }).vorOrt, false);
@@ -66,7 +69,7 @@ test('Reddit-Gruppe: pro Durchlauf nur eine Quelle, eigener Takt', async () => {
 test('Amazon-Einladung und Pokémon Center aus Reddit lösen Push aus', () => {
   const r = einordnen({ titel: 'Pokémon Delta Herrschaft ETB on Amazon – request invite now', text: '' }, { stufe: 'C', push: false });
   assert.equal(r.amazonEinladung, true);
-  assert.equal(newsPushWert(r), true);
+  assert.equal(newsPushWert(r), false); // Einladung = Zukunft, nicht direkt kaufbar (Regel 25.11.2026)
   const p = newsPushNachricht({ ...r, titel: 'x', quelle: 'Reddit', bestaetigt: false });
   assert.match(p.title, /Amazon-Einladung anfragen/);
   assert.equal(p.priority, 5);
@@ -83,4 +86,17 @@ test('Regionsfilter: nur Freiburg/Südbaden/BW oder bundesweit', async () => {
   assert.equal(fremdeRegion('Lidl: Pokémon Kollektion ab Montag'), false);
   const n = einordnen({ titel: '[Netto] Pokémon Mini Tin ab 16.11. (Region Berlin-Brandenburg)', text: '' }, { stufe: 'C', deal: true, nurPokemon: true });
   assert.deepEqual([n.vorOrt, n.fremdeRegion, newsPushWert(n)], [false, true, false]);
+});
+
+test('Vor Ort 25.11.2026: nur Raum Freiburg oder bundesweite Kette ohne Lokal-Hinweis', async () => {
+  const { regionPasst } = await import('../src/news.js');
+  const q = { stufe: 'C', deal: true, nurPokemon: true };
+  assert.equal(einordnen({ titel: '[EDEKA Potsdam] Pokémon 30 Jahre Poster Kollektion - lokal', text: '' }, q).vorOrt, false);
+  assert.equal(einordnen({ titel: '[LOKAL Paderborn] Pokemon 30 Jahre Ordner-Kollektion im Smyths Toys Paderborn', text: '' }, q).vorOrt, false);
+  assert.equal(einordnen({ titel: '[sb LÜNING] Viele Pokémon Produkte im Angebot - z.B. Top Trainer Boxen für 49,99', text: '' }, q).vorOrt, false);
+  assert.equal(einordnen({ titel: 'Edeka Gebauer - Pokemon 30 Jahre Ultra Premium Kollektion', text: '' }, q).vorOrt, false);
+  assert.equal(einordnen({ titel: '[Penny] Pokemon 30 Jahre Mini-Tins für 13,00€', text: '' }, q).vorOrt, true);
+  assert.equal(regionPasst('Edeka Freiburg-Ebnet: Pokémon Display'), true);
+  const v = einordnen({ titel: 'Pokémon Display jetzt vorbestellbar', text: '' }, q);
+  assert.equal(newsPushWert(v), false);
 });

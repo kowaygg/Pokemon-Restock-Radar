@@ -61,16 +61,30 @@ export function einordnen(e, quelle) {
   const vorOrt = VOR_ORT.test(t) && (!/\bonline\b/.test(t) || /filiale|prospekt|vor ort|im laden|in store|offline/.test(t));
   const abDatum = datumAus(e.titel);
   const fremd = fremdeRegion(`${e.titel} ${e.text}`);
-  return { art, pokemonCenter: pc, pcDrop, amazonEinladung, ttb, vorOrt: vorOrt && !fremd, fremdeRegion: fremd, ...(abDatum ? { abDatum } : {}) };
+  // Nutzer-Regel: nur was JETZT kaufbar ist – Vorbestellungen, „ab Montag“, „erscheint am …“ sind Zukunft
+  const zukunft = !!abDatum || ZUKUNFT.test(titel);
+  return { art, pokemonCenter: pc, pcDrop, amazonEinladung, ttb, vorOrt: vorOrt && regionPasst(`${e.titel} ${e.text}`), fremdeRegion: fremd, zukunft, ...(abDatum ? { abDatum } : {}) };
 }
 
+const ZUKUNFT = /vorbestell|pre.?order|vorverkauf|preorder|erscheint|ab (dem )?\d|ab (montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|morgen|nachster woche)|demnachst|coming soon|bald (erhaltlich|verfugbar)|angekundigt/;
 // Stationäre Ketten / Filial-Hinweise (Prospekt-Aktionen)
 const VOR_ORT = /\b(aldi|lidl|netto|penny|kaufland|rossmann|muller|thalia|rombach|edeka|rewe|globus|smyths|toys ?r ?us|mediamarkt|saturn|woolworth|tedi)\b|filiale|in store|offline|prospekt|vor ort|im laden/;
 
 // Regionale Aktionen: Nutzer wohnt in Freiburg (79117) → nur Freiburg/Südbaden/Baden-Württemberg oder bundesweit interessant.
 // Nennt eine Meldung eine andere Region/Stadt (z. B. „Region Berlin-Brandenburg“) und nicht unsere, wird sie ausgeblendet.
 const EIGENE_REGION = /freiburg|breisgau|sudbaden|schwarzwald|baden.?wurttemberg|\bbw\b|bundesweit|deutschlandweit|ganz deutschland|alle (filialen|markte)/;
-const FREMDE_REGION = /berlin|brandenburg|hamburg|bremen|niedersachsen|nordrhein|\bnrw\b|westfalen|hessen|thuringen|sachsen|mecklenburg|vorpommern|schleswig|holstein|bayern|munchen|nurnberg|saarland|rheinland|pfalz|koln|dusseldorf|dortmund|essen|frankfurt|leipzig|dresden|hannover|stuttgart|karlsruhe|mannheim|\bregion (nord|ost|west|mitte)\b|osterreich|schweiz/;
+const FREMDE_REGION = /berlin|brandenburg|hamburg|bremen|niedersachsen|nordrhein|\bnrw\b|westfalen|hessen|thuringen|sachsen|mecklenburg|vorpommern|schleswig|holstein|bayern|munchen|nurnberg|saarland|rheinland|pfalz|koln|dusseldorf|dortmund|essen|frankfurt|leipzig|dresden|hannover|stuttgart|karlsruhe|mannheim|potsdam|paderborn|bielefeld|munster|osnabruck|kassel|erfurt|magdeburg|rostock|kiel|lubeck|bochum|duisburg|wuppertal|bonn|aachen|augsburg|regensburg|wurzburg|heilbronn|ulm|\bregion (nord|ost|west|mitte)\b|osterreich|schweiz/;
+// Bundesweite Ketten mit Filialen im Raum Freiburg – deren Aktionen gelten meist überall
+const KETTE_BUNDESWEIT = /\b(aldi|lidl|netto|penny|kaufland|rossmann|muller|thalia|rewe|globus|smyths|mediamarkt|saturn|woolworth|tedi|galeria|dm|action|expert)\b/;
+// Einzelne Märkte/Lokal-Deals („[LOKAL Paderborn]“, „Edeka Gebauer“, „sb Lüning“) → nur, wenn unsere Region genannt ist
+const LOKAL = /\blokal\b|\bregional\b|\beinzelnen? (filiale|filialen|markt|markten)\b/;
+// Vor-Ort-Aktion anzeigen? Freiburg/Südbaden/BW genannt – oder bundesweite Kette ohne Lokal-/Fremd-Hinweis
+export function regionPasst(text) {
+  const t = norm(text);
+  if (/freiburg|breisgau|sudbaden|schwarzwald|baden.?wurttemberg|\bbw\b/.test(t)) return true;
+  if (FREMDE_REGION.test(t) || LOKAL.test(t)) return false;
+  return KETTE_BUNDESWEIT.test(t);
+}
 export function fremdeRegion(text) {
   const t = norm(text);
   return FREMDE_REGION.test(t) && !EIGENE_REGION.test(t);
@@ -131,10 +145,16 @@ export async function newsAbruf(quellen, alt = {}, { jetzt = new Date(), holen =
 }
 
 // Push nur für das Wichtige: Vorbestellung/Release, Pokémon Center, Top-Trainer-Box-Deals
+// Nutzer-Regel 25.11.2026: nur pushen, was JETZT kaufbar ist – Pokémon-Center-Drop live, Top-Trainer-Box-Deal,
+// Laden-Deal in unserer Region. Keine Vorbestellungen, Ankündigungen, Release-News oder Newsletter-Infos.
 export function newsPushWert(n) {
-  if (n.fremdeRegion) return false; // Aktionen anderer Regionen interessieren nicht
-  return n.pokemonCenter || n.amazonEinladung || n.art === 'vorbestellung' || n.art === 'release' || (n.art === 'deal' && n.ttb) || (n.vorOrt && n.art === 'deal');
+  if (n.fremdeRegion || n.zukunft) return false;
+  return !!(n.pcDrop || (n.art === 'deal' && (n.ttb || n.vorOrt)));
 }
+// Für die App: beschreibt die Meldung etwas, das man jetzt kaufen kann?
+// Ältere gespeicherte Meldungen mit den aktuellen Regeln neu einordnen (Zukunft, Region)
+export const nachbewerten = (n) => ({ ...n, zukunft: !!n.zukunft || !!n.abDatum || ZUKUNFT.test(norm(n.titel)), vorOrt: !!n.vorOrt && regionPasst(`${n.titel} ${n.text || ''}`) });
+export const jetztKaufbarNews = (n) => !n.fremdeRegion && !n.zukunft && !!(n.pcDrop || n.art === 'deal');
 
 export function newsPushNachricht(n) {
   const art = { vorbestellung: 'VORBESTELLUNG', release: 'RELEASE', leak: 'Leak/Ankündigung', deal: 'Deal-Hinweis', news: 'News' }[n.art];
