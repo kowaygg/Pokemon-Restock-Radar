@@ -285,6 +285,21 @@ Fakeshop-Finder-Prüfung, Wächter-Selbstüberwachung, optional Budget-/Gekauft-
 - 10.11.2026 (2.3.1): Puls alle 10 Min. statt 30 + sofort bei Moduswechsel (Kabel, WLAN, Akku) → Tests/Diagnose schneller. Aktiv auf dem Handy
   automatisch nach dem nächsten stündlichen git pull (Dauerlauf startet mit neuer Version neu).
 
+- 25.11.2026 (2.4.0) – Komplett-Prüfung nach Nutzer-Meldung „Runs fehlgeschlagen“. Befund: Abruf 302/305 ok (Fehler nur 10./11.11.),
+  Selbstcheck 15/15, Handy-Puls lückenlos. ABER: ~11 % der Läufe brauchten den 2. Pages-Versuch; Reddit-RSS liefert seit 17.11. nur 404
+  (alle 3 Subreddits, auch old.reddit → Login) → Selbstcheck-Warnung; dieselben Displays/Mini-Tins kamen mehrfach als „JETZT KAUFBAR“.
+  HAUPTURSACHE: run.js speicherte zustand.json VOR Top-Gedächtnis, Puls-Alarm-Zeit und Marktspannen → die gingen jedes Mal verloren
+  (Top-Pushes kamen immer, sobald der ntfy-Verlauf (12 h) sie vergessen hatte; Puls-Alarm hätte bei Stille jeden Lauf gepusht).
+  Jetzt Speichern nach jedem Block + am Ende; erster Lauf nach Update merkt aktuelle Top-Einträge nur (kein Push-Schwall).
+  Fixes: 1) Top-Push nur EINMAL je Link (Gedächtnis 7 Tage statt 6 h; nur merken, wenn Push rausging); GitHub veröffentlicht
+  `data/top-links.json`, das Handy lädt sie stündlich (WLAN, kein Sparmodus) → keine Doppel-Pushes Handy/GitHub.
+  2) `src/sets.js`: Sprache aus Set-Namen (JP: Glory of Team Rocket, Mega Brave, Inferno X …; DE: Dunkelnacht, Delta-Herrschaft,
+  Illumina City …; EN: Lumiose City, Destined Rivals …) – Fehltreffer „Glory of Team Rocket Display sv10“ 129,99 € (JP!) behoben.
+  Top: Displays/Bundles/TTB nur mit bekannter Sprache (`topTauglich`). 3) Reddit-Feeds entfernt (API bräuchte Konto).
+  4) Selbstcheck: Händler-Fehler erst nach 24 h am Stück Alarm (`fehlerSeit`), News-Fehler nur Hinweis (Alarm ab 3 Quellen).
+  5) Pages-Deploy: 3 Versuche (45 s / 120 s Pause), Lauf scheitert nie an kurzer GitHub-Störung; Timeout 15 Min.
+  Offen: Versand Card-Corner/Geeks Heaven u. a. Sitemap-Shops nicht öffentlich → App zeigt „Versand unbekannt“.
+
 ### Aufbau
 - `config/haendler.json` – Händler (status kandidat/aktiv/gesperrt, abfrage shopify) · `config/uvp.json` – UVP-Liste mit Sicherheit + Quellen
 - `config/einstellungen.json` – zentrale Werte · `config/release-quellen.json` – Quellen für Kalender/Newsfeed (Stufen A/B/C)

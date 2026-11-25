@@ -19,11 +19,18 @@ export function bewerten({ jetzt, letzterLauf, pulsAnzahl, haendler = [], newsFe
   else ok.push(`GitHub-Wächter lief vor ${Math.round(stunden * 60)} Min.`);
   if (pulsAnzahl === 0) probleme.push('Handy-Wächter: kein Lebenszeichen in den letzten 12 h – Termux öffnen: cd ~/Pokemon-Restock-Radar && npm run dauer');
   else if (pulsAnzahl > 0) ok.push(`Handy-Wächter aktiv (${pulsAnzahl} Lebenszeichen in 12 h)`);
+  // Händler: kurze Störungen (Shop kurz offline, „zu viele Anfragen“) heilen sich selbst → erst nach 24 h ununterbrochenem Fehler Alarm
   const kaputt = haendler.filter((h) => h.status === 'aktiv' && h.fehler && !NUR_HANDY.has(h.id));
-  if (kaputt.length) probleme.push(`Händler mit Fehler: ${kaputt.map((h) => `${h.name} (${h.fehler})`).join(', ')}`);
-  else ok.push(`${haendler.filter((h) => h.status === 'aktiv').length} Händler ohne Fehler`);
+  const dauerhaft = kaputt.filter((h) => h.fehlerSeit && jetzt - Date.parse(h.fehlerSeit) > 24 * 3600000);
+  const kurz = kaputt.filter((h) => !dauerhaft.includes(h));
+  if (dauerhaft.length) probleme.push(`Händler seit über 24 h mit Fehler: ${dauerhaft.map((h) => `${h.name} (${h.fehler})`).join(', ')}`);
+  if (kurz.length) hinweise.push(`Kurze Störung (heilt sich meist selbst): ${kurz.map((h) => `${h.name} (${h.fehler})`).join(', ')}`);
+  if (!kaputt.length) ok.push(`${haendler.filter((h) => h.status === 'aktiv').length} Händler ohne Fehler`);
+  // News-Quellen sind Zusatz-Infos (Reddit & Co. sperren/drosseln öfter) → nur Hinweis; Alarm erst, wenn 3+ Quellen ausfallen
   const nf = Object.entries(newsFehler);
-  if (nf.length) probleme.push(`News-Quellen mit Fehler: ${nf.map(([k, v]) => `${k} (${v})`).join(', ')}`);
+  const nfText = `News-Quellen mit Fehler: ${nf.map(([k, v]) => `${k} (${v})`).join(', ')}`;
+  if (nf.length >= 3) probleme.push(nfText);
+  else if (nf.length) hinweise.push(nfText);
   return { probleme, ok, hinweise };
 }
 

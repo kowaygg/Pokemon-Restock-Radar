@@ -1,4 +1,5 @@
 // Erkennt Pokémon-Sealed-Produkte im Titel und ordnet sie einer Produktart + Priorität zu.
+import { setSprache } from './sets.js';
 
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[-_]/g, ' ');
 
@@ -37,9 +38,17 @@ export function sprache(titel) {
   if (/\b(japanisch|japanese|\bjpn?\b|\bjap\b)/.test(t)) return 'JP';
   if (/\b(koreanisch|korean|\bkor?\b)/.test(t)) return 'KR';
   if (/\b(chinesisch|chinese|\bchn\b|\bcn\b|simplified|traditional)/.test(t)) return 'CN';
-  // ohne Angabe: japanische Set-Codes (Mega „M2“, „M6a“; SV8a, S12a) – DE/EN heißen ME02 bzw. SV10
+  // ohne Angabe: Set-Name (z. B. „Glory of Team Rocket“ = JP, „Dunkelnacht“ = DE), dann japanische Set-Codes
+  const ausSet = setSprache(titel);
+  if (ausSet) return ausSet;
+  // japanische Set-Codes (Mega „M2“, „M6a“; SV8a, S12a) – DE/EN heißen ME02 bzw. SV10
   if (/\b(m\d{1,2}[a-z]?|sv\d{1,2}[a-z]|s\d{1,2}[a-z])\b/.test(t)) return 'JP';
   return null;
+}
+
+// Top-Liste: Displays/Bundles/TTB nur mit bekannter Sprache (sonst droht der Vergleich JP-Ware ↔ deutsche UVP)
+export function topTauglich(t) {
+  return !['display-36', 'booster-bundle', 'top-trainer-box'].includes(t.art) || !!t.sprache;
 }
 
 export function istVorbestellung(p) {

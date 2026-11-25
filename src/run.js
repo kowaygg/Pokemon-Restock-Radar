@@ -2,7 +2,7 @@
 // Fehler eines Händlers stoppen nie den ganzen Ablauf.
 import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { shopifyHolen } from './shopify.js';
-import { istPokemon, produktArt, sprache, istVorbestellung } from './produkt.js';
+import { istPokemon, produktArt, sprache, istVorbestellung, topTauglich } from './produkt.js';
 import { uvpFinden, preisBewertung, pushWert, versandFuer } from './uvp.js';
 import { aenderungen } from './aenderungen.js';
 import { sitemapWaechter, titelAusUrl } from './sitemap-waechter.js';
@@ -15,6 +15,8 @@ import { marktSpannen } from './markt.js';
 import { ebaySuche, ebayGraded, serioes } from './ebay.js';
 import { pushNachricht, pushSenden, bereitsGemeldet } from './push.js';
 
+// bekannte Top-Links des GitHub-Wächters (für das Handy, damit es nichts doppelt meldet)
+const TOP_LINKS_URL = 'https://kowaygg.github.io/Pokemon-Restock-Radar/data/top-links.json';
 const lies = async (pfad, ersatz) => { try { return JSON.parse(await readFile(pfad, 'utf8')); } catch { return ersatz; } };
 const { haendler } = await lies('config/haendler.json');
 const uvpListe = await lies('config/uvp.json');
@@ -99,7 +101,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'sh
     const stufe429 = /429/.test(e.message) ? (zustand.haendler[h.id]?.stufe429 || 0) + 1 : 0;
     const pauseMin = stufe429 ? Math.min(120, einst.pauseNach429Minuten * 2 ** (stufe429 - 1)) : 0;
     const pauseBis = pauseMin ? new Date(jetzt.getTime() + pauseMin * 60000).toISOString() : null;
-    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString(), pauseBis, stufe429 };
+    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString(), fehlerSeit: zustand.haendler[h.id]?.fehlerSeit || jetzt.toISOString(), pauseBis, stufe429 };
     bericht.push(`| ${h.name} | ❌ ${e.message}${pauseBis ? ` → Pause ${pauseMin} Min.` : ''} | – | – | – | – |`);
   }
 }
@@ -122,7 +124,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && /^sitemap/.test(x
     }
     bericht.push(`| ${h.name} | ✅ ${h.abfrage}${info.sitemapGelesen ? ' (Sitemap gelesen)' : ''} | ${info.kandidaten} URLs | ${info.seiten} Seiten geprüft | – | ${alt ? meldungen.length : 'erster Lauf (nur merken)'} |`);
   } catch (e) {
-    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString() };
+    zustand.haendler[h.id] = { ...(zustand.haendler[h.id] || {}), fehler: e.message, fehlerZeit: jetzt.toISOString(), fehlerSeit: zustand.haendler[h.id]?.fehlerSeit || jetzt.toISOString() };
     bericht.push(`| ${h.name} | ❌ ${e.message} | – | – | – | – |`);
   }
 }
@@ -145,7 +147,7 @@ for (const h of haendler.filter((x) => x.status === 'aktiv' && x.abfrage === 'me
     await melden(meldungen.filter((m) => !m.marktplatz && m.verfuegbar));
     bericht.push(`| ${h.name} | ✅ Suche | ${roh.length} | ${sealed.length} | ${sealed.filter((p) => p.verfuegbar).length} eigene zum UVP | ${vorher?.produkte ? meldungen.length : 'erster Lauf (nur merken)'} |`);
   } catch (e) {
-    zustand.haendler[h.id] = { ...(vorher || {}), stand: jetzt.toISOString(), fehler: e.message };
+    zustand.haendler[h.id] = { ...(vorher || {}), stand: jetzt.toISOString(), fehler: e.message, fehlerSeit: vorher?.fehlerSeit || jetzt.toISOString() };
     bericht.push(`| ${h.name} | ❌ ${e.message} | – | – | – | – |`);
   }
 }
@@ -247,22 +249,42 @@ zustand.feed = zustand.feed.filter((f) => Date.parse(f.zeit) >= grenze).slice(0,
 zustand.letzterLauf = jetzt.toISOString();
 await mkdir('data', { recursive: true });
 await writeFile('data/zustand.json', JSON.stringify(zustand));
-// Push für JEDEN neuen Top-Eintrag – egal ob neu, wieder da, Preis auf UVP gefallen oder schon beim ersten Lauf da.
-// „Neu“ = Link war in den letzten 6 Stunden nicht in der Top-Liste (das Handy sieht pro Minute nur Ausschnitte → kein Dauer-Push).
+// Top nur mit bekannter Sprache bei Displays/Bundles/TTB: JP/KR/CN-Ware kostet ein Bruchteil – ohne Sprache wäre der
+// Vergleich mit der deutschen UVP ein möglicher Fehltreffer (z. B. „Glory of Team Rocket Display sv10“ für 129,99 €).
+for (let i = top.length - 1; i >= 0; i--) if (!topTauglich(top[i])) top.splice(i, 1);
+// Push für JEDEN neuen Top-Eintrag – einmal. „Neu“ = Link war 7 Tage lang nicht in der Top-Liste.
+// Früher 6 Stunden → dieselben Displays kamen immer wieder (das Handy sieht nur Ausschnitte, Sparmodus lässt Händler aus).
+// Restocks ausverkaufter Ware meldet weiterhin die normale „wieder verfügbar“-Meldung.
+// Handy und GitHub teilen ihr Wissen: GitHub veröffentlicht seine bekannten Top-Links (top-links.json), das Handy lädt sie stündlich.
+// Erster Lauf mit Gedächtnis (nach Update 2.4.0): aktuelle Top-Einträge nur merken – sie wurden bereits gemeldet
+const topErstlauf = !zustand.topBekannt;
 zustand.topBekannt ||= {};
+if (handy && !spar && (!zustand.topFremdZeit || jetzt - Date.parse(zustand.topFremdZeit) > 3600000)) {
+  try {
+    const fremd = await (await fetch(TOP_LINKS_URL, { signal: AbortSignal.timeout(15000) })).json();
+    for (const link of fremd.links || []) zustand.topBekannt[link] ||= jetzt.toISOString();
+    zustand.topFremdZeit = jetzt.toISOString();
+  } catch {}
+}
 {
   if (top.length && !gemeldet) gemeldet = await bereitsGemeldet(kanal);
   for (const t of top.sort((a, b) => a.prioritaet - b.prioritaet)) {
-    const vorher = zustand.topBekannt[t.link];
-    zustand.topBekannt[t.link] = jetzt.toISOString();
-    if (vorher && jetzt - Date.parse(vorher) < 6 * 3600000) continue;
-    if (gemeldet.has(t.link) || pushes >= einst.maxPushProLauf) continue;
+    const merken = () => { zustand.topBekannt[t.link] = jetzt.toISOString(); };
+    // schon gemeldet bzw. in den letzten 7 Tagen in Top gesehen (Zeit wird aufgefrischt, solange es in Top bleibt)
+    if (topErstlauf || zustand.topBekannt[t.link] || gemeldet.has(t.link)) { merken(); continue; }
+    if (pushes >= einst.maxPushProLauf) continue; // Rest kommt beim nächsten Lauf
     const gesamt = Number.isFinite(t.versand) ? t.preis + t.versand : t.preis;
-    if (await pushSenden(pushNachricht({ ...t, typ: 'top', preis: gesamt, verfuegbar: true }), { kanal })) { pushes++; gemeldet.add(t.link); }
+    // nur merken, wenn der Push rausging → sonst beim nächsten Lauf erneut versuchen
+    if (await pushSenden(pushNachricht({ ...t, typ: 'top', preis: gesamt, verfuegbar: true }), { kanal })) { pushes++; gemeldet.add(t.link); merken(); }
+    else if (!kanal) merken(); // Probelauf ohne Kanal
   }
-  const alt = jetzt.getTime() - 3 * 86400000;
+  const alt = jetzt.getTime() - 7 * 86400000;
   zustand.topBekannt = Object.fromEntries(Object.entries(zustand.topBekannt).filter(([, z]) => Date.parse(z) >= alt));
+  if (!handy) await writeFile('data/top-links.json', JSON.stringify({ zeit: jetzt.toISOString(), links: Object.keys(zustand.topBekannt) }));
 }
+// WICHTIG (Fehler bis 2.3.1): zustand.json wurde VOR Top-Gedächtnis und Puls-Alarm gespeichert → beides ging jedes Mal verloren
+// (Folge: dieselben Top-Pushes immer wieder). Jetzt nach jedem Block speichern.
+await writeFile('data/zustand.json', JSON.stringify(zustand));
 
 // Handy-Puls-Wächter (nur GitHub): Hat sich der Handy-Wächter in den letzten 90 Min. gemeldet? Sonst Push – höchstens alle 6 h.
 if (!handy && kanal) {
@@ -299,7 +321,7 @@ const oeffentlich = {
   }),
   top: top.sort((a, b) => a.prioritaet - b.prioritaet || a.bewertung.differenz - b.bewertung.differenz).slice(0, 100),
   lieferbar: lieferbar.sort((a, b) => (a.bewertung?.differenz ?? 999) - (b.bewertung?.differenz ?? 999)),
-  haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, versand: h.versand || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null })),
+  haendler: haendler.map((h) => ({ id: h.id, name: h.name, url: h.url, art: h.art, status: h.status, grund: h.grund || null, versand: h.versand || null, abfrage: h.abfrage || null, stand: zustand.haendler[h.id]?.stand || null, fehler: zustand.haendler[h.id]?.fehler || null, fehlerSeit: zustand.haendler[h.id]?.fehler ? zustand.haendler[h.id]?.fehlerSeit || null : null })),
   uvp: { ...uvpListe, kurseStand: zustand.kurse?.stand || null },
   news: zustand.news.filter((x) => !fremdeRegion(`${x.titel} ${x.text || ''}`)).slice(0, 200),
   ebay: { aktiv: ebayAktiv || !!zustand.ebay.zeit, zeit: zustand.ebay.zeit || null, sofort: zustand.ebay.sofort || [], auktionen: zustand.ebay.auktionen || [], graded: zustand.ebay.graded || [], fehler: zustand.ebay.fehler || [], gradedEingerichtet: !!(eb.graded?.suchen || []).length },
@@ -310,6 +332,8 @@ const oeffentlich = {
   entdeckt: Object.values(zustand.entdeckt || {}).filter((e) => !haendler.some((h) => domainAus(h.url) === e.domain || h.name.toLowerCase() === String(e.name).toLowerCase())).sort((a, b) => b.anzahl - a.anzahl).slice(0, 40),
 };
 await writeFile('data/oeffentlich.json', JSON.stringify(oeffentlich));
+// Endstand sichern (Puls-Alarm-Zeit, Handy-Puls, Marktspannen wurden erst nach dem letzten Speichern gesetzt)
+await writeFile('data/zustand.json', JSON.stringify(zustand));
 
 const md = ['| Händler | Status | Produkte gesamt | Pokémon-Sealed | davon lieferbar | Meldungen |', '|---|---|---|---|---|---|', ...bericht,
   '', `Push: ${kanal ? `${pushes} gesendet` : 'Probelauf (kein Kanal eingerichtet)'}`, '',

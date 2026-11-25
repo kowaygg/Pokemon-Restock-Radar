@@ -143,3 +143,21 @@ test('Fehltreffer 10.11.2026: „Inferno X M2 Display“ ist Japan; „M6a … K
   assert.equal(sprache('Pokemon ME02 Mega Entwicklung Display deutsch'), 'DE');
   assert.equal(uvpFinden('Pokemon ME06 Delta Herrschaft Display', 'display-36', l).uvp, 179.64);
 });
+
+test('Set-Namen: JP-Sets ohne Sprachangabe sind kein Fehltreffer (2.4.0)', async () => {
+  const { topTauglich } = await import('../src/produkt.js');
+  // „Glory of Team Rocket“ = japanisches Set (sv10 ohne Zusatz) → nie mit der deutschen Display-UVP vergleichen
+  assert.equal(sprache('Pokemon Glory of Team Rocket Display sv10'), 'JP');
+  assert.notEqual(bew('Pokemon Glory of Team Rocket Display sv10', 129.99).stufe, 'uvp');
+  assert.equal(sprache('Pokemon Dunkelnacht Display'), 'DE');
+  assert.equal(sprache('Pokémon TCG Illumina City Mini Tin Box Sammelkarten'), 'DE');
+  assert.equal(sprache('Pokemon Mini-Tin-Box: Lumiose City'), 'EN');
+  assert.equal(sprache('Pokemon Mega Brave Booster Box'), 'JP');
+  assert.equal(sprache('Pokemon Display'), null);
+  // ausdrückliche Sprache geht vor dem Set-Namen
+  assert.equal(sprache('Pokemon Glory of Team Rocket Booster Box Korean'), 'KR');
+  // Top: Displays/Bundles/TTB nur mit bekannter Sprache, Mini-Tins auch ohne
+  assert.equal(topTauglich({ art: 'display-36', sprache: null }), false);
+  assert.equal(topTauglich({ art: 'display-36', sprache: 'DE' }), true);
+  assert.equal(topTauglich({ art: 'mini-tin', sprache: null }), true);
+});
